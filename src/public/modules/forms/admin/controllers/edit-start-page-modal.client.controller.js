@@ -4,6 +4,7 @@ const {
   MAX_UPLOAD_FILE_SIZE,
   VALID_UPLOAD_FILE_TYPES,
 } = require('shared/constants')
+const { MB } = require('../../../../../app/constants/filesize')
 const { FormLogoState } = require('../../../../../types')
 const { getFormLogo } = require('../../helpers/logo')
 
@@ -98,8 +99,8 @@ function EditStartPageController(
       vm.uploaded.file = ''
       switch (ngfError.$error) {
         case 'maxSize':
-          vm.uploadError = `${(ngfError.size / 1000000).toFixed(2)} MB / ${
-            vm.maxLogoSize / 1000000
+          vm.uploadError = `${(ngfError.size / MB).toFixed(2)} MB / ${
+            vm.maxLogoSize / MB
           } MB: File size exceeded`
           break
         case 'resize':

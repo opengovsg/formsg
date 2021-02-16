@@ -1,10 +1,10 @@
+const { MB } = require('../../../constants/filesize')
 const BaseFieldValidator = require('./BaseFieldValidator.class')
-const MILLION = 1000000
 
 class AttachmentValidator extends BaseFieldValidator {
   _generateByteLengthLimit() {
     const num = parseInt(this.formField.attachmentSize)
-    return num * MILLION
+    return num * MB
   }
 
   _isSizeValid() {

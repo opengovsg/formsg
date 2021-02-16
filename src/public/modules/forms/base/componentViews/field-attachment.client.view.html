@@ -42,7 +42,7 @@
         ngf-resize="{width: 1024, centerCrop: false}"
         ngf-validate-after-resize="true"
         ngf-max-files="1"
-        ngf-max-size="vm.field.attachmentSize * 1000000"
+        ngf-max-size="vm.field.attachmentSize * MB"
         ngf-select="vm.uploadFile($file, $invalidFiles, vm.field._id)"
         ng-model="vm.field.fieldValue"
       />
