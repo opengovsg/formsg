@@ -1,7 +1,20 @@
+import { isEmpty } from 'lodash'
 import { Schema } from 'mongoose'
 
 import { validateEmailDomains } from '../../../shared/util/email-domain-validation'
 import { IEmailFieldSchema, ResponseMode } from '../../../types'
+
+const validateAllowDomainsToBeSet = (
+  emailDomains: string[],
+  hasAllowedEmailDomains: boolean,
+): boolean => {
+  // Case 1: hasAllowedEmailDomains is false and emailDomains must be empty.
+  const case1 = !hasAllowedEmailDomains && isEmpty(emailDomains)
+  // Case 2: hasAllowedEmailDomains is true and email domains must not be empty.
+  const case2 = hasAllowedEmailDomains && !isEmpty(emailDomains)
+
+  return case1 || case2
+}
 
 const createEmailFieldSchema = (): Schema<IEmailFieldSchema> => {
   const EmailFieldSchema = new Schema<IEmailFieldSchema>({
@@ -53,12 +66,27 @@ const createEmailFieldSchema = (): Schema<IEmailFieldSchema> => {
       ],
       // If allowedEmailDomains is empty, then all email domains should be allowed.
       default: [],
-      validate: {
-        validator: (emailDomains: string[]): boolean => {
-          return validateEmailDomains(emailDomains)
+      validate: [
+        {
+          validator: function (emailDomains: string[]) {
+            return validateEmailDomains(emailDomains)
+          },
+          message: 'There are one or more duplicate or invalid email domains.',
         },
-        message: 'There are one or more duplicate or invalid email domains.',
-      },
+        {
+          validator: function (
+            this: IEmailFieldSchema,
+            emailDomains: string[],
+          ) {
+            return validateAllowDomainsToBeSet(
+              emailDomains,
+              this.hasAllowedEmailDomains,
+            )
+          },
+          message:
+            'Given email domains should not be empty when allowed email domains option is toggled on',
+        },
+      ],
     },
   })
 
@@ -72,6 +100,15 @@ const createEmailFieldSchema = (): Schema<IEmailFieldSchema> => {
           Error('Autoreply PDF is not allowed for storage mode forms'),
         )
       }
+    }
+
+    return next()
+  })
+
+  // If hasAllowedEmailDomains is false, then clear allowedEmailDomains
+  EmailFieldSchema.pre<IEmailFieldSchema>('validate', function (next) {
+    if (!this.hasAllowedEmailDomains) {
+      this.allowedEmailDomains = []
     }
 
     return next()
