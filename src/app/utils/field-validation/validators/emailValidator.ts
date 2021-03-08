@@ -24,21 +24,19 @@ const emailFormatValidator: EmailValidator = (response) => {
 }
 
 /**
- * Returns a validation function
- * to check if email domain is valid.
+ * Returns a validation function to check if email domain is valid.
  */
 const makeEmailDomainValidator: EmailValidatorConstructor = (emailField) => (
   response,
 ) => {
-  const {
-    isVerifiable,
-    hasAllowedEmailDomains,
-    allowedEmailDomains,
-  } = emailField
+  const { isVerifiable, allowedEmailDomains } = emailField
   const { answer } = response
   const emailAddress = String(answer)
-  if (!(isVerifiable && hasAllowedEmailDomains && allowedEmailDomains.length))
+  // Passthrough if not verifiable or all domains allowed.
+  if (!isVerifiable || allowedEmailDomains.length === 0) {
     return right(response)
+  }
+
   const emailDomain = '@' + emailAddress.split('@').pop()
 
   return allowedEmailDomains.includes(emailDomain)
