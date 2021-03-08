@@ -622,6 +622,7 @@
                 <input
                   type="checkbox"
                   ng-model="vm.field.hasAllowedEmailDomains"
+                  ng-change="vm.handleRestrictEmailDomainsToggle()"
                   ng-disabled="!vm.field.isVerifiable"
                 />
                 <div class="toggle-selector-switch">

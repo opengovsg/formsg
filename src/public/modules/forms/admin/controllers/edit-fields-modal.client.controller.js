@@ -146,6 +146,14 @@ function EditFieldsModalController(
     }
   }
 
+  vm.handleRestrictEmailDomainsToggle = function () {
+    const field = vm.field
+    if (field.hasAllowedEmailDomains === false) {
+      // Reset email domains.
+      field.allowedEmailDomainsFromText = ''
+    }
+  }
+
   vm.ratingSteps = Rating.steps
   vm.ratingShapes = Rating.shapes
 
