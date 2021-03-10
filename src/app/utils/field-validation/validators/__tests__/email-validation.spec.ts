@@ -152,7 +152,7 @@ describe('Email field validation', () => {
     expect(validateResult._unsafeUnwrap()).toEqual(true)
   })
 
-  it('should allow email addresses whose email domain belongs to allowedEmailDomains when isVerifiable is true, hasAllowedEmailDomains is true and allowedEmailDomains is not empty', () => {
+  it('should allow email addresses whose email domain belongs to a non-empty allowedEmailDomains when isVerifiable is true', () => {
     const formField = {
       _id: 'abc123',
       fieldType: BasicField.Email,
@@ -162,7 +162,6 @@ describe('Email field validation', () => {
       disabled: false,
       required: true,
       isVerifiable: true,
-      hasAllowedEmailDomains: true,
       allowedEmailDomains: ['@test.gov.sg'],
     }
     const response = {
@@ -182,7 +181,7 @@ describe('Email field validation', () => {
     expect(validateResult._unsafeUnwrap()).toEqual(true)
   })
 
-  it('should not allow email addresses whose email domain does not belong to allowedEmailDomains when isVerifiable is true, hasAllowedEmailDomains is true and allowedEmailDomains is not empty', () => {
+  it('should not allow email addresses whose email domain does not belong to non-empty allowedEmailDomains when isVerifiable is true', () => {
     const formField = {
       _id: 'abc123',
       fieldType: BasicField.Email,
@@ -192,7 +191,6 @@ describe('Email field validation', () => {
       required: true,
       disabled: false,
       isVerifiable: true,
-      hasAllowedEmailDomains: true,
       allowedEmailDomains: ['@example.com'],
     }
     const response = {
@@ -214,7 +212,7 @@ describe('Email field validation', () => {
     )
   })
 
-  it('should allow any valid email address when isVerifiable is true, hasAllowedEmailDomains is true but allowedEmailDomains is empty', () => {
+  it('should allow any valid email address when isVerifiable is true but allowedEmailDomains is empty', () => {
     const formField = {
       _id: 'abc123',
       fieldType: BasicField.Email,
@@ -224,7 +222,6 @@ describe('Email field validation', () => {
       required: true,
       disabled: false,
       isVerifiable: true,
-      hasAllowedEmailDomains: true,
       allowedEmailDomains: [],
     }
     const response = {
@@ -244,37 +241,7 @@ describe('Email field validation', () => {
     expect(validateResult._unsafeUnwrap()).toEqual(true)
   })
 
-  it('should allow any valid email address when isVerifiable is true and hasAllowedEmailDomains is false, regardless of the cardinality of allowedEmailDomains', () => {
-    const formField = {
-      _id: 'abc123',
-      fieldType: BasicField.Email,
-      globalId: 'random',
-      title: 'random',
-      description: 'random',
-      required: true,
-      disabled: false,
-      isVerifiable: true,
-      hasAllowedEmailDomains: false,
-      allowedEmailDomains: ['@example.com'],
-    }
-    const response = {
-      _id: 'abc123',
-      fieldType: BasicField.Email,
-      question: 'random',
-      isVisible: true,
-      answer: 'volunteer-testing@test.gov.sg',
-      signature: 'some signature',
-    } as ISingleAnswerResponse
-    const validateResult = validateField(
-      'formId',
-      (formField as unknown) as IFieldSchema,
-      response as ProcessedFieldResponse,
-    )
-    expect(validateResult.isOk()).toBe(true)
-    expect(validateResult._unsafeUnwrap()).toEqual(true)
-  })
-
-  it('should allow any valid email address when isVerifiable is false and hasAllowedEmailDomains is true, regardless of the cardinality of allowedEmailDomains', () => {
+  it('should allow any valid email address when isVerifiable is false regardless of the cardinality of allowedEmailDomains', () => {
     const formField = {
       _id: 'abc123',
       fieldType: BasicField.Email,
@@ -284,7 +251,6 @@ describe('Email field validation', () => {
       required: true,
       disabled: false,
       isVerifiable: false,
-      hasAllowedEmailDomains: true,
       allowedEmailDomains: ['@example.com'],
     }
     const response = {
@@ -313,7 +279,6 @@ describe('Email field validation', () => {
       required: true,
       disabled: false,
       isVerifiable: false,
-      hasAllowedEmailDomains: true,
       allowedEmailDomains: ['@example.com'],
     }
     const response = {
