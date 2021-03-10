@@ -75,8 +75,9 @@ function EditFieldsModalController(
   vm.user = Auth.getUser() || $state.go('signin')
   if (vm.field.fieldType === 'email') {
     const userEmailDomain = '@' + vm.user.email.split('@').pop()
+    vm.field.hasAllowedEmailDomains = vm.field.allowedEmailDomains.length > 0
     vm.field.allowedEmailDomainsPlaceholder = `${userEmailDomain}\n@agency.gov.sg`
-    if (vm.field.allowedEmailDomains.length > 0) {
+    if (vm.field.hasAllowedEmailDomains) {
       vm.field.allowedEmailDomainsFromText = vm.field.allowedEmailDomains.join(
         '\n',
       )
