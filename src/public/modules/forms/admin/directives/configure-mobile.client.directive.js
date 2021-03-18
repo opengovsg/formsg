@@ -44,7 +44,7 @@ function configureMobileDirective() {
                     description: `
                       Under 10,000 form responses: Free verified SMS
                       <br><br>
-                      Above 10,000 form responses: <b>$0.0395 per SMS - <a href=${$scope.supportFormLink} target="_blank" class="">contact us</a> 
+                      Above 10,000 form responses: <b>~US$0.0395 per SMS - <a href=${$scope.supportFormLink} target="_blank" class="">contact us</a> 
                       for billing</b>. Forms exceeding the free tier without billing will be deactivated.
                     `,
                   }
