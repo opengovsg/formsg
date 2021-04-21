@@ -16,8 +16,9 @@ function isVerifiableSaveInterceptor(Toastr) {
           Toastr.error(
             'Turn on OTP verification again if you wish to restrict email domains.',
           )
+          scope.vm.field.hasAllowedEmailDomains = false
+          scope.vm.field.allowedEmailDomainsFromText = ''
         }
-        scope.vm.field.hasAllowedEmailDomains = false
         return inputValue
       })
     },
