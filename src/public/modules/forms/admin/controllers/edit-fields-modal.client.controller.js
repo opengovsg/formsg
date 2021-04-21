@@ -75,7 +75,16 @@ function EditFieldsModalController(
   vm.user = Auth.getUser() || $state.go('signin')
   if (vm.field.fieldType === 'email') {
     const userEmailDomain = '@' + vm.user.email.split('@').pop()
-    vm.field.hasAllowedEmailDomains = vm.field.allowedEmailDomains.length > 0
+
+    // Backwards compatibility and inconsistency fix.
+    // Set allowedEmailDomains array to empty if allow domains toggle is off.
+    if (vm.field.hasAllowedEmailDomains === false) {
+      vm.field.allowedEmailDomains = []
+    } else {
+      // hasAllowedEmailDomains is true, set "true" state based on length of allowedEmailDomains.
+      vm.field.hasAllowedEmailDomains = vm.field.allowedEmailDomains.length > 0
+    }
+
     vm.field.allowedEmailDomainsPlaceholder = `${userEmailDomain}\n@agency.gov.sg`
     if (vm.field.hasAllowedEmailDomains) {
       vm.field.allowedEmailDomainsFromText = vm.field.allowedEmailDomains.join(
@@ -485,6 +494,7 @@ function EditFieldsModalController(
           .map((s) => s.trim())
           .filter((s) => s)
       }
+      field.hasAllowedEmailDomains = field.allowedEmailDomains.length > 0
       delete field.allowedEmailDomainsFromText
       delete field.allowedEmailDomainsPlaceholder
     }
