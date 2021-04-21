@@ -1,5 +1,10 @@
 import { types as basicTypes } from '../../../shared/resources/basic'
-import { BasicField, ITableRow } from '../../../types'
+import {
+  BasicField,
+  IEmailFieldSchema,
+  IFieldSchema,
+  ITableRow,
+} from '../../../types'
 import {
   ColumnResponse,
   ProcessedAttachmentResponse,
@@ -73,4 +78,10 @@ export const isProcessedAttachmentResponse = (
     // No check for response.filename as response.filename is generated only when actual file is uploaded
     // Hence hidden attachment fields - which still return empty response - will not have response.filename property
   )
+}
+
+export const isEmailFieldSchema = (
+  field: IFieldSchema,
+): field is IEmailFieldSchema => {
+  return field.fieldType === BasicField.Email
 }

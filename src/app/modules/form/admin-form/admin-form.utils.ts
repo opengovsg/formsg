@@ -1,4 +1,5 @@
 import { StatusCodes } from 'http-status-codes'
+import { get } from 'lodash'
 import { err, ok, Result } from 'neverthrow'
 
 import { EditFieldActions } from '../../../../shared/constants'
@@ -9,6 +10,7 @@ import {
   Status,
 } from '../../../../types'
 import { createLoggerWithLabel } from '../../../config/logger'
+import { isEmailFieldSchema } from '../../../utils/field-validation/field-validation.guards'
 import { reorder, replaceAt } from '../../../utils/immutable-array-fns'
 import {
   ApplicationError,
@@ -262,6 +264,19 @@ const updateCurrentField = (
   existingFormFields: IFieldSchema[],
   fieldToUpdate: IFieldSchema,
 ): EditFormFieldResult => {
+  // TODO(#1210): Remove this function when no longer being called.
+  // For backwards compatibility with old clients sending an inconsistent email
+  // field state where removed hasAllowedEmailDomains key is still sent, and is
+  // false, but allowedEmailDomains is a non-empty array.
+  // Set allowedEmailDomains to empty array when this happens.
+  if (isEmailFieldSchema(fieldToUpdate)) {
+    // Default to true; only modify if the parameter exists and is `false`.
+    if (!get(fieldToUpdate, 'hasAllowedEmailDomains', true)) {
+      // Resetting allowed email domains.
+      fieldToUpdate.allowedEmailDomains = []
+    }
+  }
+
   const existingFieldPosition = existingFormFields.findIndex(
     (f) => f.globalId === fieldToUpdate.globalId,
   )
