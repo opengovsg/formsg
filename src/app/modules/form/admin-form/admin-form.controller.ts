@@ -1031,6 +1031,19 @@ export const handleUpdateForm: RequestHandler<
   const { form: formUpdateParams } = req.body
   const sessionUserId = (req.session as Express.AuthedSession).user._id
 
+  const logMeta = {
+    action: 'handleUpdateForm',
+    ...createReqMeta(req),
+    userId: sessionUserId,
+    formId,
+    formUpdateParams,
+  }
+
+  logger.info({
+    message: 'updateForm endpoint still being called',
+    meta: logMeta,
+  })
+
   // Step 1: Retrieve currently logged in user.
   return UserService.getPopulatedUserById(sessionUserId)
     .andThen((user) =>
@@ -1064,13 +1077,7 @@ export const handleUpdateForm: RequestHandler<
     .mapErr((error) => {
       logger.error({
         message: 'Error occurred when updating form',
-        meta: {
-          action: 'handleUpdateForm',
-          ...createReqMeta(req),
-          userId: sessionUserId,
-          formId,
-          formUpdateParams,
-        },
+        meta: logMeta,
         error,
       })
       const { errorMessage, statusCode } = mapRouteError(error)
