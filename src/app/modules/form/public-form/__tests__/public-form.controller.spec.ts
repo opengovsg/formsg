@@ -17,10 +17,14 @@ import {
   MyInfoCookieAccessError,
   MyInfoMissingAccessTokenError,
 } from 'src/app/modules/myinfo/myinfo.errors'
-import { MyInfoCookieState } from 'src/app/modules/myinfo/myinfo.types'
-import { JwtPayload } from 'src/app/modules/spcp/spcp.types'
+import {
+  MyInfoCookieState,
+  MyInfoForm,
+} from 'src/app/modules/myinfo/myinfo.types'
+import { JwtPayload, SpcpForm } from 'src/app/modules/spcp/spcp.types'
 import {
   AuthType,
+  IFormSchema,
   IPopulatedForm,
   IPopulatedUser,
   MyInfoAttribute,
@@ -32,7 +36,10 @@ import expressHandler from 'tests/unit/backend/helpers/jest-express'
 import * as AuthService from '../../../auth/auth.service'
 import { MyInfoCookieStateError } from '../../../myinfo/myinfo.errors'
 import { MyInfoFactory } from '../../../myinfo/myinfo.factory'
-import { MissingJwtError } from '../../../spcp/spcp.errors'
+import {
+  CreateRedirectUrlError,
+  MissingJwtError,
+} from '../../../spcp/spcp.errors'
 import { SpcpFactory } from '../../../spcp/spcp.factory'
 import {
   AuthTypeMismatchError,
@@ -1135,6 +1142,349 @@ describe('public-form.controller', () => {
           spcpSession: { userName: MOCK_MYINFO_DATA.getUinFin() },
           isIntranetUser: true,
         })
+      })
+    })
+  })
+
+  describe('_handleFormAuthRedirect', () => {
+    const MOCK_REQ = expressHandler.mockRequest({
+      params: {
+        formId: new ObjectId().toHexString(),
+      },
+      query: {
+        isPersistentLogin: true,
+      },
+    })
+    const MOCK_REDIRECT_URL = 'www.mockata.com'
+
+    it('should return 200 with the redirect url when the request is valid and the form has authType SP', async () => {
+      // Arrange
+      const MOCK_FORM = {
+        authType: AuthType.SP,
+        esrvcId: '12345',
+      } as SpcpForm<IFormSchema>
+      const mockRes = expressHandler.mockResponse()
+      MockFormService.retrieveFullFormById.mockReturnValueOnce(
+        okAsync(MOCK_FORM),
+      )
+      MockSpcpFactory.createRedirectUrl.mockReturnValueOnce(
+        ok(MOCK_REDIRECT_URL),
+      )
+
+      // Act
+      await PublicFormController._handleFormAuthRedirect(
+        MOCK_REQ,
+        mockRes,
+        jest.fn(),
+      )
+
+      // Assert
+      expect(mockRes.status).toBeCalledWith(200)
+      expect(mockRes.json).toBeCalledWith({ redirectURL: MOCK_REDIRECT_URL })
+    })
+
+    it('should return 200 with the redirect url when the request is valid, form has authType SP and isPersistentLogin is undefined', async () => {
+      // Arrange
+      const MOCK_REQ_WITHOUT_PERSISTENT_LOGIN = expressHandler.mockRequest({
+        params: {
+          formId: new ObjectId().toHexString(),
+        },
+      })
+      const MOCK_FORM = {
+        authType: AuthType.SP,
+        esrvcId: '12345',
+      } as SpcpForm<IFormSchema>
+      const mockRes = expressHandler.mockResponse()
+      MockFormService.retrieveFullFormById.mockReturnValueOnce(
+        okAsync(MOCK_FORM),
+      )
+      MockSpcpFactory.createRedirectUrl.mockReturnValueOnce(
+        ok(MOCK_REDIRECT_URL),
+      )
+
+      // Act
+      await PublicFormController._handleFormAuthRedirect(
+        MOCK_REQ_WITHOUT_PERSISTENT_LOGIN,
+        mockRes,
+        jest.fn(),
+      )
+
+      // Assert
+      expect(mockRes.status).toBeCalledWith(200)
+      expect(mockRes.json).toBeCalledWith({ redirectURL: MOCK_REDIRECT_URL })
+    })
+
+    it('should return 200 with the redirect url when the request is valid, form has authType SP and isPersistentLogin is false', async () => {
+      // Arrange
+      const MOCK_REQ_WITH_FALSE_PERSISTENT_LOGIN = expressHandler.mockRequest({
+        params: {
+          formId: new ObjectId().toHexString(),
+        },
+        query: {
+          isPersistentLogin: false,
+        },
+      })
+      const MOCK_FORM = {
+        authType: AuthType.SP,
+        esrvcId: '12345',
+      } as SpcpForm<IFormSchema>
+      const mockRes = expressHandler.mockResponse()
+      MockFormService.retrieveFullFormById.mockReturnValueOnce(
+        okAsync(MOCK_FORM),
+      )
+      MockSpcpFactory.createRedirectUrl.mockReturnValueOnce(
+        ok(MOCK_REDIRECT_URL),
+      )
+
+      // Act
+      await PublicFormController._handleFormAuthRedirect(
+        MOCK_REQ_WITH_FALSE_PERSISTENT_LOGIN,
+        mockRes,
+        jest.fn(),
+      )
+
+      // Assert
+      expect(mockRes.status).toBeCalledWith(200)
+      expect(mockRes.json).toBeCalledWith({ redirectURL: MOCK_REDIRECT_URL })
+    })
+
+    it('should return 200 with the redirect url when the request is valid and the form has authType CP', async () => {
+      // Arrange
+      const MOCK_FORM = {
+        authType: AuthType.CP,
+        esrvcId: '12345',
+      } as SpcpForm<IFormSchema>
+
+      const mockRes = expressHandler.mockResponse()
+      MockFormService.retrieveFullFormById.mockReturnValueOnce(
+        okAsync(MOCK_FORM),
+      )
+      MockSpcpFactory.createRedirectUrl.mockReturnValueOnce(
+        ok(MOCK_REDIRECT_URL),
+      )
+
+      // Act
+      await PublicFormController._handleFormAuthRedirect(
+        MOCK_REQ,
+        mockRes,
+        jest.fn(),
+      )
+
+      // Assert
+      expect(mockRes.status).toBeCalledWith(200)
+      expect(mockRes.json).toBeCalledWith({ redirectURL: MOCK_REDIRECT_URL })
+    })
+
+    it('should return 200 with the redirect url when the request is valid and the form has authType MyInfo', async () => {
+      // Arrange
+      const MOCK_FORM = ({
+        authType: AuthType.MyInfo,
+        esrvcId: '12345',
+        getUniqueMyInfoAttrs: jest.fn().mockReturnValue([]),
+      } as unknown) as MyInfoForm<IFormSchema>
+
+      const mockRes = expressHandler.mockResponse()
+      MockFormService.retrieveFullFormById.mockReturnValueOnce(
+        okAsync(MOCK_FORM),
+      )
+      MockMyInfoFactory.createRedirectURL.mockReturnValueOnce(
+        ok(MOCK_REDIRECT_URL),
+      )
+
+      // Act
+      await PublicFormController._handleFormAuthRedirect(
+        MOCK_REQ,
+        mockRes,
+        jest.fn(),
+      )
+
+      // Assert
+      expect(mockRes.status).toBeCalledWith(200)
+      expect(mockRes.json).toBeCalledWith({ redirectURL: MOCK_REDIRECT_URL })
+    })
+
+    it('should return 400 when the form has authType NIL', async () => {
+      // Arrange
+      const MOCK_FORM = {
+        authType: AuthType.NIL,
+        esrvcId: '12345',
+      }
+
+      const mockRes = expressHandler.mockResponse()
+      MockFormService.retrieveFullFormById.mockReturnValueOnce(
+        okAsync(MOCK_FORM),
+      )
+
+      // Act
+      await PublicFormController._handleFormAuthRedirect(
+        MOCK_REQ,
+        mockRes,
+        jest.fn(),
+      )
+
+      // Assert
+      expect(mockRes.status).toBeCalledWith(400)
+      expect(mockRes.json).toBeCalledWith({
+        message:
+          'Please ensure that the form has authentication enabled. Please refresh and try again.',
+      })
+    })
+
+    it('should return 400 when the form has authType MyInfo and is missing esrvcId', async () => {
+      // Arrange
+      const MOCK_FORM = ({
+        authType: AuthType.MyInfo,
+      } as unknown) as MyInfoForm<IFormSchema>
+
+      const mockRes = expressHandler.mockResponse()
+      MockFormService.retrieveFullFormById.mockReturnValueOnce(
+        okAsync(MOCK_FORM),
+      )
+
+      // Act
+      await PublicFormController._handleFormAuthRedirect(
+        MOCK_REQ,
+        mockRes,
+        jest.fn(),
+      )
+
+      // Assert
+      expect(mockRes.status).toBeCalledWith(400)
+      expect(mockRes.json).toBeCalledWith({
+        message:
+          'This form does not have a valid eServiceId. Please refresh and try again.',
+      })
+    })
+
+    it('should return 400 when the form has authType SP and is missing esrvcId', async () => {
+      // Arrange
+      const MOCK_FORM = ({
+        authType: AuthType.SP,
+      } as unknown) as SpcpForm<IFormSchema>
+
+      const mockRes = expressHandler.mockResponse()
+      MockFormService.retrieveFullFormById.mockReturnValueOnce(
+        okAsync(MOCK_FORM),
+      )
+
+      // Act
+      await PublicFormController._handleFormAuthRedirect(
+        MOCK_REQ,
+        mockRes,
+        jest.fn(),
+      )
+
+      // Assert
+      expect(mockRes.status).toBeCalledWith(400)
+      expect(mockRes.json).toBeCalledWith({
+        message:
+          'This form does not have a valid eServiceId. Please refresh and try again.',
+      })
+    })
+
+    it('should return 400 when the form has authType CP and is missing esrvcId', async () => {
+      // Arrange
+      const MOCK_FORM = ({
+        authType: AuthType.CP,
+      } as unknown) as SpcpForm<IFormSchema>
+
+      const mockRes = expressHandler.mockResponse()
+      MockFormService.retrieveFullFormById.mockReturnValueOnce(
+        okAsync(MOCK_FORM),
+      )
+
+      // Act
+      await PublicFormController._handleFormAuthRedirect(
+        MOCK_REQ,
+        mockRes,
+        jest.fn(),
+      )
+
+      // Assert
+      expect(mockRes.status).toBeCalledWith(400)
+      expect(mockRes.json).toBeCalledWith({
+        message:
+          'This form does not have a valid eServiceId. Please refresh and try again.',
+      })
+    })
+
+    it('should return 500 when the form could not be retrieved from the database', async () => {
+      // Arrange
+
+      const mockRes = expressHandler.mockResponse()
+      MockFormService.retrieveFullFormById.mockReturnValueOnce(
+        errAsync(new DatabaseError()),
+      )
+
+      // Act
+      await PublicFormController._handleFormAuthRedirect(
+        MOCK_REQ,
+        mockRes,
+        jest.fn(),
+      )
+
+      // Assert
+      expect(mockRes.status).toBeCalledWith(500)
+      expect(mockRes.json).toBeCalledWith({
+        message: 'Sorry, something went wrong. Please try again.',
+      })
+    })
+
+    it('should return 500 when the redirectURL could not be created', async () => {
+      // Arrange
+      const MOCK_FORM = ({
+        esrvcId: '234',
+        authType: AuthType.CP,
+      } as unknown) as SpcpForm<IFormSchema>
+
+      const mockRes = expressHandler.mockResponse()
+      MockFormService.retrieveFullFormById.mockReturnValueOnce(
+        okAsync(MOCK_FORM),
+      )
+      MockSpcpFactory.createRedirectUrl.mockReturnValueOnce(
+        err(new CreateRedirectUrlError()),
+      )
+
+      // Act
+      await PublicFormController._handleFormAuthRedirect(
+        MOCK_REQ,
+        mockRes,
+        jest.fn(),
+      )
+
+      // Assert
+      expect(mockRes.status).toBeCalledWith(500)
+      expect(mockRes.json).toBeCalledWith({
+        message: 'Sorry, something went wrong. Please try again.',
+      })
+    })
+
+    it('should return 500 when the redirectURL feature is not implemented', async () => {
+      // Arrange
+      const MOCK_FORM = ({
+        esrvcId: '234',
+        authType: AuthType.MyInfo,
+        getUniqueMyInfoAttrs: jest.fn().mockReturnValue([]),
+      } as unknown) as SpcpForm<IFormSchema>
+      const mockRes = expressHandler.mockResponse()
+      MockFormService.retrieveFullFormById.mockReturnValueOnce(
+        okAsync(MOCK_FORM),
+      )
+      MockMyInfoFactory.createRedirectURL.mockReturnValueOnce(
+        err(new MissingFeatureError('Redirect url')),
+      )
+
+      // Act
+      await PublicFormController._handleFormAuthRedirect(
+        MOCK_REQ,
+        mockRes,
+        jest.fn(),
+      )
+
+      // Assert
+      expect(mockRes.status).toBeCalledWith(500)
+      expect(mockRes.json).toBeCalledWith({
+        message: 'Sorry, something went wrong. Please try again.',
       })
     })
   })
