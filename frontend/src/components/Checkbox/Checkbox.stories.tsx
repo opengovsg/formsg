@@ -54,6 +54,7 @@ export const Playground: Story = (args) => {
     alert(JSON.stringify(data))
   }
 
+  const options = ['Option 1', 'Option 2', 'Option 3']
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate>
       <FormControl
@@ -64,36 +65,18 @@ export const Playground: Story = (args) => {
       >
         <FormLabel htmlFor={name}>{label}</FormLabel>
         <VStack align="left">
-          <Checkbox
-            value="Option 1"
-            isDisabled={isDisabled}
-            {...register(name, {
-              required: {
-                value: isRequired,
-                message: 'this is a required field',
-              },
-            })}
-          />
-          <Checkbox
-            value="Option 2"
-            isDisabled={isDisabled}
-            {...register(name, {
-              required: {
-                value: isRequired,
-                message: 'this is a required field',
-              },
-            })}
-          />
-          <Checkbox
-            value="Option 3"
-            isDisabled={isDisabled}
-            {...register(name, {
-              required: {
-                value: isRequired,
-                message: 'this is a required field',
-              },
-            })}
-          />
+          {options.map((option) => (
+            <Checkbox
+              value={option}
+              isDisabled={isDisabled}
+              {...register(name, {
+                required: {
+                  value: isRequired,
+                  message: 'this is a required field',
+                },
+              })}
+            />
+          ))}
           <CheckboxOthers
             value="Others"
             isDisabled={isDisabled}
