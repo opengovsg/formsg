@@ -8,9 +8,9 @@ import { CheckboxProps, Input, VStack } from '@chakra-ui/react'
 import { Meta, Story } from '@storybook/react'
 
 import Button from '~components/Button'
+import Others from '~components/Others'
 
 import { Checkbox } from './Checkbox'
-import { CheckboxOthers } from './CheckboxOthers'
 
 export default {
   title: 'Components/Checkbox',
@@ -29,9 +29,9 @@ export const CheckboxGroup: Story<CheckboxProps> = (args) => {
       <Checkbox {...args} />
       <Checkbox {...args} />
       <Checkbox {...args} />
-      <CheckboxOthers {...args} value="Others">
+      <Others {...args} value="Others" base="checkbox">
         <Input placeholder="Please specify" />
-      </CheckboxOthers>
+      </Others>
     </VStack>
   )
 }
@@ -77,9 +77,10 @@ export const Playground: Story = (args) => {
               })}
             />
           ))}
-          <CheckboxOthers
+          <Others
             value="Others"
             isDisabled={isDisabled}
+            base="checkbox"
             {...register(name)}
           >
             {/* Any subcomponent can be used due to children composition */}
@@ -92,7 +93,7 @@ export const Playground: Story = (args) => {
                 required: Array.isArray(values) && values.includes('Others'),
               })}
             />
-          </CheckboxOthers>
+          </Others>
         </VStack>
         <FormErrorMessage>
           {errors[name] && errors[name].message}

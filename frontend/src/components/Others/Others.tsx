@@ -1,20 +1,31 @@
-import React, { ChangeEvent, cloneElement, isValidElement, useRef } from 'react'
-import { CheckboxProps, Flex, forwardRef, useMergeRefs } from '@chakra-ui/react'
+import { ChangeEvent, cloneElement, isValidElement, useRef } from 'react'
+import {
+  CheckboxProps,
+  Flex,
+  forwardRef,
+  RadioProps,
+  useMergeRefs,
+} from '@chakra-ui/react'
 import { createContext } from '@chakra-ui/react-utils'
 
-import { Checkbox } from './Checkbox'
+import Checkbox from '~components/Checkbox'
+import Radio from '~components/Radio'
+
+type OthersProps = (CheckboxProps | RadioProps) & {
+  base: string
+}
 
 const [OthersProvider, useOthersContext] = createContext<{
   onInputChange: () => void
 }>({
-  name: 'CheckboxOtherContext',
+  name: 'OthersContext',
   strict: false,
 })
 
-export const CheckboxOthers = forwardRef<CheckboxProps, 'input'>(
-  ({ children, ...props }, ref) => {
+export const Others = forwardRef<OthersProps, 'input'>(
+  ({ children, base, ...props }, ref) => {
     const inputRef = useRef<HTMLInputElement | null>(null)
-    const checkboxRef = useMergeRefs(ref, inputRef)
+    const mergedRef = useMergeRefs(ref, inputRef)
 
     const handleInputChange = () => {
       if (!inputRef?.current?.checked) {
@@ -24,12 +35,29 @@ export const CheckboxOthers = forwardRef<CheckboxProps, 'input'>(
 
     return (
       <OthersProvider value={{ onInputChange: handleInputChange }}>
-        <Checkbox {...props} ref={checkboxRef} />
+        {getBaseComponent({ base, mergedRef, ...props })}
         <OthersWrapper>{children}</OthersWrapper>
       </OthersProvider>
     )
   },
 )
+
+const getBaseComponent = ({
+  base,
+  mergedRef,
+  ...props
+}: {
+  mergedRef: ((node: unknown) => void) | null
+} & OthersProps): JSX.Element | null => {
+  switch (base) {
+    case 'checkbox':
+      return <Checkbox {...(props as CheckboxProps)} ref={mergedRef} />
+    case 'radio':
+      return <Radio {...(props as RadioProps)} ref={mergedRef} />
+    default:
+      return null
+  }
+}
 
 const OthersWrapper = ({
   children,
