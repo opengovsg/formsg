@@ -38,6 +38,7 @@ export const Radio: ComponentStyleConfig = {
       py: '0.5rem',
       _hover: {
         bg: 'primary.100',
+        cursor: 'pointer',
       },
       _focusWithin: {
         borderColor: 'primary.500',
