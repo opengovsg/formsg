@@ -6,6 +6,7 @@ import {
 } from '@chakra-ui/form-control'
 import { CheckboxGroup, CheckboxProps, Input, VStack } from '@chakra-ui/react'
 import { Meta, Story } from '@storybook/react'
+import { omit } from 'lodash'
 
 import Button from '~components/Button'
 import Others from '~components/Others'
@@ -59,7 +60,8 @@ export const Playground: Story = (args) => {
     alert(JSON.stringify(data))
   }
 
-  console.log(errors.others)
+  const fieldWithoutRef = omit(field, ['ref'])
+  const fieldRef = field.ref
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate>
@@ -71,8 +73,8 @@ export const Playground: Story = (args) => {
       >
         <FormLabel htmlFor={name}>{label}</FormLabel>
         <VStack align="left">
-          <CheckboxGroup {...field}>
-            <Checkbox value="Option 1" isDisabled={isDisabled} />
+          <CheckboxGroup {...fieldWithoutRef}>
+            <Checkbox value="Option 1" isDisabled={isDisabled} ref={fieldRef} />
             <Checkbox value="Option 2" isDisabled={isDisabled} />
             <Checkbox value="Option 3" isDisabled={isDisabled} />
             <Others value="Others" isDisabled={isDisabled} base="checkbox">
@@ -104,3 +106,86 @@ Playground.args = {
   isRequired: true,
   isDisabled: false,
 }
+
+/**
+ * FOR DEVELOPERS: Can also be used directly with useform and register.
+ * Commented out to streamline UI review as this looks identical to Playground
+ */
+// export const PlaygroundWithoutCheckboxGroup: Story = (args) => {
+//   const { name, label, isDisabled, isRequired } = args
+
+//   const {
+//     handleSubmit,
+//     watch,
+//     register,
+//     formState: { errors },
+//   } = useForm()
+
+//   const values = watch(name)
+
+//   const onSubmit = (data: Record<string, string>) => {
+//     alert(JSON.stringify(data))
+//   }
+
+//   const options = ['Option 1', 'Option 2', 'Option 3']
+//   return (
+//     <form onSubmit={handleSubmit(onSubmit)} noValidate>
+//       <FormControl
+//         isRequired={isRequired}
+//         isDisabled={isDisabled}
+//         isInvalid={!!errors[name]}
+//         mb={6}
+//       >
+//         <FormLabel htmlFor={name}>{label}</FormLabel>
+//         <VStack align="left">
+//           {options.map((option, idx) => (
+//             <Checkbox
+//               key={idx}
+//               value={option}
+//               isDisabled={isDisabled}
+//               {...register(name, {
+//                 required: {
+//                   value: isRequired,
+//                   message: 'This field is required',
+//                 },
+//               })}
+//             />
+//           ))}
+//           <Others
+//             value="Others"
+//             isDisabled={isDisabled}
+//             base="checkbox"
+//             {...register(name, {
+//               required: {
+//                 value: isRequired,
+//                 message: 'This field is required',
+//               },
+//             })}
+//           >
+//             {/* Any subcomponent can be used due to children composition */}
+//             <Input
+//               isInvalid={!!errors.others}
+//               placeholder="Please specify"
+//               {...register('others', {
+//                 // Caller is responsible for validation, this is just an example, can be
+//                 // refined when we start implementing validation and business logic.
+//                 required: Array.isArray(values) && values.includes('Others'),
+//               })}
+//             />
+//           </Others>
+//         </VStack>
+//         <FormErrorMessage>
+//           {errors[name] && errors[name].message}
+//         </FormErrorMessage>
+//       </FormControl>
+//       <Button type="submit">Submit</Button>
+//     </form>
+//   )
+// }
+
+// PlaygroundWithoutCheckboxGroup.args = {
+//   name: 'Test playground input',
+//   label: 'Checkbox Field',
+//   isRequired: true,
+//   isDisabled: false,
+// }

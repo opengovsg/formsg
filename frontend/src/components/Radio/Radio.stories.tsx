@@ -6,6 +6,7 @@ import {
 } from '@chakra-ui/form-control'
 import { Input, RadioGroup, RadioProps, VStack } from '@chakra-ui/react'
 import { Meta, Story } from '@storybook/react'
+import { omit } from 'lodash'
 
 import Button from '~components/Button'
 import Others from '~components/Others'
@@ -58,6 +59,9 @@ export const Playground: Story = (args) => {
     alert(JSON.stringify(data))
   }
 
+  const fieldWithoutRef = omit(field, ['ref'])
+  const fieldRef = field.ref
+
   const options = ['Option 1', 'Option 2', 'Option 3']
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate>
@@ -68,19 +72,20 @@ export const Playground: Story = (args) => {
         mb={6}
       >
         <FormLabel htmlFor={name}>{label}</FormLabel>
-        <RadioGroup {...field}>
+        <RadioGroup {...fieldWithoutRef}>
           <VStack align="left">
             {options.map((option, idx) => {
-              if (idx === 1) {
+              if (idx === 0) {
                 return (
                   <Radio
+                    key={idx}
                     value={option}
                     isDisabled={isDisabled}
-                    {...register('first')}
+                    ref={fieldRef}
                   />
                 )
               }
-              return <Radio value={option} isDisabled={isDisabled} />
+              return <Radio key={idx} value={option} isDisabled={isDisabled} />
             })}
             <Others value="Others" isDisabled={isDisabled} base="radio">
               {/* Any subcomponent can be used due to children composition */}
