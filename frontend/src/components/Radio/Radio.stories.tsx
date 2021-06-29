@@ -48,7 +48,9 @@ export const Playground: Story = (args) => {
     control,
     name,
     rules: {
-      required: isRequired ? { value: true, message: 'Required field' } : false,
+      required: isRequired
+        ? { value: true, message: 'This field is required' }
+        : false,
     },
   })
 
@@ -68,9 +70,18 @@ export const Playground: Story = (args) => {
         <FormLabel htmlFor={name}>{label}</FormLabel>
         <RadioGroup {...field}>
           <VStack align="left">
-            {options.map((option) => (
-              <Radio value={option} isDisabled={isDisabled} />
-            ))}
+            {options.map((option, idx) => {
+              if (idx === 1) {
+                return (
+                  <Radio
+                    value={option}
+                    isDisabled={isDisabled}
+                    {...register('first')}
+                  />
+                )
+              }
+              return <Radio value={option} isDisabled={isDisabled} />
+            })}
             <Others value="Others" isDisabled={isDisabled} base="radio">
               {/* Any subcomponent can be used due to children composition */}
               <Input
