@@ -60,9 +60,6 @@ export const Playground: Story = (args) => {
     alert(JSON.stringify(data))
   }
 
-  const fieldWithoutRef = omit(field, ['ref'])
-  const fieldRef = field.ref
-
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate>
       <FormControl
@@ -73,8 +70,8 @@ export const Playground: Story = (args) => {
       >
         <FormLabel htmlFor={name}>{label}</FormLabel>
         <VStack align="left">
-          <CheckboxGroup {...fieldWithoutRef}>
-            <Checkbox value="Option 1" isDisabled={isDisabled} ref={fieldRef} />
+          <CheckboxGroup {...omit(field, 'ref')}>
+            <Checkbox value="Option 1" isDisabled={isDisabled} />
             <Checkbox value="Option 2" isDisabled={isDisabled} />
             <Checkbox value="Option 3" isDisabled={isDisabled} />
             <Others value="Others" isDisabled={isDisabled} base="checkbox">
