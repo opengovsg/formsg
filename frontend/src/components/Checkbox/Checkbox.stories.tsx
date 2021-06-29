@@ -26,17 +26,14 @@ Default.args = {
 export const CheckboxGroup: Story<CheckboxProps> = (args) => {
   return (
     <VStack align="left">
-      <Checkbox {...args} />
-      <Checkbox {...args} />
-      <Checkbox {...args} />
+      <Checkbox value="Option 1" />
+      <Checkbox value="Option 2" />
+      <Checkbox value="Option 3" />
       <Others {...args} value="Others" base="checkbox">
         <Input placeholder="Please specify" />
       </Others>
     </VStack>
   )
-}
-CheckboxGroup.args = {
-  value: 'Option',
 }
 
 export const Playground: Story = (args) => {

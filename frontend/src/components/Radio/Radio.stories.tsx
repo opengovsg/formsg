@@ -28,8 +28,8 @@ export const Group: Story<RadioProps> = (args) => {
     <RadioGroup>
       <VStack align="left">
         <Radio value="Option 1" />
-        <Radio value="Option 1" />
-        <Radio value="Option 1" />
+        <Radio value="Option 2" />
+        <Radio value="Option 3" />
         <Others value="Others" base="radio">
           <Input placeholder="Please specify" />
         </Others>
