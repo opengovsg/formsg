@@ -1,19 +1,8 @@
 import { ChangeEvent, cloneElement, isValidElement, useRef } from 'react'
-import {
-  CheckboxProps,
-  Flex,
-  forwardRef,
-  RadioProps,
-  useMergeRefs,
-} from '@chakra-ui/react'
+import { CheckboxProps, Flex, forwardRef, useMergeRefs } from '@chakra-ui/react'
 import { createContext } from '@chakra-ui/react-utils'
 
-import Checkbox from '~components/Checkbox'
-import Radio from '~components/Radio'
-
-type OthersProps = (CheckboxProps | RadioProps) & {
-  base: string
-}
+import { Checkbox } from './Checkbox'
 
 const [OthersProvider, useOthersContext] = createContext<{
   onInputChange: () => void
@@ -22,8 +11,8 @@ const [OthersProvider, useOthersContext] = createContext<{
   strict: false,
 })
 
-export const Others = forwardRef<OthersProps, 'input'>(
-  ({ children, base, ...props }, ref) => {
+export const CheckboxOthers = forwardRef<CheckboxProps, 'input'>(
+  ({ children, ...props }, ref) => {
     const inputRef = useRef<HTMLInputElement | null>(null)
     const mergedRef = useMergeRefs(ref, inputRef)
 
@@ -35,29 +24,12 @@ export const Others = forwardRef<OthersProps, 'input'>(
 
     return (
       <OthersProvider value={{ onInputChange: handleInputChange }}>
-        {getBaseComponent({ base, mergedRef, ...props })}
+        <Checkbox {...props} ref={mergedRef} />
         <OthersWrapper>{children}</OthersWrapper>
       </OthersProvider>
     )
   },
 )
-
-const getBaseComponent = ({
-  base,
-  mergedRef,
-  ...props
-}: {
-  mergedRef: ((node: unknown) => void) | null
-} & OthersProps): JSX.Element | null => {
-  switch (base) {
-    case 'checkbox':
-      return <Checkbox {...(props as CheckboxProps)} ref={mergedRef} />
-    case 'radio':
-      return <Radio {...(props as RadioProps)} ref={mergedRef} />
-    default:
-      return null
-  }
-}
 
 const OthersWrapper = ({
   children,

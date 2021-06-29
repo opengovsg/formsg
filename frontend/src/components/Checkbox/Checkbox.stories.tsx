@@ -9,9 +9,9 @@ import { Meta, Story } from '@storybook/react'
 import { omit } from 'lodash'
 
 import Button from '~components/Button'
-import Others from '~components/Others'
 
 import { Checkbox } from './Checkbox'
+import { CheckboxOthers } from './CheckboxOthers'
 
 export default {
   title: 'Components/Checkbox',
@@ -30,9 +30,9 @@ export const Group: Story<CheckboxProps> = (args) => {
       <Checkbox value="Option 1" />
       <Checkbox value="Option 2" />
       <Checkbox value="Option 3" />
-      <Others {...args} value="Others" base="checkbox">
+      <CheckboxOthers {...args} value="Others">
         <Input placeholder="Please specify" />
-      </Others>
+      </CheckboxOthers>
     </VStack>
   )
 }
@@ -74,7 +74,7 @@ export const Playground: Story = (args) => {
             <Checkbox value="Option 1" isDisabled={isDisabled} />
             <Checkbox value="Option 2" isDisabled={isDisabled} />
             <Checkbox value="Option 3" isDisabled={isDisabled} />
-            <Others value="Others" isDisabled={isDisabled} base="checkbox">
+            <CheckboxOthers value="Others" isDisabled={isDisabled}>
               {/* Any subcomponent can be used due to children composition */}
               <Input
                 isInvalid={!!errors.others}
@@ -85,7 +85,7 @@ export const Playground: Story = (args) => {
                   required: Array.isArray(values) && values.includes('Others'),
                 })}
               />
-            </Others>
+            </CheckboxOthers>
           </CheckboxGroup>
         </VStack>
         <FormErrorMessage>

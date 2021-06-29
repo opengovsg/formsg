@@ -8,9 +8,9 @@ import { Input, RadioGroup, RadioProps, VStack } from '@chakra-ui/react'
 import { Meta, Story } from '@storybook/react'
 
 import Button from '~components/Button'
-import Others from '~components/Others'
 
 import { Radio } from './Radio'
+import { RadioOthers } from './RadioOthers'
 
 export default {
   title: 'Components/Radio',
@@ -30,9 +30,9 @@ export const Group: Story<RadioProps> = (args) => {
         <Radio value="Option 1" />
         <Radio value="Option 2" />
         <Radio value="Option 3" />
-        <Others value="Others" base="radio">
+        <RadioOthers value="Others">
           <Input placeholder="Please specify" />
-        </Others>
+        </RadioOthers>
       </VStack>
     </RadioGroup>
   )
@@ -73,7 +73,7 @@ export const Playground: Story = (args) => {
             {options.map((option, idx) => {
               return <Radio key={idx} value={option} isDisabled={isDisabled} />
             })}
-            <Others value="Others" isDisabled={isDisabled} base="radio">
+            <RadioOthers value="Others" isDisabled={isDisabled}>
               {/* Any subcomponent can be used due to children composition */}
               <Input
                 isInvalid={!!errors.others}
@@ -84,7 +84,7 @@ export const Playground: Story = (args) => {
                   required: field.value === 'Others',
                 })}
               />
-            </Others>
+            </RadioOthers>
           </VStack>
         </RadioGroup>
         <FormErrorMessage>
