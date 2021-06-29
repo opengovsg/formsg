@@ -27,6 +27,9 @@ export const Radio: ComponentStyleConfig = {
           borderColor: 'primary.500',
         },
       },
+      _invalid: {
+        borderColor: 'primary.500',
+      },
     },
     label: {
       textColor: 'secondary.700',
