@@ -37,6 +37,9 @@ const variantLine: ThemingPropsThunk<SystemStyleObjectRecord, ChakraTheme> = (
       textTransform: 'capitalise',
       p: '4px',
       [marginProp]: '4px',
+      _focus: {
+        boxShadow: 'none',
+      },
     },
   }
 }
