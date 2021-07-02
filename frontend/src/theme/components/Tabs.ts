@@ -34,7 +34,7 @@ const variantLine: ThemingPropsThunk<SystemStyleObjectRecord, ChakraTheme> = (
       p: '4px',
     },
     tab: {
-      textTransform: 'uppercase',
+      textTransform: 'capitalise',
       p: '4px',
       [marginProp]: '4px',
     },
@@ -46,7 +46,7 @@ const variantLight: ThemingPropsThunk<SystemStyleObjectRecord, ChakraTheme> = (
 ) => {
   return merge(variantLine(props), {
     root: {
-      backgroundColor: 'white',
+      bg: 'white',
     },
     tab: {
       _hover: {
@@ -55,6 +55,10 @@ const variantLight: ThemingPropsThunk<SystemStyleObjectRecord, ChakraTheme> = (
       _selected: {
         color: 'primary.500',
       },
+      _active: {
+        bg: 'white',
+      },
+      transitionProperty: 'common',
       color: 'primary.300',
     },
   })
@@ -65,15 +69,19 @@ const variantDark: ThemingPropsThunk<SystemStyleObjectRecord, ChakraTheme> = (
 ) => {
   return merge(variantLine(props), {
     root: {
-      backgroundColor: 'secondary.500',
+      bg: 'secondary.500',
     },
     tab: {
+      _active: {
+        bg: 'secondary.500',
+      },
       _hover: {
         color: 'secondary.200',
       },
       _selected: {
         color: 'white',
       },
+      transitionProperty: 'common',
       color: 'secondary.300',
     },
   })
