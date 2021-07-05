@@ -14,7 +14,7 @@ import { Checkbox } from './Checkbox'
 import { CheckboxOthers } from './CheckboxOthers'
 
 export default {
-  title: 'Components/Checkbox',
+  title: 'Components/Fields/Checkbox',
   component: Checkbox,
   decorators: [],
 } as Meta

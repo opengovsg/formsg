@@ -13,7 +13,7 @@ import { Radio } from './Radio'
 import { RadioOthers } from './RadioOthers'
 
 export default {
-  title: 'Components/Radio',
+  title: 'Components/Fields/Radio',
   component: Radio,
   decorators: [],
 } as Meta
