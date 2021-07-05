@@ -9,6 +9,7 @@ import {
   MAX_UPLOAD_FILE_SIZE,
   VALID_UPLOAD_FILE_TYPES,
 } from '../../../../shared/constants'
+import { SMS_WARNING_TIERS } from '../../../../shared/util/verification'
 import {
   FormLogoState,
   FormMetaView,
@@ -36,6 +37,12 @@ import {
 import { aws as AwsConfig } from '../../../config/config'
 import { createLoggerWithLabel } from '../../../config/logger'
 import getFormModel from '../../../models/form.server.model'
+import {
+  MailGenerationError,
+  MailSendError,
+} from '../../../services/mail/mail.errors'
+import MailService from '../../../services/mail/mail.service'
+import * as SmsService from '../../../services/sms/sms.service'
 import { dotifyObject } from '../../../utils/dotify-object'
 import {
   getMongoErrorMessage,
@@ -50,13 +57,14 @@ import {
 } from '../../core/core.errors'
 import { MissingUserError } from '../../user/user.errors'
 import * as UserService from '../../user/user.service'
+import { hasAdminExceededFreeSmsLimit } from '../../verification/verification.util'
 import {
   FormNotFoundError,
   LogicNotFoundError,
   TransferOwnershipError,
 } from '../form.errors'
 import { getFormModelByResponseMode } from '../form.service'
-import { getFormFieldById, getLogicById } from '../form.utils'
+import { getFormFieldById, getLogicById, isFormOnboarded } from '../form.utils'
 
 import { PRESIGNED_POST_EXPIRY_SECS } from './admin-form.constants'
 import {
@@ -1069,3 +1077,63 @@ export const disableSmsVerificationsForUser = (
       return transformMongoError(error)
     },
   ).map(() => true)
+
+/**
+ * Checks the number of free smses sent by the admin of the form and deactivates verification or sends mail as required
+ * @param form The form whose admin's sms counts needs to be checked
+ * @returns ok(true) when the verification has been deactivated successfully or no action is required
+ * @returns err(MailGenerationError) when an error occurred on creating the HTML template for the email
+ * @returns err(MailSendError) when an error occurred on sending the email
+ * @returns err(PossibleDatabaseError) when an error occurred while retrieving the counts from the database
+ */
+export const checkFreeSmsSentByAdminAndDeactivateVerification = (
+  form: IPopulatedForm,
+): ResultAsync<
+  true,
+  MailGenerationError | MailSendError | PossibleDatabaseError
+> => {
+  // Convert to string because it's typed as any
+  const formAdminId = String(form.admin._id)
+
+  return isFormOnboarded(form).asyncAndThen((isOnboarded) => {
+    if (isOnboarded) {
+      return okAsync(true)
+    }
+    return SmsService.retrieveFreeSmsCounts(formAdminId).andThen(
+      (freeSmsSent) => checkSmsCountAndPerformAction(form, freeSmsSent),
+    )
+  })
+}
+
+/**
+ * Checks the number of free smses sent by the admin of a form and performs the appropriate action
+ * @param form The form whose admin's sms counts needs to be checked
+ * @returns ok(true) when the action has been performed successfully
+ * @returns err(MailGenerationError) when an error occurred on creating the HTML template for the email
+ * @returns err(MailSendError) when an error occurred on sending the email
+ * @returns err(PossibleDatabaseError) when an error occurred while retrieving the counts from the database
+ */
+const checkSmsCountAndPerformAction = (
+  form: Pick<IPopulatedForm, 'admin' | 'title' | '_id' | 'permissionList'>,
+  freeSmsSent: number,
+): ResultAsync<
+  true,
+  MailGenerationError | MailSendError | PossibleDatabaseError
+> => {
+  // Convert to string because it's typed as any
+  const formAdminId = String(form.admin._id)
+
+  // NOTE: Because the admin has exceeded their allowable limit of free sms,
+  // the sms verifications for their forms also need to be disabled.
+  if (hasAdminExceededFreeSmsLimit(freeSmsSent)) {
+    return MailService.sendSmsVerificationDisabledEmail(form).andThen(() =>
+      disableSmsVerificationsForUser(formAdminId),
+    )
+  }
+
+  if (freeSmsSent in SMS_WARNING_TIERS) {
+    return MailService.sendSmsVerificationWarningEmail(form, freeSmsSent)
+  }
+
+  return okAsync(true)
+}
