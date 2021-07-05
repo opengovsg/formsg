@@ -85,3 +85,14 @@ export class FormAuthNoEsrvcIdError extends ApplicationError {
     )
   }
 }
+
+/**
+ * Error returned when the form is not onboarded (has no message service name)
+ */
+export class MissingMessageServiceNameError extends ApplicationError {
+  constructor(formId: string) {
+    super(
+      `Attempted to retrieve message service name form ${formId} when it was undefined`,
+    )
+  }
+}
