@@ -1,5 +1,3 @@
-import { err, ok, Result } from 'neverthrow'
-
 import {
   IEncryptedFormSchema,
   IFieldSchema,
@@ -12,8 +10,6 @@ import {
 } from '../../../types'
 import { smsConfig } from '../../config/features/sms.config'
 import { isMongooseDocumentArray } from '../../utils/mongoose'
-
-import { MissingMessageServiceNameError } from './form.errors'
 
 // Converts 'test@hotmail.com, test@gmail.com' to ['test@hotmail.com', 'test@gmail.com']
 export const transformEmailString = (v: string): string[] => {
@@ -130,18 +126,10 @@ export const getLogicById = (
 /**
  * Checks if a given form is onboarded (the form's message service name is defined and different from the default)
  * @param form The form to check
- * @returns ok(boolean) indicating if the form is/is not onboarded
+ * @returns boolean indicating if the form is/is not onboarded
  */
-export const isFormOnboarded = (form: IPopulatedForm): Result<boolean, never> =>
-  extractFormMessageServiceName(form)
-    .andThen((msgSrvcName) => ok(!(msgSrvcName === smsConfig.twilioMsgSrvcSid)))
-    .orElse(() => ok(false))
-
-const extractFormMessageServiceName = (
-  form: IPopulatedForm,
-): Result<string, MissingMessageServiceNameError> => {
-  const msgSrvcName = form.msgSrvcName
-  return msgSrvcName
-    ? ok(msgSrvcName)
-    : err(new MissingMessageServiceNameError(String(form._id)))
+export const isFormOnboarded = (form: IPopulatedForm): boolean => {
+  return form.msgSrvcName
+    ? !(form.msgSrvcName === smsConfig.twilioMsgSrvcSid)
+    : false
 }
