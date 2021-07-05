@@ -27,3 +27,10 @@ export enum ADMIN_VERIFIED_SMS_STATES {
   belowLimit = 'BELOW_LIMIT',
   hasMessageServiceId = 'MESSAGE_SERVICE_ID_OBTAINED',
 }
+export const SMS_VERIFICATION_LIMIT = 10000
+
+export enum SMS_WARNING_TIERS {
+  LOW = 2500,
+  MED = 5000,
+  HIGH = 7500,
+}

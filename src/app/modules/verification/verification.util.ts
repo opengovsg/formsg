@@ -2,6 +2,7 @@ import { StatusCodes } from 'http-status-codes'
 
 import {
   HASH_EXPIRE_AFTER_SECONDS,
+  SMS_VERIFICATION_LIMIT,
   VERIFIED_FIELDTYPES,
   WAIT_FOR_OTP_SECONDS,
   WAIT_FOR_OTP_TOLERANCE_SECONDS,
@@ -209,4 +210,8 @@ export const mapRouteError: MapRouteError = (
         statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
       }
   }
+}
+
+export const hasAdminExceededFreeSmsLimit = (smsCount: number): boolean => {
+  return smsCount > SMS_VERIFICATION_LIMIT
 }
