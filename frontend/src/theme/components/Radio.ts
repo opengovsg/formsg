@@ -2,7 +2,7 @@ import { ComponentStyleConfig } from '@chakra-ui/react'
 import { getColor } from '@chakra-ui/theme-tools'
 
 export const Radio: ComponentStyleConfig = {
-  parts: ['row', 'others'],
+  parts: ['others'],
   baseStyle: (props) => ({
     control: {
       border: '2px solid',
@@ -49,7 +49,8 @@ export const Radio: ComponentStyleConfig = {
       },
     },
     others: {
-      alignSelf: 'flex-end',
+      pl: '48px',
+      mt: '2px',
     },
   }),
   sizes: {

@@ -1,15 +1,13 @@
 import { ChangeEvent, cloneElement, isValidElement, useRef } from 'react'
-import { Flex, forwardRef, RadioProps, useMergeRefs } from '@chakra-ui/react'
-import { createContext } from '@chakra-ui/react-utils'
+import {
+  Flex,
+  forwardRef,
+  RadioProps,
+  useMergeRefs,
+  useMultiStyleConfig,
+} from '@chakra-ui/react'
 
 import { Radio } from './Radio'
-
-const [OthersProvider, useOthersContext] = createContext<{
-  onInputChange: () => void
-}>({
-  name: 'OthersContext',
-  strict: false,
-})
 
 export const RadioOthers = forwardRef<RadioProps, 'input'>(
   ({ children, ...props }, ref) => {
@@ -23,22 +21,26 @@ export const RadioOthers = forwardRef<RadioProps, 'input'>(
     }
 
     return (
-      <OthersProvider value={{ onInputChange: handleInputChange }}>
+      <>
         <Radio {...props} ref={mergedRef} />
-        <OthersWrapper>{children}</OthersWrapper>
-      </OthersProvider>
+        <OthersWrapper onInputChange={handleInputChange}>
+          {children}
+        </OthersWrapper>
+      </>
     )
   },
 )
 
 const OthersWrapper = ({
   children,
+  onInputChange,
   onClick,
 }: {
   children: React.ReactNode
+  onInputChange: () => void
   onClick?: (e: ChangeEvent<HTMLInputElement>) => void
 }) => {
-  const { onInputChange } = useOthersContext()
+  const style = useMultiStyleConfig('Radio', {}).others
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     onInputChange()
@@ -46,7 +48,7 @@ const OthersWrapper = ({
   }
 
   return (
-    <Flex pl="48px" mt="2px">
+    <Flex __css={style}>
       {isValidElement(children) &&
         cloneElement(children, {
           onClick: handleInputChange,

@@ -1,15 +1,13 @@
 import { ChangeEvent, cloneElement, isValidElement, useRef } from 'react'
-import { CheckboxProps, Flex, forwardRef, useMergeRefs } from '@chakra-ui/react'
-import { createContext } from '@chakra-ui/react-utils'
+import {
+  CheckboxProps,
+  Flex,
+  forwardRef,
+  useMergeRefs,
+  useMultiStyleConfig,
+} from '@chakra-ui/react'
 
 import { Checkbox } from './Checkbox'
-
-const [OthersProvider, useOthersContext] = createContext<{
-  onInputChange: () => void
-}>({
-  name: 'OthersContext',
-  strict: false,
-})
 
 export const CheckboxOthers = forwardRef<CheckboxProps, 'input'>(
   ({ children, ...props }, ref) => {
@@ -23,30 +21,33 @@ export const CheckboxOthers = forwardRef<CheckboxProps, 'input'>(
     }
 
     return (
-      <OthersProvider value={{ onInputChange: handleInputChange }}>
+      <>
         <Checkbox {...props} ref={mergedRef} />
-        <OthersWrapper>{children}</OthersWrapper>
-      </OthersProvider>
+        <OthersWrapper onInputChange={handleInputChange}>
+          {children}
+        </OthersWrapper>
+      </>
     )
   },
 )
 
 const OthersWrapper = ({
   children,
+  onInputChange,
   onClick,
 }: {
   children: React.ReactNode
+  onInputChange: () => void
   onClick?: (e: ChangeEvent<HTMLInputElement>) => void
 }) => {
-  const { onInputChange } = useOthersContext()
+  const style = useMultiStyleConfig('Checkbox', {}).others
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     onInputChange()
     onClick?.(e)
   }
-
   return (
-    <Flex pl="48px" mt="2px">
+    <Flex __css={style}>
       {isValidElement(children) &&
         cloneElement(children, {
           onClick: handleInputChange,

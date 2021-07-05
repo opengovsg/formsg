@@ -2,7 +2,7 @@ import { ComponentStyleConfig } from '@chakra-ui/react'
 import { getColor } from '@chakra-ui/theme-tools'
 
 export const Checkbox: ComponentStyleConfig = {
-  parts: ['row', 'others'],
+  parts: ['others'],
   baseStyle: ({ theme }) => ({
     control: {
       borderRadius: '0.19rem',
@@ -36,6 +36,10 @@ export const Checkbox: ComponentStyleConfig = {
         borderColor: 'primary.500',
         boxShadow: `0 0 0 2px ${getColor(theme, 'primary.500')}`,
       },
+    },
+    others: {
+      pl: '48px',
+      mt: '2px',
     },
   }),
   sizes: {
