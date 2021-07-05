@@ -7,6 +7,7 @@ import { createLoggerWithLabel } from '../../config/logger'
 import { generateOtpWithHash } from '../../utils/otp'
 import { createReqMeta } from '../../utils/request'
 import { ControllerHandler } from '../core/core.types'
+import * as AdminFormService from '../form/admin-form/admin-form.service'
 import * as FormService from '../form/form.service'
 
 import * as VerificationService from './verification.service'
@@ -221,7 +222,23 @@ export const _handleGenerateOtp: ControllerHandler<
           transactionId,
         }),
       )
-      .map(() => res.sendStatus(StatusCodes.CREATED))
+      .map(() => {
+        res.sendStatus(StatusCodes.CREATED)
+        void FormService.retrieveFullFormById(formId)
+          .andThen((form) =>
+            AdminFormService.checkFreeSmsSentByAdminAndDeactivateVerification(
+              form,
+            ),
+          )
+          .mapErr((error) => {
+            logger.error({
+              message:
+                'Error checking sms counts or deactivating OTP verification for admin',
+              meta: logMeta,
+              error,
+            })
+          })
+      })
       .mapErr((error) => {
         logger.error({
           message: 'Error creating new OTP',
