@@ -1112,7 +1112,7 @@ export const checkFreeSmsSentByAdminAndDeactivateVerification = (
  * @returns err(MailSendError) when an error occurred on sending the email
  * @returns err(PossibleDatabaseError) when an error occurred while retrieving the counts from the database
  */
-const checkSmsCountAndPerformAction = (
+export const checkSmsCountAndPerformAction = (
   form: Pick<IPopulatedForm, 'admin' | 'title' | '_id' | 'permissionList'>,
   freeSmsSent: number,
 ): ResultAsync<
