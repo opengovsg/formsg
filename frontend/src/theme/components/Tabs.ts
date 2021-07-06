@@ -34,7 +34,7 @@ const variantLine: ThemingPropsThunk<SystemStyleObjectRecord, ChakraTheme> = (
       p: '4px',
     },
     tab: {
-      textTransform: 'capitalise',
+      textTransform: 'uppercase',
       p: '4px',
       [marginProp]: '4px',
       _focus: {
