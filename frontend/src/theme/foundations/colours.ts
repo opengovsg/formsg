@@ -14,6 +14,22 @@ export type ThemeColorScheme =
   | 'theme-red'
   | 'theme-brown'
 
+/**
+ * Available color schemes to use for form field colors
+ */
+export type FieldColorScheme = Extract<
+  ThemeColorScheme,
+  | 'primary'
+  | 'theme-green'
+  | 'theme-teal'
+  | 'theme-purple'
+  | 'theme-grey'
+  | 'theme-yellow'
+  | 'theme-orange'
+  | 'theme-red'
+  | 'theme-brown'
+>
+
 export const colours: { [k in ThemeColorScheme]: Record<string, string> } = {
   primary: {
     100: '#F6F7FC',

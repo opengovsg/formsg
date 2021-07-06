@@ -123,9 +123,6 @@ const variantOutlineReverse: ThemingPropsThunk<CSSObject, ChakraTheme> = (
 
 export const Button: ComponentStyleConfig = {
   baseStyle: {
-    // Required to prevent buggy outline colors from showing up due to
-    // transitions caused by `focus-visible`
-    outlineColor: 'transparent !important',
     borderRadius: '0.25rem',
     border: '1px solid',
     textStyle: 'subhead-1',
@@ -154,7 +151,7 @@ export const Button: ComponentStyleConfig = {
     clear: variantClear,
   } as Record<ThemeButtonVariant, ThemingPropsThunk<SystemStyleObject>>,
   defaultProps: {
-    variant: 'primary',
+    variant: 'solid',
     colorScheme: 'primary',
     size: 'md',
   },
