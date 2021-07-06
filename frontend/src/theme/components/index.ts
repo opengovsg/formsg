@@ -4,8 +4,8 @@ import { Form } from './Form'
 import { FormError } from './FormError'
 import { FormLabel } from './FormLabel'
 import { Input } from './Input'
-import { Tabs } from './Tabs'
 import { Link } from './Link'
+import { Tabs } from './Tabs'
 
 export const components = {
   Button,
