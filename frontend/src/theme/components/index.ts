@@ -5,6 +5,7 @@ import { FormError } from './FormError'
 import { FormLabel } from './FormLabel'
 import { Input } from './Input'
 import { Link } from './Link'
+import { Tabs } from './Tabs'
 
 export const components = {
   Button,
@@ -13,5 +14,6 @@ export const components = {
   Link,
   FormError,
   FormLabel,
+  Tabs,
   [YESNO_THEME_KEY]: YesNoField,
 }
