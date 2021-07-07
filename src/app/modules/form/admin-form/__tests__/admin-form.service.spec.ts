@@ -55,10 +55,8 @@ import {
 
 import { generateDefaultField } from 'tests/unit/backend/helpers/generate-form-data'
 
-import {
-  SMS_VERIFICATION_LIMIT,
-  SMS_WARNING_TIERS,
-} from '../../../../../shared/util/verification'
+import { SMS_WARNING_TIERS } from '../../../../../shared/util/verification'
+import { smsConfig } from '../../../../config/features/sms.config'
 import MailService from '../../../../services/mail/mail.service'
 import * as SmsService from '../../../../services/sms/sms.service'
 import {
@@ -2345,12 +2343,12 @@ describe('admin-form.service', () => {
       // Act
       const actual = await AdminFormService.checkSmsCountAndPerformAction(
         MOCK_FORM,
-        SMS_VERIFICATION_LIMIT + 1,
+        smsConfig.smsVerificationLimit + 1,
       )
 
       // Assert
       expect(actual._unsafeUnwrap()).toBe(true)
-      expect(exceedSpy).toHaveBeenCalledWith(SMS_VERIFICATION_LIMIT + 1)
+      expect(exceedSpy).toHaveBeenCalledWith(smsConfig.smsVerificationLimit + 1)
       expect(
         MockMailService.sendSmsVerificationDisabledEmail,
       ).toHaveBeenCalledWith(MOCK_FORM)
@@ -2464,12 +2462,12 @@ describe('admin-form.service', () => {
       // Act
       const actual = await AdminFormService.checkSmsCountAndPerformAction(
         MOCK_FORM,
-        SMS_VERIFICATION_LIMIT + 1,
+        smsConfig.smsVerificationLimit + 1,
       )
 
       // Assert
       expect(actual._unsafeUnwrapErr()).toBe(expected)
-      expect(exceedSpy).toHaveBeenCalledWith(SMS_VERIFICATION_LIMIT + 1)
+      expect(exceedSpy).toHaveBeenCalledWith(smsConfig.smsVerificationLimit + 1)
       expect(disableSpy).not.toHaveBeenCalled()
       expect(
         MockMailService.sendSmsVerificationDisabledEmail,
