@@ -1092,12 +1092,12 @@ export const checkFreeSmsSentByAdminAndDeactivateVerification = (
   true,
   MailGenerationError | MailSendError | PossibleDatabaseError
 > => {
-  // Convert to string because it's typed as any
-  const formAdminId = String(form.admin._id)
-
   if (isFormOnboarded(form)) {
     return okAsync(true)
   }
+
+  // Convert to string because it's typed as any
+  const formAdminId = String(form.admin._id)
 
   return SmsService.retrieveFreeSmsCounts(formAdminId).andThen((freeSmsSent) =>
     checkSmsCountAndPerformAction(form, freeSmsSent),
