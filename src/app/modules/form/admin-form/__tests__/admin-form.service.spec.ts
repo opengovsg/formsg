@@ -2504,7 +2504,7 @@ describe('admin-form.service', () => {
       expect(retrievalSpy).not.toHaveBeenCalled()
     })
 
-    it('should call underlying methods succcessfully when form is onboarded', async () => {
+    it('should call underlying methods succcessfully when form is not onboarded', async () => {
       // Arrange
       const onboardSpy = jest.spyOn(FormUtils, 'isFormOnboarded')
       onboardSpy.mockReturnValueOnce(false)
