@@ -128,7 +128,9 @@ export const getLogicById = (
  * @param form The form to check
  * @returns boolean indicating if the form is/is not onboarded
  */
-export const isFormOnboarded = (form: IPopulatedForm): boolean => {
+export const isFormOnboarded = (
+  form: Pick<IPopulatedForm, 'msgSrvcName'>,
+): boolean => {
   return form.msgSrvcName
     ? !(form.msgSrvcName === smsConfig.twilioMsgSrvcSid)
     : false
