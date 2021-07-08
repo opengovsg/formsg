@@ -20,10 +20,20 @@ const TabTemplate: Story<TabsProps> = (args) => {
 
 export const LightTab = TabTemplate.bind({})
 LightTab.args = {
-  variant: 'line',
+  variant: 'line-light',
 }
 
 export const DarkTab = TabTemplate.bind({})
 DarkTab.args = {
-  variant: 'enclosed',
+  variant: 'line-dark',
+}
+
+export const WithScrolling = TabTemplate.bind({})
+WithScrolling.args = {
+  variant: 'line-light',
+}
+WithScrolling.parameters = {
+  viewport: {
+    defaultViewport: 'mobile1',
+  },
 }
