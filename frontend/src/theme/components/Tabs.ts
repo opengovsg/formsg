@@ -4,45 +4,45 @@ import {
   SystemStyleObjectRecord,
   ThemingPropsThunk,
 } from '@chakra-ui/react'
-import { merge } from 'lodash'
+import merge from 'lodash/merge'
 
-const variantLine: ThemingPropsThunk<SystemStyleObjectRecord, ChakraTheme> = (
-  props,
-) => {
-  const { orientation } = props
-  const isVertical = orientation === 'vertical'
-  const marginProp = isVertical ? 'marginStart' : 'marginBottom'
-  return {
-    root: {
-      w: 'auto',
-      p: '24px',
-      mx: '-16px', // ignore parent padding and extend full width of screen
-    },
-    tablist: {
-      overflowX: 'scroll',
-      borderColor: 'transparent',
-      /* Hide scrollbar for IE and Edge */
-      '&::MsOverflowStyle': 'none',
-      /* Hide scrollbar for Firefox */
-      '&::scrollbarWidth': 'none',
-      /* Hide scrollbar for Chrome, Safari and Opera */
-      '&::-webkit-scrollbar': {
-        display: 'none',
+const variantLine: ThemingPropsThunk<SystemStyleObjectRecord, ChakraTheme> =
+  () => {
+    return {
+      root: {
+        w: 'auto',
+        p: '1.5rem',
       },
-    },
-    tabPanel: {
-      p: '4px',
-    },
-    tab: {
-      textTransform: 'uppercase',
-      p: '4px',
-      [marginProp]: '4px',
-      _focus: {
-        boxShadow: 'none',
+      tablist: {
+        overflowX: 'scroll',
+        borderColor: 'transparent',
+        /* Hide scrollbar for IE and Edge */
+        '&::MsOverflowStyle': 'none',
+        /* Hide scrollbar for Firefox */
+        '&::scrollbarWidth': 'none',
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        '&::-webkit-scrollbar': {
+          display: 'none',
+        },
       },
-    },
+      tabPanel: {
+        p: '4px',
+      },
+      tab: {
+        textTransform: 'uppercase',
+        p: '0.25rem',
+        marginBottom: '0.25rem',
+        borderBottom: '0.125rem solid',
+        borderColor: 'transparent',
+        _focus: {
+          boxShadow: 'none',
+        },
+        _selected: {
+          borderColor: 'currentColor',
+        },
+      },
+    }
   }
-}
 
 const variantLight: ThemingPropsThunk<SystemStyleObjectRecord, ChakraTheme> = (
   props,
@@ -94,21 +94,22 @@ export const Tabs: ComponentMultiStyleConfig = {
   parts: [],
   baseStyle: {
     tab: {
-      mr: '6%',
-      px: '3%',
+      mr: '15%',
+      px: '4%',
     },
   },
   sizes: {
     md: {
       tab: {
         textStyle: 'subhead-3',
-        p: '0px',
+        p: '0rem',
       },
     },
   },
   variants: {
-    line: variantLight,
-    enclosed: variantDark,
+    // Chakra UI already has a line variant, these are our custom variants
+    'line-light': variantLight,
+    'line-dark': variantDark,
   },
   defaultProps: {
     colorScheme: 'primary',
