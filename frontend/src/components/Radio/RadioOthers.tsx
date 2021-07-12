@@ -2,15 +2,18 @@ import { ChangeEvent, cloneElement, isValidElement, useRef } from 'react'
 import {
   Flex,
   forwardRef,
+  Radio,
   RadioProps,
   useMergeRefs,
   useMultiStyleConfig,
 } from '@chakra-ui/react'
 
-import { Radio } from './Radio'
+interface RadioOthersProps extends RadioProps {
+  displayValue?: string
+}
 
-export const RadioOthers = forwardRef<RadioProps, 'input'>(
-  ({ children, ...props }, ref) => {
+export const RadioOthers = forwardRef<RadioOthersProps, 'input'>(
+  ({ children, displayValue, ...props }, ref) => {
     const inputRef = useRef<HTMLInputElement | null>(null)
     const mergedRef = useMergeRefs(ref, inputRef)
 
@@ -22,7 +25,9 @@ export const RadioOthers = forwardRef<RadioProps, 'input'>(
 
     return (
       <>
-        <Radio {...props} ref={mergedRef} />
+        <Radio {...props} ref={mergedRef}>
+          {displayValue}
+        </Radio>
         <OthersWrapper onInputChange={handleInputChange}>
           {children}
         </OthersWrapper>

@@ -1,15 +1,14 @@
-import { useController, useForm } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import {
   FormControl,
   FormErrorMessage,
   FormLabel,
 } from '@chakra-ui/form-control'
-import { Input, RadioGroup, RadioProps, VStack } from '@chakra-ui/react'
+import { Input, Radio, RadioGroup, RadioProps, VStack } from '@chakra-ui/react'
 import { Meta, Story } from '@storybook/react'
 
 import Button from '~components/Button'
 
-import { Radio } from './Radio'
 import { RadioOthers } from './RadioOthers'
 
 export default {
@@ -18,7 +17,9 @@ export default {
   decorators: [],
 } as Meta
 
-export const Default: Story<RadioProps> = (args) => <Radio {...args} />
+export const Default: Story<RadioProps> = (args) => (
+  <Radio {...args}>{args.value}</Radio>
+)
 Default.args = {
   value: 'Option',
 }
@@ -27,10 +28,10 @@ export const Group: Story<RadioProps> = (args) => {
   return (
     <RadioGroup>
       <VStack align="left">
-        <Radio value="Option 1" />
-        <Radio value="Option 2" />
-        <Radio value="Option 3" />
-        <RadioOthers value="Others">
+        <Radio value="Option 1">Option 1</Radio>
+        <Radio value="Option 2">Option 2</Radio>
+        <Radio value="Option 3">Option 3</Radio>
+        <RadioOthers value="Others" displayValue="Others">
           <Input placeholder="Please specify" />
         </RadioOthers>
       </VStack>
@@ -40,19 +41,15 @@ export const Group: Story<RadioProps> = (args) => {
 
 export const Playground: Story = (args) => {
   const { name, label, isDisabled, isRequired } = args
-  const { register, handleSubmit, control } = useForm()
+
   const {
-    field,
+    handleSubmit,
+    watch,
+    register,
     formState: { errors },
-  } = useController({
-    control,
-    name,
-    rules: {
-      required: isRequired
-        ? { value: true, message: 'This field is required' }
-        : false,
-    },
-  })
+  } = useForm()
+
+  const values = watch(name, false)
 
   const onSubmit = (data: Record<string, string>) => {
     alert(JSON.stringify(data))
@@ -68,12 +65,29 @@ export const Playground: Story = (args) => {
         mb={6}
       >
         <FormLabel htmlFor={name}>{label}</FormLabel>
-        <RadioGroup {...field}>
+        <RadioGroup>
           <VStack align="left">
-            {options.map((option, idx) => {
-              return <Radio key={idx} value={option} isDisabled={isDisabled} />
-            })}
-            <RadioOthers value="Others" isDisabled={isDisabled}>
+            {options.map((option, idx) => (
+              <Radio
+                key={idx}
+                value={option}
+                isDisabled={isDisabled}
+                {...register(name, {
+                  required: {
+                    value: isRequired,
+                    message: 'This field is required',
+                  },
+                })}
+              >
+                {option}
+              </Radio>
+            ))}
+            <RadioOthers
+              value="Others"
+              displayValue="Others"
+              isDisabled={isDisabled}
+              base="checkbox"
+            >
               {/* Any subcomponent can be used due to children composition */}
               <Input
                 isInvalid={!!errors.others}
@@ -81,12 +95,13 @@ export const Playground: Story = (args) => {
                 {...register('others', {
                   // Caller is responsible for validation, this is just an example, can be
                   // refined when we start implementing validation and business logic.
-                  required: field.value === 'Others',
+                  required: Array.isArray(values) && values.includes('Others'),
                 })}
               />
             </RadioOthers>
           </VStack>
         </RadioGroup>
+
         <FormErrorMessage>
           {errors[name] && errors[name].message}
         </FormErrorMessage>

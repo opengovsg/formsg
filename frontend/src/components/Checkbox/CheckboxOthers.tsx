@@ -1,5 +1,6 @@
 import { ChangeEvent, cloneElement, isValidElement, useRef } from 'react'
 import {
+  Checkbox,
   CheckboxProps,
   Flex,
   forwardRef,
@@ -7,10 +8,12 @@ import {
   useMultiStyleConfig,
 } from '@chakra-ui/react'
 
-import { Checkbox } from './Checkbox'
+interface CheckboxOthersProps extends CheckboxProps {
+  displayValue: string
+}
 
-export const CheckboxOthers = forwardRef<CheckboxProps, 'input'>(
-  ({ children, ...props }, ref) => {
+export const CheckboxOthers = forwardRef<CheckboxOthersProps, 'input'>(
+  ({ children, displayValue, ...props }, ref) => {
     const inputRef = useRef<HTMLInputElement | null>(null)
     const mergedRef = useMergeRefs(ref, inputRef)
 
@@ -22,7 +25,9 @@ export const CheckboxOthers = forwardRef<CheckboxProps, 'input'>(
 
     return (
       <>
-        <Checkbox {...props} ref={mergedRef} />
+        <Checkbox {...props} ref={mergedRef}>
+          {displayValue}
+        </Checkbox>
         <OthersWrapper onInputChange={handleInputChange}>
           {children}
         </OthersWrapper>
