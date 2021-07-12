@@ -33,16 +33,21 @@ const variantLine: ThemingPropsThunk<SystemStyleObjectRecord, ChakraTheme> = ({
       borderColor: 'transparent',
       mx: '1rem',
       transition: 'none',
+      //  margins to ensure text remains at the same position as selected tabs
+      mb: '0.125rem',
+      borderBottom: '0',
       _selected: {
+        mb: '0',
         borderBottom: '0.125rem solid',
         _focus: {
-          // add horizontal padding and update margins to ensure text remains at the same position
+          // add horizontal padding
           p: '0.25rem',
           ml: '0.75rem',
           mr: '0.75rem',
+          borderRadius: '0.25rem',
+          //  margins to ensure text remains at the same position as selected tabs
           mb: '0.125rem',
           borderBottom: '0',
-          borderRadius: '0.25rem',
         },
       },
     },
