@@ -5,6 +5,7 @@ import {
   getLogicUnitPreventingSubmit,
   getVisibleFieldIds,
 } from '../../../shared/util/logic'
+import { formatFieldsForLogic } from '../../../shared/util/logic-utils'
 import {
   FieldResponse,
   IFieldSchema,
@@ -31,7 +32,10 @@ export abstract class IncomingSubmission {
     public readonly form: IPopulatedForm,
     private fieldMap: ValidatedFieldMap,
   ) {
-    this.visibleFieldIds = getVisibleFieldIds(responses, form)
+    this.visibleFieldIds = getVisibleFieldIds(
+      formatFieldsForLogic(responses, form.form_fields),
+      form,
+    )
     this.visibleResponseIds = this.getVisibleResponseIds()
     this.verifiableResponseIds = this.getVerifiableResponseIds()
   }
@@ -156,7 +160,7 @@ export abstract class IncomingSubmission {
     // logic.
     if (
       getLogicUnitPreventingSubmit(
-        this.responses,
+        formatFieldsForLogic(this.responses, this.form.form_fields),
         this.form,
         this.visibleFieldIds,
       )

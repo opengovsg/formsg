@@ -2,6 +2,9 @@
 
 const ExamplesService = require('../../../services/ExamplesService')
 const UserService = require('../../../services/UserService')
+const {
+  transformBackendLogic,
+} = require('../services/form-logic/form-logic.client.service')
 
 // Setting up route
 angular.module('forms').config([
@@ -111,7 +114,12 @@ angular.module('forms').config([
             'FormApi',
             '$stateParams',
             function (FormApi, $stateParams) {
-              return FormApi.getAdminForm($stateParams.formId)
+              return FormApi.getAdminForm($stateParams.formId).then(
+                ({ form }) => {
+                  form.form_logics = form.form_logics.map(transformBackendLogic)
+                  return { form }
+                },
+              )
             },
           ],
         },
