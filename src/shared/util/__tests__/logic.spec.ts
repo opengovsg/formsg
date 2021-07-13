@@ -8,8 +8,12 @@ import {
 } from 'src/shared/util/logic'
 import {
   BasicField,
+<<<<<<< HEAD
   FieldResponse,
   IField,
+=======
+  CheckboxConditionValue,
+>>>>>>> 4c2ffe1b (feat: add checkbox to logic module with tests)
   IFieldSchema,
   IFormDocument,
   IPreventSubmitLogicSchema,
@@ -17,6 +21,7 @@ import {
   IShortTextFieldSchema,
   IShowFieldsLogicSchema,
   LogicConditionState,
+  LogicFieldResponse,
   LogicIfValue,
   LogicType,
 } from 'src/types'
@@ -34,10 +39,10 @@ describe('Logic validation', () => {
   const makeResponse = (
     fieldId: string,
     answer: string | number | null = null,
-    answerArray: string[] | null = null,
+    answerArray: string[] | CheckboxConditionValue | null = null,
     fieldType: string | null = null,
     isVisible = true,
-  ): FieldResponse => {
+  ): LogicFieldResponse => {
     const response: Record<string, any> = { _id: fieldId, isVisible, fieldType }
     if (answer !== null) {
       response.answer = answer
@@ -45,7 +50,7 @@ describe('Logic validation', () => {
     if (answerArray) {
       response.answerArray = answerArray
     }
-    return response as FieldResponse
+    return response as LogicFieldResponse
   }
 
   describe('visibility for different states', () => {
