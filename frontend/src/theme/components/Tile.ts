@@ -1,7 +1,5 @@
 import { ComponentMultiStyleConfig } from '@chakra-ui/theme'
 
-export type BannerVariant = 'simple' | 'complex'
-//        border: '1px solid var(--chakra-colors-success-500)',
 export const Tile: ComponentMultiStyleConfig = {
   parts: ['container', 'title', 'icon', 'subtitle'],
   baseStyle: {
