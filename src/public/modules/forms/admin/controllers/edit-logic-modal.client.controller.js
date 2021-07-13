@@ -1,7 +1,13 @@
 'use strict'
 
 const { range } = require('lodash')
-const { LogicType } = require('../../../../../types')
+
+const {
+  LogicType,
+  LogicIfValue,
+  BasicField,
+  LogicConditionState,
+} = require('../../../../../types')
 const FormLogic = require('../../../../../shared/util/logic')
 const UpdateFormService = require('../../../../services/UpdateFormService')
 
@@ -170,10 +176,13 @@ function EditLogicModalController(
       return
     }
 
-    if (field.fieldType === 'dropdown' || field.fieldType === 'radiobutton') {
+    if (
+      field.fieldType === BasicField.Dropdown ||
+      field.fieldType === BasicField.Radio
+    ) {
       condition.ifValues = field.fieldOptions
 
-      if (field.fieldType === 'radiobutton' && field.othersRadioButton) {
+      if (field.fieldType === BasicField.Radio && field.othersRadioButton) {
         // prevent duplicate 'Others' option when reload or the question is with an existing 'Others' option
         if (condition.ifValues.indexOf('Others') === -1) {
           // prevent changing the original field options
@@ -182,19 +191,30 @@ function EditLogicModalController(
         }
       }
 
-      if (condition.state === 'is equals to') {
-        condition.ifValueType = 'single-select'
+      if (condition.state === LogicConditionState.Equal) {
+        condition.ifValueType = LogicIfValue.SingleSelect
       } else {
-        condition.ifValueType = 'multi-select'
+        condition.ifValueType = LogicIfValue.MultiSelect
       }
-    } else if (field.fieldType === 'rating') {
+    } else if (field.fieldType === BasicField.Checkbox) {
+      condition.ifValues = field.fieldOptions.map((option) => {
+        return {
+          value: option,
+          other: false,
+        }
+      })
+      if (field.fieldType === BasicField.Checkbox && field.othersRadioButton) {
+        condition.ifValues.push({ value: 'Others', other: true })
+      }
+      condition.ifValueType = LogicIfValue.MultiValue
+    } else if (field.fieldType === BasicField.Rating) {
       condition.ifValues = range(1, field.ratingOptions.steps + 1)
-      condition.ifValueType = 'single-select'
-    } else if (field.fieldType === 'yes_no') {
+      condition.ifValueType = LogicIfValue.SingleSelect
+    } else if (field.fieldType === BasicField.YesNo) {
       condition.ifValues = ['Yes', 'No']
-      condition.ifValueType = 'single-select'
+      condition.ifValueType = LogicIfValue.SingleSelect
     } else {
-      condition.ifValueType = 'number'
+      condition.ifValueType = LogicIfValue.Number
     }
   }
 
@@ -251,6 +271,19 @@ function EditLogicModalController(
     }
   }
 
+  vm.shouldDisableSave = function () {
+    const thenNotSelected =
+      !vm.logicTypeSelection.showFields && !vm.logicTypeSelection.preventSubmit
+    const valueNotSelected = vm.logic.conditions.some((condition) =>
+      vm.hasEmptyConditionError(condition),
+    )
+    return vm.logicForm.$invalid || thenNotSelected || valueNotSelected
+  }
+
+  vm.hasEmptyConditionError = function (condition) {
+    return !condition.value || condition.value.length === 0
+  }
+
   vm.save = function () {
     // Clear data of unselected logic type
     if (vm.logicTypeSelection.showFields) {
@@ -304,5 +337,22 @@ function EditLogicModalController(
       .catch(() => {
         Toastr.error('Failed to update logic, please refresh and try again!')
       })
+  }
+
+  // Functions to be used for multi-valued logic fields
+  vm.initValue = function (condition) {
+    if (!condition.value) {
+      condition.value = []
+      condition.value.push([])
+    }
+  }
+
+  vm.addOption = function (condition) {
+    condition.value.push([])
+  }
+
+  vm.deleteOption = function (condition, option) {
+    const indexToDelete = condition.value.indexOf(option)
+    condition.value.splice(indexToDelete, 1)
   }
 }

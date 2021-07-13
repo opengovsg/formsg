@@ -85,7 +85,11 @@
                 </div>
               </div>
               <div class="if-state-value">
-                {{condition.state}} <u>{{vm.formatValue(condition.value)}}</u>
+                {{condition.state}}
+                <u
+                  >{{vm.formatValue(condition.value,
+                  condition.fieldInfo.fieldType)}}</u
+                >
               </div>
             </div>
           </div>

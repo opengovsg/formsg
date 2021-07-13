@@ -1,6 +1,6 @@
 'use strict'
 
-const { LogicType } = require('../../../../../types')
+const { LogicType, BasicField } = require('../../../../../types')
 const UpdateFormService = require('../../../../services/UpdateFormService')
 
 angular.module('forms').component('editLogicComponent', {
@@ -64,7 +64,12 @@ function editLogicComponentController($uibModal, FormFields, Toastr, $q) {
     return field && field.fieldType
   }
 
-  vm.formatValue = function (values) {
+  vm.formatValue = function (values, fieldType) {
+    if (fieldType === BasicField.Checkbox) {
+      // value has shape [[{value:..., others:...}, ...], [...], ...]
+      // map each object to its value
+      values = values.map((arr) => arr.map((obj) => obj.value))
+    }
     if (values instanceof Array) {
       return values.join(' or ')
     }

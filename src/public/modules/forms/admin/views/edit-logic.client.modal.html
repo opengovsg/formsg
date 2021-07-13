@@ -178,6 +178,67 @@
                 </ui-select>
               </div>
               <div
+                ng-if="condition.ifValueType === 'multi-value'"
+                class="col-md-10 col-xs-12 field-input"
+                id="multi-select"
+                ng-init="vm.initValue(condition)"
+              >
+                <div
+                  class="inline-option"
+                  ng-repeat="option in condition.value track by $index"
+                >
+                  <ui-select
+                    multiple
+                    search-enabled="true"
+                    ng-model="condition.value[$index]"
+                    ng-value="true"
+                    ng-disabled="vm.isIfValueDisabled(condition)"
+                    ng-required="true"
+                    uis-open-close="vm.onDropdownOpenClose()"
+                    class="inline-input"
+                  >
+                    <ui-select-match
+                      placeholder="Click to add up to multiple values"
+                      >{{ $item.value }}</ui-select-match
+                    >
+                    <ui-select-choices
+                      refresh="vm.filterOptions($select.search, condition.ifValues)"
+                      refresh-delay="300"
+                      repeat="value in vm.filteredOptions | limitTo: vm.infiniteScroll.currentItems track by $index"
+                      infinite-scroll="vm.addMoreItems()"
+                      infinite-scroll-container="'#multi-select .ui-select-choices-content'"
+                      infinite-scroll-distance="3"
+                    >
+                      <span ng-bind="value.value"></span>
+                    </ui-select-choices>
+                  </ui-select>
+                  <div class="inline-btn">
+                    <button
+                      class="btn-delete"
+                      ng-click="vm.deleteOption(condition, option)"
+                    >
+                      <i class="bx bx-trash bx-lg"></i>
+                    </button>
+                  </div>
+                </div>
+                <a
+                  ng-click="vm.addOption(condition)"
+                  class="modal-add-btn col-md-10 col-xs-10"
+                  ><i class="bx bx-plus icon-spacing"></i>Add another
+                  combination</a
+                >
+                <div class="row" ng-if="vm.hasEmptyConditionError(condition)">
+                  <div class="col-md-12">
+                    <div class="alert-custom alert-error">
+                      <i class="bx bx-exclamation bx-md icon-spacing"></i>
+                      <span class="alert-msg"
+                        >You must specify at least one value.</span
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div
                 ng-if="condition.ifValueType === 'number'"
                 class="col-md-10 col-xs-12 field-input"
               >
@@ -360,7 +421,7 @@
       type="submit"
       ng-click="vm.save()"
       class="btn-custom btn-medium modal-save-btn"
-      ng-disabled="vm.logicForm.$invalid || (!vm.logicTypeSelection.showFields && !vm.logicTypeSelection.preventSubmit)"
+      ng-disabled="vm.shouldDisableSave()"
     >
       Save
     </button>
