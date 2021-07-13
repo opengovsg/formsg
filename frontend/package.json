@@ -27,6 +27,7 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3",
     "typescript": "^4.2.3",
+    "use-drag-scroll": "^1.0.1",
     "web-vitals": "^0.2.2"
   },
   "scripts": {
