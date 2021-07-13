@@ -9,6 +9,7 @@ angular.module('forms').component('editLogicComponent', {
     myform: '=',
     isLogicError: '<',
     updateForm: '&',
+    checkIfHasInvalidValues: '=',
   },
   controller: [
     '$uibModal',
@@ -113,6 +114,7 @@ function editLogicComponentController($uibModal, FormFields, Toastr, $q) {
           logicIndex,
           getField,
           getNewCondition,
+          checkIfHasInvalidValues: vm.checkIfHasInvalidValues,
           myform: vm.myform,
         }),
       },

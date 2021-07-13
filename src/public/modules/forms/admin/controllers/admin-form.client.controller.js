@@ -3,7 +3,11 @@
 const { StatusCodes } = require('http-status-codes')
 const get = require('lodash/get')
 const moment = require('moment-timezone')
-const { LogicType } = require('../../../../../types')
+const {
+  LogicType,
+  BasicField,
+  LogicConditionState,
+} = require('../../../../../types')
 const UpdateFormService = require('../../../../services/UpdateFormService')
 const UserService = require('../../../../services/UserService')
 const FieldFactory = require('../../helpers/field-factory')
@@ -358,11 +362,15 @@ function AdminFormController(
 
   /**
    * Updates $scope.isLogicError based on whether form has logic units with fields
-   * that no longer exist.
+   * that no longer exist or deleted field options.
    */
   $scope.checkLogicError = () => {
     $scope.isLogicError = $scope.myform.form_logics.some((logicUnit) => {
-      return hasConditionError(logicUnit) || hasShowError(logicUnit)
+      return (
+        hasConditionError(logicUnit) ||
+        hasShowError(logicUnit) ||
+        hasInvalidValues(logicUnit)
+      )
     })
   }
 
@@ -389,5 +397,73 @@ function AdminFormController(
     return $scope.myform.form_fields.find(function (field) {
       return field._id === fieldId
     })
+  }
+
+  /**
+   * Checks if a logic unit has any errors in its field values.
+   * @param {Object} logicUnit
+   */
+  const hasInvalidValues = (logicUnit) => {
+    return logicUnit.conditions.some((condition) => {
+      return $scope.checkIfHasInvalidValues(
+        condition.value,
+        $scope.myform.form_fields.find(
+          (field) => field._id === condition.field,
+        ), // must use the myform.form_fields and not condition.fieldInfo because condition.fieldInfo has not been updated
+        condition.state,
+      )
+    })
+  }
+
+  $scope.checkIfHasInvalidValues = function (values, field, state) {
+    if (
+      !field ||
+      !state ||
+      !values ||
+      ((Array.isArray(values) || String(values)) && values.length === 0)
+    ) {
+      // if field, state, value has not been chosen has not been chosen, no error
+      return false
+    }
+    if (
+      field.fieldType === BasicField.Dropdown ||
+      field.fieldType === BasicField.Radio
+    ) {
+      const flattenedValues = [].concat(values).reduce((options, val) => {
+        return options.concat(val)
+      }, [])
+      return flattenedValues.some((val) => {
+        if (field.fieldOptions.includes(val)) {
+          return false
+        }
+        return val === 'Others' ? !field.othersRadioButton : true
+      })
+    } else if (field.fieldType === BasicField.Checkbox) {
+      const flattenedValues = [].concat(values).reduce((options, val) => {
+        return options.concat(val)
+      }, [])
+      return flattenedValues.some((val) => {
+        if (val.other) {
+          return !field.othersRadioButton
+        }
+        return !field.fieldOptions.includes(val.value)
+      })
+    } else if (field.fieldType === BasicField.Rating) {
+      return values > field.ratingOptions.steps
+    } else if (field.fieldType === BasicField.Decimal) {
+      const min = field.ValidationOptions.customMin
+      const max = field.ValidationOptions.customMax
+      const belowMin = min ? values < min : false
+      const aboveMax = max ? max < values : false
+      if (state === LogicConditionState.Lte) {
+        return belowMin
+      } else if (state === LogicConditionState.Gte) {
+        return aboveMax
+      } else {
+        return belowMin || aboveMax
+      }
+    } else {
+      return false
+    }
   }
 }

@@ -83,6 +83,16 @@
                   <i class="bx bx-exclamation"></i>
                   <div class="field-error-text">Field not found</div>
                 </div>
+                <div
+                  class="field-panel-inner field-error"
+                  ng-show="vm.checkIfHasInvalidValues(condition.value, condition.fieldInfo, condition.state) && vm.isLogicError"
+                >
+                  <!-- Also check vm.isLogicError because it is most up to date with the form's current state -->
+                  <i class="bx bx-exclamation"></i>
+                  <div class="field-error-text">
+                    Some values are no longer valid.
+                  </div>
+                </div>
               </div>
               <div class="if-state-value">
                 {{condition.state}}

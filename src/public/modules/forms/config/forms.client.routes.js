@@ -139,7 +139,8 @@ angular.module('forms').config([
             template: `<edit-logic-component 
                 myform="myform"
                 update-form="updateForm(update)"
-                is-logic-error="isLogicError">
+                is-logic-error="isLogicError"
+                check-if-has-invalid-values="checkIfHasInvalidValues">
               </edit-logic-component>`,
           },
           'share@viewForm': {

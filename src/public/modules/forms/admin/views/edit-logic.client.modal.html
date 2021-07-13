@@ -252,6 +252,18 @@
               </div>
             </div>
             <div
+              ng-show="vm.checkIfHasInvalidValues(condition.value, condition.fieldInfo, condition.state)"
+              class="col-md-10 col-md-offset-2 col-xs-12 warning-with-padding"
+            >
+              <div class="alert-custom alert-error">
+                <i class="bx bx-exclamation bx-md icon-spacing"></i>
+                <span class="alert-msg"
+                  >One or more of {{condition.fieldInfo.title}}'s values above
+                  are invalid.</span
+                >
+              </div>
+            </div>
+            <div
               class="
                 col-lg-1 col-md-1 col-sm-2 col-xs-2
                 logic-btn-container
