@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { BiLockAlt, BiMailSend } from 'react-icons/bi'
 import { Box, ListItem, Text, UnorderedList } from '@chakra-ui/react'
 import { Meta, Story } from '@storybook/react'
@@ -60,10 +59,15 @@ export const Playground: Story = ({
   listTitle,
   listItems,
 }) => {
+  // NOTE: This is required because storybook allows complete removal of the list
+  // And it's added back as an object
+  const actualListItems =
+    typeof listItems === 'object' ? _.values(listItems) : listItems
+
   return (
     <Box width="332px">
       <Tile icon={BiLockAlt} title={title} subtitle={subtitle}>
-        <List listTitle={listTitle} listItems={listItems ?? []}></List>
+        <List listTitle={listTitle} listItems={actualListItems ?? []}></List>
       </Tile>
     </Box>
   )
