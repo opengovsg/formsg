@@ -35,3 +35,12 @@ export const EMAIL_FORM_SETTINGS_FIELDS = <const>[
   'emails',
 ]
 export const STORAGE_FORM_SETTINGS_FIELDS = FORM_SETTINGS_FIELDS
+
+export const ADMIN_FORM_META_FIELDS = <const>[
+  'admin',
+  'title',
+  'lastModified',
+  'status',
+  '_id',
+  'responseMode',
+]

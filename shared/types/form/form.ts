@@ -3,8 +3,9 @@ import { FormField, FormFieldDto } from '../field'
 
 import { FormLogic } from './form_logic'
 import { FormLogo } from './form_logo'
-import { Merge, SetRequired } from 'type-fest'
+import { Merge, PartialDeep, SetRequired } from 'type-fest'
 import {
+  ADMIN_FORM_META_FIELDS,
   EMAIL_FORM_SETTINGS_FIELDS,
   EMAIL_PUBLIC_FORM_FIELDS,
   STORAGE_FORM_SETTINGS_FIELDS,
@@ -21,6 +22,7 @@ export enum FormColorTheme {
 }
 
 export type FormPermission = {
+  id?: string
   email: string
   write: boolean
 }
@@ -141,6 +143,8 @@ export type EmailFormDto = Merge<
 
 export type FormDto = StorageFormDto | EmailFormDto
 
+export type AdminFormDto = Merge<FormDto, { admin: UserDto }>
+
 type PublicFormBase = {
   admin: PublicUserDto
 }
@@ -178,6 +182,8 @@ export type StorageFormSettings = Pick<
 
 export type FormSettings = EmailFormSettings | StorageFormSettings
 
+export type SettingsUpdateDto = PartialDeep<FormSettings>
+
 /**
  * Misnomer. More of a public form auth session.
  */
@@ -194,3 +200,44 @@ export type PublicFormViewDto = {
   isIntranetUser?: boolean
   myInfoError?: true
 }
+
+export type PreviewFormViewDto = Pick<PublicFormViewDto, 'form'>
+
+export type AdminFormViewDto = {
+  form: AdminFormDto
+}
+
+export type AdminDashboardFormMetaDto = Pick<
+  AdminFormDto,
+  typeof ADMIN_FORM_META_FIELDS[number]
+>
+
+export type DuplicateFormBodyDto = {
+  title: string
+} & (
+  | {
+      responseMode: FormResponseMode.Email
+      emails: string | string[]
+    }
+  | {
+      responseMode: FormResponseMode.Encrypt
+      publicKey: string
+    }
+)
+
+export type CreateEmailFormBodyDto = Pick<
+  EmailFormDto,
+  'emails' | 'responseMode' | 'title'
+>
+export type CreateStorageFormBodyDto = Pick<
+  StorageFormDto,
+  'publicKey' | 'responseMode' | 'title'
+>
+
+export type CreateFormBodyDto =
+  | CreateEmailFormBodyDto
+  | CreateStorageFormBodyDto
+
+export type EndPageUpdateDto = FormEndPage
+export type StartPageUpdateDto = FormStartPage
+export type PermissionsUpdateDto = FormPermission[]
