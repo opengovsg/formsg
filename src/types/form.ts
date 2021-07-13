@@ -2,6 +2,7 @@ import { Document, LeanDocument, Model, ToObjectOptions, Types } from 'mongoose'
 import { Merge, SetRequired } from 'type-fest'
 
 import {
+  AdminDashboardFormMetaDto,
   EmailFormSettings,
   FormAuthType,
   FormBase,
@@ -65,9 +66,7 @@ export type FormOtpData = {
   msgSrvcName?: string
 }
 
-export interface Permission extends FormPermission {
-  _id?: string
-}
+export type Permission = FormPermission
 
 export interface IForm extends FormBase {
   // Loosen types here to allow for IPopulatedForm extension
@@ -155,7 +154,7 @@ export interface IFormSchema extends IForm, Document, PublicView<PublicForm> {
    * @param admin the admin to inject into the returned object
    * @returns dashboard form view object
    */
-  getDashboardView(admin: IPopulatedUser): FormMetaView
+  getDashboardView(admin: IPopulatedUser): AdminDashboardFormMetaDto
   getUniqueMyInfoAttrs(): MyInfoAttribute[]
   /**
    * Retrieve form settings.
@@ -269,7 +268,7 @@ export interface IFormModel extends Model<IFormSchema> {
   getMetaByUserIdOrEmail(
     userId: IUserSchema['_id'],
     userEmail: IUserSchema['email'],
-  ): Promise<FormMetaView[]>
+  ): Promise<AdminDashboardFormMetaDto[]>
 
   /**
    * Update the end page of form with given endpage object.
@@ -302,11 +301,3 @@ export interface IFormModel extends Model<IFormSchema> {
 
 export type IEncryptedFormModel = IFormModel & Model<IEncryptedFormSchema>
 export type IEmailFormModel = IFormModel & Model<IEmailFormSchema>
-
-/** Typing for the shape of the important meta subset for form document. */
-export type FormMetaView = Pick<
-  IFormSchema,
-  'title' | 'lastModified' | 'status' | '_id' | 'responseMode'
-> & {
-  admin: IPopulatedUser
-}

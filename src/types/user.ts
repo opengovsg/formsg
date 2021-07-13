@@ -45,6 +45,6 @@ export interface IUserModel extends Model<IUserSchema> {
 }
 
 export interface IPopulatedUser extends IUserSchema {
-  _id: ObjectId
+  _id: any
   agency: AgencyDocument
 }
