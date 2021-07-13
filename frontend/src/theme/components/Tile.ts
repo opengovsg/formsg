@@ -4,7 +4,6 @@ export const Tile: ComponentMultiStyleConfig = {
   parts: ['container', 'title', 'icon', 'subtitle'],
   baseStyle: {
     container: {
-      width: 'fit-content',
       borderRadius: '0.25rem',
       padding: '1.5rem',
       _active: {
