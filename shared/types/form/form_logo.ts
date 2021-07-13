@@ -4,22 +4,22 @@ export enum FormLogoState {
   Custom = 'CUSTOM',
 }
 
-interface FormLogoBase {
+export interface FormLogoBase {
   state: FormLogoState
 }
 
-interface CustomFormLogo extends FormLogoBase {
+export interface CustomFormLogo extends FormLogoBase {
   state: FormLogoState.Custom
   fileId: string
   fileName: string
   fileSizeInBytes: number
 }
 
-interface NoFormLogo extends FormLogoBase {
+export interface NoFormLogo extends FormLogoBase {
   state: FormLogoState.None
 }
 
-interface DefaultFormLogo extends FormLogoBase {
+export interface DefaultFormLogo extends FormLogoBase {
   state: FormLogoState.Default
 }
 
