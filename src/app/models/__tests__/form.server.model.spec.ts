@@ -2,9 +2,12 @@
 import { ObjectId } from 'bson-ext'
 import { cloneDeep, map, merge, omit, orderBy, pick } from 'lodash'
 import mongoose, { Types } from 'mongoose'
+import {
+  EMAIL_PUBLIC_FORM_FIELDS,
+  STORAGE_PUBLIC_FORM_FIELDS,
+} from 'shared/constants/form'
 
 import getFormModel, {
-  FORM_PUBLIC_FIELDS,
   getEmailFormModel,
   getEncryptedFormModel,
 } from 'src/app/models/form.server.model'
@@ -1857,7 +1860,7 @@ describe('Form Model', () => {
         const actual = emailForm.getPublicView()
 
         // Assert
-        expect(actual).toEqual(pick(emailForm, FORM_PUBLIC_FIELDS))
+        expect(actual).toEqual(pick(emailForm, EMAIL_PUBLIC_FORM_FIELDS))
         // Admin should be plain admin id since form is not populated.
         expect(actual.admin).toBeInstanceOf(ObjectId)
       })
@@ -1881,7 +1884,7 @@ describe('Form Model', () => {
 
         expect(JSON.stringify(actual)).toEqual(
           JSON.stringify({
-            ...pick(populatedEmailForm, FORM_PUBLIC_FIELDS),
+            ...pick(populatedEmailForm, STORAGE_PUBLIC_FORM_FIELDS),
             // Admin should only contain public view of agency since agency is populated.
             admin: {
               agency: expectedPublicAgencyView,
@@ -1903,7 +1906,7 @@ describe('Form Model', () => {
         const actual = encryptForm.getPublicView()
 
         // Assert
-        expect(actual).toEqual(pick(encryptForm, FORM_PUBLIC_FIELDS))
+        expect(actual).toEqual(pick(encryptForm, STORAGE_PUBLIC_FORM_FIELDS))
         // Admin should be plain admin id since form is not populated.
         expect(actual.admin).toBeInstanceOf(ObjectId)
       })
@@ -1927,7 +1930,7 @@ describe('Form Model', () => {
 
         expect(JSON.stringify(actual)).toEqual(
           JSON.stringify({
-            ...pick(populatedEncryptForm, FORM_PUBLIC_FIELDS),
+            ...pick(populatedEncryptForm, STORAGE_PUBLIC_FORM_FIELDS),
             // Admin should only contain public view of agency since agency is populated.
             admin: {
               agency: expectedPublicAgencyView,

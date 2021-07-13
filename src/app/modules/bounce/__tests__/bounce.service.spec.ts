@@ -423,7 +423,7 @@ describe('BounceService', () => {
       expect(MockSmsFactory.sendBouncedSubmissionSms).toHaveBeenCalledTimes(2)
       expect(MockSmsFactory.sendBouncedSubmissionSms).toHaveBeenCalledWith({
         adminEmail: testUser.email,
-        adminId: testUser._id,
+        adminId: String(testUser._id),
         formId: form._id,
         formTitle: form.title,
         recipient: MOCK_CONTACT.contact,
@@ -431,7 +431,7 @@ describe('BounceService', () => {
       })
       expect(MockSmsFactory.sendBouncedSubmissionSms).toHaveBeenCalledWith({
         adminEmail: testUser.email,
-        adminId: testUser._id,
+        adminId: String(testUser._id),
         formId: form._id,
         formTitle: form.title,
         recipient: MOCK_CONTACT_2.contact,
@@ -467,7 +467,7 @@ describe('BounceService', () => {
       expect(MockSmsFactory.sendBouncedSubmissionSms).toHaveBeenCalledTimes(2)
       expect(MockSmsFactory.sendBouncedSubmissionSms).toHaveBeenCalledWith({
         adminEmail: testUser.email,
-        adminId: testUser._id,
+        adminId: String(testUser._id),
         formId: form._id,
         formTitle: form.title,
         recipient: MOCK_CONTACT.contact,
@@ -475,7 +475,7 @@ describe('BounceService', () => {
       })
       expect(MockSmsFactory.sendBouncedSubmissionSms).toHaveBeenCalledWith({
         adminEmail: testUser.email,
-        adminId: testUser._id,
+        adminId: String(testUser._id),
         formId: form._id,
         formTitle: form.title,
         recipient: MOCK_CONTACT_2.contact,
@@ -912,7 +912,7 @@ describe('BounceService', () => {
       expect(MockSmsFactory.sendFormDeactivatedSms).toHaveBeenCalledTimes(2)
       expect(MockSmsFactory.sendFormDeactivatedSms).toHaveBeenCalledWith({
         adminEmail: form.admin.email,
-        adminId: form.admin._id,
+        adminId: String(form.admin._id),
         formId: form._id,
         formTitle: form.title,
         recipient: MOCK_CONTACT.contact,
@@ -920,7 +920,7 @@ describe('BounceService', () => {
       })
       expect(MockSmsFactory.sendFormDeactivatedSms).toHaveBeenCalledWith({
         adminEmail: form.admin.email,
-        adminId: form.admin._id,
+        adminId: String(form.admin._id),
         formId: form._id,
         formTitle: form.title,
         recipient: MOCK_CONTACT_2.contact,
@@ -948,7 +948,7 @@ describe('BounceService', () => {
       expect(MockSmsFactory.sendFormDeactivatedSms).toHaveBeenCalledTimes(2)
       expect(MockSmsFactory.sendFormDeactivatedSms).toHaveBeenCalledWith({
         adminEmail: form.admin.email,
-        adminId: form.admin._id,
+        adminId: String(form.admin._id),
         formId: form._id,
         formTitle: form.title,
         recipient: MOCK_CONTACT.contact,
@@ -956,7 +956,7 @@ describe('BounceService', () => {
       })
       expect(MockSmsFactory.sendFormDeactivatedSms).toHaveBeenCalledWith({
         adminEmail: form.admin.email,
-        adminId: form.admin._id,
+        adminId: String(form.admin._id),
         formId: form._id,
         formTitle: form.title,
         recipient: MOCK_CONTACT_2.contact,

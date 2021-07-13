@@ -1,26 +1,20 @@
 import { LeanDocument } from 'mongoose'
 import { ConditionalPick, PartialDeep, Primitive } from 'type-fest'
 
-import {
-  FormField,
-  FormFieldSchema,
-  FormFieldWithId,
-  IFieldSchema,
-  IPossiblyPrefilledField,
-} from '../field'
+import { FormField, FormFieldSchema, FormFieldWithId } from '../field'
 import {
   EndPage,
   FormSettings,
   IForm,
   IPopulatedForm,
   Permission,
-  PublicForm,
   ResponseMode,
   StartPage,
 } from '../form'
-import { SpcpSession } from '../spcp'
 
 import { EditFormFieldParams } from './field'
+
+export { PublicFormViewDto } from '../../../shared/types/form/form'
 
 export type SettingsUpdateDto = PartialDeep<FormSettings>
 
@@ -69,17 +63,4 @@ export type FormUpdateParams = {
   status?: IForm['status']
   title?: IForm['title']
   webhook?: IForm['webhook']
-}
-
-// NOTE: This is needed because PublicForm inherits from IFormDocument (where form_fields has type of IFieldSchema).
-// However, the form returned back to the client has form_field of two possible types
-interface PossiblyPrefilledPublicForm extends Omit<PublicForm, 'form_fields'> {
-  form_fields: IPossiblyPrefilledField[] | IFieldSchema[]
-}
-
-export type PublicFormViewDto = {
-  form: PossiblyPrefilledPublicForm
-  spcpSession?: SpcpSession
-  isIntranetUser?: boolean
-  myInfoError?: true
 }

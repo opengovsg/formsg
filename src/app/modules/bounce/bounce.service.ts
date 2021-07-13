@@ -290,7 +290,7 @@ export const sendSmsBounceNotification = (
   const smsResults = possibleSmsRecipients.map((recipient) =>
     SmsFactory.sendBouncedSubmissionSms({
       adminEmail: form.admin.email,
-      adminId: form.admin._id,
+      adminId: String(form.admin._id),
       formId: form._id,
       formTitle: form.title,
       recipient: recipient.contact,
@@ -439,7 +439,7 @@ export const notifyAdminsOfDeactivation = (
   const smsResults = possibleSmsRecipients.map((recipient) =>
     SmsFactory.sendFormDeactivatedSms({
       adminEmail: form.admin.email,
-      adminId: form.admin._id,
+      adminId: String(form.admin._id),
       formId: form._id,
       formTitle: form.title,
       recipient: recipient.contact,

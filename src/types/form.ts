@@ -1,7 +1,23 @@
-import range from 'lodash/range'
 import { Document, LeanDocument, Model, ToObjectOptions, Types } from 'mongoose'
-import { SetRequired } from 'type-fest'
+import { Merge, SetRequired } from 'type-fest'
 
+import {
+  EmailFormSettings,
+  FormAuthType,
+  FormBase,
+  FormColorTheme,
+  FormEndPage,
+  FormPermission,
+  FormResponseMode,
+  FormSettings,
+  FormStartPage,
+  FormStatus,
+  FormWebhook,
+  PublicEmailFormDto,
+  PublicFormDto,
+  PublicStorageFormDto,
+  StorageFormSettings,
+} from '../../shared/types/form/form'
 import { OverrideProps } from '../app/modules/form/admin-form/admin-form.types'
 
 import { PublicView } from './database'
@@ -9,65 +25,35 @@ import {
   FormField,
   FormFieldSchema,
   FormFieldWithId,
-  IFieldSchema,
   MyInfoAttribute,
 } from './field'
-import { FormLogicSchema, ILogicSchema, LogicDto } from './form_logic'
-import { ICustomFormLogo, IFormLogo } from './form_logo'
+import { FormLogicSchema, LogicDto } from './form_logic'
 import { IPopulatedUser, IUserSchema, PublicUser } from './user'
 
-export enum AuthType {
-  NIL = 'NIL',
-  SP = 'SP',
-  CP = 'CP',
-  MyInfo = 'MyInfo',
-  SGID = 'SGID',
+export {
+  FormAuthType as AuthType,
+  FormColorTheme as ColorTheme,
+  FormEndPage as EndPage,
+  FormStartPage as StartPage,
+  FormStatus as Status,
+  FormColorTheme as Colors,
+  FormResponseMode as ResponseMode,
+  FormWebhook as Webhook,
+  FormSettings,
+  StorageFormSettings,
+  EmailFormSettings,
+  PublicFormDto,
+  PublicStorageFormDto,
+  PublicEmailFormDto,
 }
-
-export enum Status {
-  Private = 'PRIVATE',
-  Public = 'PUBLIC',
-  Archived = 'ARCHIVED',
-}
-
-export enum Colors {
-  Blue = 'blue',
-  Red = 'red',
-  Green = 'green',
-  Orange = 'orange',
-  Brown = 'brown',
-  Grey = 'grey',
-}
-
-export enum ResponseMode {
-  Encrypt = 'encrypt',
-  Email = 'email',
-}
-
-export const Rating = range(1, 11).map(String)
 
 // Typings
-// Make sure this is kept in sync with form.server.model#FORM_PUBLIC_FIELDS.
-export type PublicFormValues = Pick<
-  IFormDocument,
-  | 'admin'
-  | 'authType'
-  | 'endPage'
-  | 'esrvcId'
-  | 'form_fields'
-  | 'form_logics'
-  | 'hasCaptcha'
-  | 'publicKey'
-  | 'startPage'
-  | 'status'
-  | 'title'
-  | '_id'
-  | 'responseMode'
+export type PublicForm = Merge<
+  PublicFormDto,
+  {
+    admin: PublicUser
+  }
 >
-
-export type PublicForm = Omit<PublicFormValues, 'admin'> & {
-  admin: PublicUser
-}
 
 export type FormOtpData = {
   form: IFormSchema['_id']
@@ -79,29 +65,21 @@ export type FormOtpData = {
   msgSrvcName?: string
 }
 
-export type StartPage = {
-  paragraph?: string
-  estTimeTaken?: number
-  colorTheme?: Colors
-  logo?: IFormLogo | ICustomFormLogo
-}
-
-export type EndPage = {
-  title?: string
-  paragraph?: string
-  buttonLink?: string
-  buttonText?: string
-}
-
-export type Permission = {
-  email: string
-  write: boolean
+export interface Permission extends FormPermission {
   _id?: string
 }
 
-export type Webhook = {
-  url: string
-  isRetryEnabled: boolean
+export interface IForm extends FormBase {
+  // Loosen types here to allow for IPopulatedForm extension
+  admin: any
+  permission?: Permission[]
+  form_fields?: FormFieldSchema[]
+  form_logics?: FormLogicSchema[]
+
+  publicKey?: string
+  // string type is allowed due to a setter on the form schema that transforms
+  // strings to string array.
+  emails?: string[] | string
 }
 
 /**
@@ -117,52 +95,6 @@ export type PickDuplicateForm = Pick<
   | 'inactiveMessage'
   | 'submissionLimit'
   | 'responseMode'
->
-export interface IForm {
-  title: string
-  form_fields?: IFieldSchema[]
-  form_logics?: ILogicSchema[]
-  admin: IUserSchema['_id']
-  permissionList?: Permission[]
-
-  startPage?: StartPage
-  endPage?: EndPage
-
-  hasCaptcha?: boolean
-  authType?: AuthType
-
-  status?: Status
-
-  inactiveMessage?: string
-  submissionLimit?: number | null
-  isListed?: boolean
-  esrvcId?: string
-  webhook?: Webhook
-  msgSrvcName?: string
-
-  responseMode: ResponseMode
-
-  // Schema properties
-  created?: Date
-  lastModified?: Date
-
-  publicKey?: string
-  // string type is allowed due to a setter on the form schema that transforms
-  // strings to string array.
-  emails?: string[] | string
-}
-
-export type FormSettings = Pick<
-  IFormDocument,
-  | 'authType'
-  | 'emails'
-  | 'esrvcId'
-  | 'hasCaptcha'
-  | 'inactiveMessage'
-  | 'status'
-  | 'submissionLimit'
-  | 'title'
-  | 'webhook'
 >
 
 export interface IFormSchema extends IForm, Document, PublicView<PublicForm> {
@@ -277,6 +209,7 @@ export interface IFormDocument extends IFormSchema {
   >
   webhook: SetRequired<NonNullable<IFormSchema['webhook']>, 'url'>
 }
+
 export interface IPopulatedForm extends Omit<IFormDocument, 'toJSON'> {
   admin: IPopulatedUser
   // Override types.
@@ -346,7 +279,7 @@ export interface IFormModel extends Model<IFormSchema> {
    */
   updateEndPageById(
     formId: string,
-    newEndPage: EndPage,
+    newEndPage: FormEndPage,
   ): Promise<IFormDocument | null>
 
   /**
@@ -357,7 +290,7 @@ export interface IFormModel extends Model<IFormSchema> {
    */
   updateStartPageById(
     formId: string,
-    newStartPage: StartPage,
+    newStartPage: FormStartPage,
   ): Promise<IFormDocument | null>
 
   updateFormLogic(

@@ -2,6 +2,7 @@
 
 const axios = require('axios').default
 const values = require('lodash/values')
+const range = require('lodash/range')
 const cloneDeep = require('lodash/cloneDeep')
 
 const UserService = require('../../../../services/UserService')
@@ -16,7 +17,7 @@ const { uploadImage } = require('../../../../services/FileHandlerService')
 const {
   DateSelectedValidation: DateValidationOptions,
 } = require('../../../../../shared/constants')
-const { Rating, RatingShape } = require('../../../../../types')
+const { RatingShape } = require('../../../../../types')
 const CancelToken = axios.CancelToken
 
 const EMAIL_MODE_ALLOWED_SIZES = ['1', '2', '3', '7']
@@ -158,7 +159,7 @@ function EditFieldsModalController(
     }
   }
 
-  vm.ratingSteps = Rating
+  vm.ratingSteps = range(1, 11).map(String)
   vm.ratingShapes = Object.values(RatingShape)
 
   vm.showDuplicateOptionsError = function (field) {

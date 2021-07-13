@@ -9,6 +9,7 @@ export type PublicAgency = PublicAgencyDto
 export type AgencyInstanceMethods = PublicView<PublicAgency>
 
 export interface IAgencySchema extends AgencyBase {
+  _id: any
   created?: Date
   lastModified?: Date
 }
