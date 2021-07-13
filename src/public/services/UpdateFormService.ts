@@ -1,17 +1,23 @@
 import axios from 'axios'
 
-import { FormSettings, IPopulatedForm, LogicDto } from '../../types'
+import {
+  FieldCreateDto,
+  FormFieldDto,
+  FormFieldWithId,
+} from '../../../shared/types/field'
+import {
+  AdminFormDto,
+  AdminFormViewDto,
+  FormSettings,
+  SettingsUpdateDto,
+} from '../../../shared/types/form/form'
+import { LogicDto } from '../../../shared/types/form/form_logic'
 import {
   EmailSubmissionDto,
   EncryptSubmissionDto,
   EndPageUpdateDto,
-  FieldCreateDto,
-  FieldUpdateDto,
-  FormFieldDto,
   FormUpdateParams,
-  FormViewDto,
   PermissionsUpdateDto,
-  SettingsUpdateDto,
   StartPageUpdateDto,
   SubmissionResponseDto,
 } from '../../types/api'
@@ -44,10 +50,10 @@ export const getSingleFormField = async (
 export const updateSingleFormField = async (
   formId: string,
   fieldId: string,
-  updateFieldBody: FieldUpdateDto,
-): Promise<FieldUpdateDto> => {
+  updateFieldBody: FormFieldDto,
+): Promise<FormFieldDto> => {
   return axios
-    .put<FieldUpdateDto>(
+    .put<FormFieldDto>(
       `${ADMIN_FORM_ENDPOINT}/${formId}/fields/${fieldId}`,
       updateFieldBody,
     )
@@ -57,7 +63,7 @@ export const updateSingleFormField = async (
 export const createSingleFormField = async (
   formId: string,
   createFieldBody: FieldCreateDto,
-): Promise<FormFieldDto> => {
+): Promise<FormFieldWithId> => {
   return axios
     .post<FormFieldDto>(
       `${ADMIN_FORM_ENDPOINT}/${formId}/fields`,
@@ -289,9 +295,9 @@ export const deleteForm = async (
 export const updateForm = async (
   formId: string,
   update: FormUpdateParams,
-): Promise<IPopulatedForm> => {
+): Promise<AdminFormDto> => {
   return axios
-    .put<IPopulatedForm>(`${formId}/adminform`, { form: update })
+    .put<AdminFormDto>(`${formId}/adminform`, { form: update })
     .then(({ data }) => data)
 }
 
@@ -303,9 +309,9 @@ export const updateForm = async (
 export const transferOwner = async (
   formId: string,
   newOwnerEmail: string,
-): Promise<FormViewDto> => {
+): Promise<AdminFormViewDto> => {
   return axios
-    .post<FormViewDto>(
+    .post<AdminFormViewDto>(
       `${ADMIN_FORM_ENDPOINT}/${formId}/collaborators/transfer-owner`,
       { email: newOwnerEmail },
     )

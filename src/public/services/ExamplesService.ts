@@ -1,8 +1,11 @@
 import axios from 'axios'
 
-import { FormMetaView, PublicForm } from '../../types'
 import {
-  DuplicateFormBody,
+  AdminDashboardFormMetaDto,
+  DuplicateFormBodyDto,
+  PreviewFormViewDto,
+} from '../../../shared/types/form/form'
+import {
   ExampleFormsQueryDto,
   ExampleFormsResult,
   ExampleSingleFormResult,
@@ -48,10 +51,10 @@ export const getSingleExampleForm = (
  */
 export const useTemplate = async (
   formId: string,
-  overrideParams: DuplicateFormBody,
-): Promise<FormMetaView> => {
+  overrideParams: DuplicateFormBodyDto,
+): Promise<AdminDashboardFormMetaDto> => {
   return axios
-    .post<FormMetaView>(`${formId}/adminform/copy`, overrideParams)
+    .post<AdminDashboardFormMetaDto>(`${formId}/adminform/copy`, overrideParams)
     .then(({ data }) => data)
 }
 
@@ -62,8 +65,8 @@ export const useTemplate = async (
  */
 export const queryTemplate = async (
   formId: string,
-): Promise<{ form: PublicForm }> => {
+): Promise<PreviewFormViewDto> => {
   return axios
-    .get<{ form: PublicForm }>(`${formId}/adminform/template`)
+    .get<PreviewFormViewDto>(`${formId}/adminform/template`)
     .then(({ data }) => data)
 }

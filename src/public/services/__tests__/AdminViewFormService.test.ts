@@ -1,13 +1,12 @@
 import MockAxios from 'jest-mock-axios'
 
-import { IPopulatedUser } from 'src/types'
-import {
-  FormMetaView,
-  IPopulatedForm,
-  PublicForm,
-  ResponseMode,
-} from 'src/types/form'
+import { IPopulatedForm, PublicForm, ResponseMode } from 'src/types/form'
 
+import {
+  AdminDashboardFormMetaDto,
+  FormStatus,
+} from '../../../../shared/types/form/form'
+import { UserDto } from '../../../../shared/types/user'
 import {
   ADMIN_FORM_ENDPOINT,
   getAdminFormView,
@@ -19,20 +18,21 @@ jest.mock('axios', () => MockAxios)
 
 const MOCK_USER = {
   _id: 'mock-user-id',
-} as IPopulatedUser
+} as UserDto
 
 describe('AdminViewFormService', () => {
   afterEach(() => MockAxios.reset())
   describe('getDashboardView', () => {
     it('should successfully return all available forms if GET request succeeds', async () => {
       // Arrange
-      const expected: FormMetaView[] = [
+      const expected: AdminDashboardFormMetaDto[] = [
         {
           title: 'title',
           lastModified: new Date(),
           _id: 'mock-form-id',
           responseMode: ResponseMode.Email,
           admin: MOCK_USER,
+          status: FormStatus.Private,
         },
       ]
       MockAxios.get.mockResolvedValueOnce({ data: expected })
@@ -46,7 +46,7 @@ describe('AdminViewFormService', () => {
 
     it('should successfully return empty array if GET request succeeds and there are no forms', async () => {
       // Arrange
-      const expected: FormMetaView[] = []
+      const expected: AdminDashboardFormMetaDto[] = []
       MockAxios.get.mockResolvedValueOnce({ data: expected })
 
       // Act

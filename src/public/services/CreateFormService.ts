@@ -1,9 +1,12 @@
 import axios from 'axios'
 
-import { FormMetaView, IForm, IFormSchema } from '../../types'
-import { DuplicateFormBody } from '../../types/api'
+import {
+  AdminDashboardFormMetaDto,
+  CreateFormBodyDto,
+  DuplicateFormBodyDto,
+  FormDto,
+} from '../../../shared/types/form/form'
 
-// endpoints exported for testing
 export const ADMIN_FORM_ENDPOINT = '/api/v3/admin/forms'
 
 /**
@@ -14,10 +17,10 @@ export const ADMIN_FORM_ENDPOINT = '/api/v3/admin/forms'
  */
 export const duplicateForm = async (
   formId: string,
-  duplicateFormBody: DuplicateFormBody,
-): Promise<FormMetaView> => {
+  duplicateFormBody: DuplicateFormBodyDto,
+): Promise<AdminDashboardFormMetaDto> => {
   return axios
-    .post<FormMetaView>(
+    .post<AdminDashboardFormMetaDto>(
       `${ADMIN_FORM_ENDPOINT}/${formId}/duplicate`,
       duplicateFormBody,
     )
@@ -30,9 +33,9 @@ export const duplicateForm = async (
  * @returns Newly created form.
  */
 export const createForm = async (
-  newForm: Omit<IForm, 'admin'>,
-): Promise<IFormSchema> => {
+  newForm: CreateFormBodyDto,
+): Promise<FormDto> => {
   return axios
-    .post<IFormSchema>(`${ADMIN_FORM_ENDPOINT}`, { form: newForm })
+    .post<FormDto>(`${ADMIN_FORM_ENDPOINT}`, { form: newForm })
     .then(({ data }) => data)
 }
