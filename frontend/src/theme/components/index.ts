@@ -7,6 +7,7 @@ import { FormLabel } from './FormLabel'
 import { Input } from './Input'
 import { Link } from './Link'
 import { PhoneNumberInput } from './PhoneNumberInput'
+import { Tag } from './Tag'
 import { Textarea } from './Textarea'
 
 export const components = {
@@ -19,5 +20,6 @@ export const components = {
   FormError,
   FormLabel,
   [YESNO_THEME_KEY]: YesNoField,
+  Tag,
   Banner,
 }
