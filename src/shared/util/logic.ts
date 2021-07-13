@@ -105,9 +105,10 @@ const getPreventSubmitConditions = (
   const formFieldIds = new Set(
     form.form_fields?.map((field) => String(field._id)),
   )
+
   const preventFormLogics =
     form.form_logics?.filter(
-      (formLogic) =>
+      (formLogic): formLogic is IPreventSubmitLogicSchema =>
         isPreventSubmitLogic(formLogic) &&
         allConditionsExist(formLogic.conditions, formFieldIds),
     ) ?? []

@@ -1751,7 +1751,9 @@ export const _handleCreateLogic: ControllerHandler<
       .andThen((retrievedForm) =>
         AdminFormService.createFormLogic(retrievedForm, createLogicBody),
       )
-      .map((createdLogic) => res.status(StatusCodes.OK).json(createdLogic))
+      .map((createdLogic) =>
+        res.status(StatusCodes.OK).json(createdLogic as LogicDto),
+      )
       .mapErr((error) => {
         logger.error({
           message: 'Error occurred when creating form logic',
@@ -2000,7 +2002,9 @@ export const _handleUpdateLogic: ControllerHandler<
       .andThen((retrievedForm) =>
         AdminFormService.updateFormLogic(retrievedForm, logicId, updatedLogic),
       )
-      .map((updatedLogic) => res.status(StatusCodes.OK).json(updatedLogic))
+      .map((updatedLogic) =>
+        res.status(StatusCodes.OK).json(updatedLogic as LogicDto),
+      )
       .mapErr((error) => {
         logger.error({
           message: 'Error occurred when updating form logic',

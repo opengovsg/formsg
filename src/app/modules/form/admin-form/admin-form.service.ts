@@ -10,6 +10,7 @@ import {
   VALID_UPLOAD_FILE_TYPES,
 } from '../../../../shared/constants'
 import {
+  FormLogicSchema,
   FormLogoState,
   FormMetaView,
   FormSettings,
@@ -17,7 +18,6 @@ import {
   IForm,
   IFormDocument,
   IFormSchema,
-  ILogicSchema,
   IPopulatedForm,
   IUserSchema,
   LogicDto,
@@ -772,7 +772,7 @@ export const updateFormSettings = (
 export const createFormLogic = (
   form: IPopulatedForm,
   createLogicBody: LogicDto,
-): ResultAsync<ILogicSchema, DatabaseError | FormNotFoundError> => {
+): ResultAsync<FormLogicSchema, DatabaseError | FormNotFoundError> => {
   // Create new form logic
   return ResultAsync.fromPromise(
     FormModel.createFormLogic(form._id, createLogicBody),
@@ -810,7 +810,7 @@ export const deleteFormLogic = (
   form: IPopulatedForm,
   logicId: string,
 ): ResultAsync<
-  IFormSchema,
+  IFormDocument,
   DatabaseError | LogicNotFoundError | FormNotFoundError
 > => {
   // First check if specified logic exists
@@ -864,7 +864,7 @@ export const updateFormLogic = (
   logicId: string,
   updatedLogic: LogicDto,
 ): ResultAsync<
-  ILogicSchema,
+  FormLogicSchema,
   DatabaseError | LogicNotFoundError | FormNotFoundError
 > => {
   // First check if specified logic exists

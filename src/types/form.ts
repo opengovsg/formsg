@@ -12,7 +12,7 @@ import {
   IFieldSchema,
   MyInfoAttribute,
 } from './field'
-import { ILogicSchema, LogicDto } from './form_logic'
+import { FormLogicSchema, ILogicSchema, LogicDto } from './form_logic'
 import { ICustomFormLogo, IFormLogo } from './form_logo'
 import { IPopulatedUser, IUserSchema, PublicUser } from './user'
 
@@ -167,7 +167,7 @@ export type FormSettings = Pick<
 
 export interface IFormSchema extends IForm, Document, PublicView<PublicForm> {
   form_fields?: Types.DocumentArray<FormFieldSchema> | FormFieldSchema[]
-  form_logics?: Types.DocumentArray<ILogicSchema> | ILogicSchema[]
+  form_logics?: Types.DocumentArray<FormLogicSchema> | FormLogicSchema[]
 
   /**
    * Replaces the field corresponding to given id to given new field
@@ -314,8 +314,11 @@ export interface IFormModel extends Model<IFormSchema> {
   createFormLogic(
     formId: string,
     createLogicBody: LogicDto,
-  ): Promise<IFormSchema | null>
-  deleteFormLogic(formId: string, logicId: string): Promise<IFormSchema | null>
+  ): Promise<IFormDocument | null>
+  deleteFormLogic(
+    formId: string,
+    logicId: string,
+  ): Promise<IFormDocument | null>
 
   /**
    * Deletes specified form field by its id from the form corresponding to given form id.
