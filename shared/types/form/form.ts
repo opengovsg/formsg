@@ -1,8 +1,15 @@
-import { UserDto } from '../user'
-import { FormField } from '../field'
+import { PublicUserDto, UserDto } from '../user'
+import { FormField, FormFieldDto } from '../field'
 
 import { FormLogic } from './form_logic'
 import { FormLogo } from './form_logo'
+import { Merge, SetRequired } from 'type-fest'
+import {
+  EMAIL_FORM_SETTINGS_FIELDS,
+  EMAIL_PUBLIC_FORM_FIELDS,
+  STORAGE_FORM_SETTINGS_FIELDS,
+  STORAGE_PUBLIC_FORM_FIELDS,
+} from '../../constants/form'
 
 export enum FormColorTheme {
   Blue = 'blue',
@@ -27,8 +34,8 @@ export type FormStartPage = {
 
 export type FormEndPage = {
   title: string
-  paragraph: string
-  buttonLink: string
+  paragraph?: string
+  buttonLink?: string
   buttonText: string
 }
 
@@ -58,33 +65,34 @@ export enum FormResponseMode {
 
 export interface FormBase {
   title: string
-  form_fields: FormField[]
-  form_logics: FormLogic[]
   admin: UserDto['_id']
-  permissionList: FormPermission[]
 
-  startPage: FormStartPage
-  endPage: FormEndPage
+  form_fields?: FormField[]
+  form_logics?: FormLogic[]
+  permissionList?: FormPermission[]
 
-  hasCaptcha: boolean
-  authType: FormAuthType
+  startPage?: FormStartPage
+  endPage?: FormEndPage
 
-  status: FormStatus
+  hasCaptcha?: boolean
+  authType?: FormAuthType
 
-  inactiveMessage: string
-  submissionLimit: number | null
-  isListed: boolean
+  status?: FormStatus
+
+  inactiveMessage?: string
+  submissionLimit?: number | null
+  isListed?: boolean
 
   esrvcId?: string
 
   msgSrvcName?: string
 
-  webhook: FormWebhook
+  webhook?: FormWebhook
 
   responseMode: FormResponseMode
 
-  created: Date
-  lastModified: Date
+  created?: Date
+  lastModified?: Date
 }
 
 export interface EmailFormBase extends FormBase {
@@ -95,4 +103,94 @@ export interface EmailFormBase extends FormBase {
 export interface StorageFormBase extends FormBase {
   responseMode: FormResponseMode.Encrypt
   publicKey: string
+}
+
+export type Form<T extends FormBase = FormBase> = SetRequired<
+  T,
+  | 'form_fields'
+  | 'form_logics'
+  | 'permissionList'
+  | 'startPage'
+  | 'endPage'
+  | 'hasCaptcha'
+  | 'authType'
+  | 'status'
+  | 'inactiveMessage'
+  | 'submissionLimit'
+  | 'isListed'
+  | 'webhook'
+  | 'created'
+  | 'lastModified'
+>
+
+export type StorageFormDto = Merge<
+  Form<StorageFormBase>,
+  {
+    form_fields: FormFieldDto[]
+    _id: string
+  }
+>
+
+export type EmailFormDto = Merge<
+  Form<EmailFormBase>,
+  {
+    form_fields: FormFieldDto[]
+    _id: string
+  }
+>
+
+export type FormDto = StorageFormDto | EmailFormDto
+
+type PublicFormBase = {
+  admin: PublicUserDto
+}
+
+export type PublicStorageFormDto = Merge<
+  Pick<
+    StorageFormDto,
+    // Arrays like typeof list have numeric index signatures, so their number key
+    // yields the union of all numerically-indexed properties.
+    typeof STORAGE_PUBLIC_FORM_FIELDS[number]
+  >,
+  PublicFormBase
+>
+
+export type PublicEmailFormDto = Merge<
+  Pick<
+    StorageFormDto,
+    // Arrays like typeof list have numeric index signatures, so their number key
+    // yields the union of all numerically-indexed properties.
+    typeof EMAIL_PUBLIC_FORM_FIELDS[number]
+  >,
+  PublicFormBase
+>
+
+export type PublicFormDto = PublicStorageFormDto | PublicEmailFormDto
+
+export type EmailFormSettings = Pick<
+  EmailFormDto,
+  typeof EMAIL_FORM_SETTINGS_FIELDS[number]
+>
+export type StorageFormSettings = Pick<
+  StorageFormDto,
+  typeof STORAGE_FORM_SETTINGS_FIELDS[number]
+>
+
+export type FormSettings = EmailFormSettings | StorageFormSettings
+
+/**
+ * Misnomer. More of a public form auth session.
+ */
+export interface SpcpSession {
+  userName: string
+  iat?: number // Optional as these are not returned for MyInfo forms
+  rememberMe?: boolean
+  exp?: number
+}
+
+export type PublicFormViewDto = {
+  form: PublicFormDto
+  spcpSession?: SpcpSession
+  isIntranetUser?: boolean
+  myInfoError?: true
 }
