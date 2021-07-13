@@ -26,6 +26,7 @@ export type FormCondition = {
 }
 
 export type FormLogicBase = {
+  logicType: LogicType
   conditions: FormCondition[]
 }
 
@@ -35,7 +36,7 @@ export interface ShowFieldLogic extends FormLogicBase {
 }
 
 export interface PreventSubmitLogic extends FormLogicBase {
-  logicType: LogicType.ShowFields
+  logicType: LogicType.PreventSubmit
   preventSubmitMessage: string
 }
 
