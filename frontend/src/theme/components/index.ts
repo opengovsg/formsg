@@ -9,6 +9,7 @@ import { Link } from './Link'
 import { PhoneNumberInput } from './PhoneNumberInput'
 import { Tag } from './Tag'
 import { Textarea } from './Textarea'
+import { Tile } from './Tile'
 
 export const components = {
   Button,
@@ -22,4 +23,5 @@ export const components = {
   [YESNO_THEME_KEY]: YesNoField,
   Tag,
   Banner,
+  Tile,
 }
