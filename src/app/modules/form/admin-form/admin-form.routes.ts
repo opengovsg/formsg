@@ -7,7 +7,7 @@ import { celebrate, Joi as BaseJoi, Segments } from 'celebrate'
 import { Router } from 'express'
 
 import { ResponseMode } from '../../../../types'
-import { DuplicateFormBody } from '../../../../types/api'
+import { DuplicateFormBodyDto } from '../../../../types/api'
 import { withUserAuthentication } from '../../auth/auth.middlewares'
 import * as EncryptSubmissionController from '../../submission/encrypt-submission/encrypt-submission.controller'
 
@@ -19,7 +19,7 @@ const Joi = BaseJoi.extend(JoiDate) as typeof BaseJoi
 
 // Validators
 const duplicateFormValidator = celebrate({
-  [Segments.BODY]: Joi.object<DuplicateFormBody>({
+  [Segments.BODY]: Joi.object<DuplicateFormBodyDto>({
     // Require valid responsesMode field.
     responseMode: Joi.string()
       .valid(...Object.values(ResponseMode))

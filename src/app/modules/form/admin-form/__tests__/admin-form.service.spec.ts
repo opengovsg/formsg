@@ -25,18 +25,18 @@ import { EditFieldActions, VALID_UPLOAD_FILE_TYPES } from 'src/shared/constants'
 import {
   AuthType,
   BasicField,
+  Colors,
   EndPage,
+  FormLogicSchema,
   FormLogoState,
-  FormMetaView,
   FormSettings,
   ICustomFormLogo,
   IEmailFormSchema,
   IFormDocument,
   IFormSchema,
-  ILogicSchema,
   IPopulatedForm,
-  IPopulatedUser,
   IUserSchema,
+  LogicDto,
   LogicType,
   PickDuplicateForm,
   ResponseMode,
@@ -44,7 +44,8 @@ import {
   Status,
 } from 'src/types'
 import {
-  DuplicateFormBody,
+  AdminDashboardFormMetaDto,
+  DuplicateFormBodyDto,
   EditFormFieldParams,
   FieldCreateDto,
   FieldUpdateDto,
@@ -109,20 +110,20 @@ describe('admin-form.service', () => {
         email: 'MOCK_EMAIL@example.com',
         _id: mockUserId,
       } as IUserSchema
-      const mockDashboardForms: FormMetaView[] = [
+      const mockDashboardForms = [
         {
-          admin: {} as IPopulatedUser,
+          admin: {},
           title: 'test form 1',
           _id: 'any',
           responseMode: ResponseMode.Email,
         },
         {
-          admin: {} as IPopulatedUser,
+          admin: {},
           title: 'test form 2',
           _id: 'any2',
           responseMode: ResponseMode.Encrypt,
         },
-      ]
+      ] as AdminDashboardFormMetaDto[]
       // Mock user admin success.
       MockUserService.findUserById.mockReturnValueOnce(
         okAsync(mockUser as IUserSchema),
@@ -418,12 +419,12 @@ describe('admin-form.service', () => {
         } as ICustomFormLogo,
       },
     } as unknown as IFormDocument
-    const MOCK_EMAIL_OVERRIDE_PARAMS: DuplicateFormBody = {
+    const MOCK_EMAIL_OVERRIDE_PARAMS: DuplicateFormBodyDto = {
       responseMode: ResponseMode.Email,
       title: 'mock new title',
       emails: ['mockExample@example.com'],
     }
-    const MOCK_ENCRYPT_OVERRIDE_PARAMS: DuplicateFormBody = {
+    const MOCK_ENCRYPT_OVERRIDE_PARAMS: DuplicateFormBodyDto = {
       responseMode: ResponseMode.Encrypt,
       title: 'mock new title',
       publicKey: 'some public key',
@@ -1096,6 +1097,7 @@ describe('admin-form.service', () => {
       title: 'new title',
       webhook: {
         url: '',
+        isRetryEnabled: false,
       },
     }
 
@@ -1369,7 +1371,7 @@ describe('admin-form.service', () => {
         {
           _id: logicId,
           id: logicId,
-        } as ILogicSchema,
+        } as FormLogicSchema,
       ],
     }
 
@@ -1696,32 +1698,32 @@ describe('admin-form.service', () => {
         {
           _id: logicId1,
           logicType: LogicType.ShowFields,
-        } as ILogicSchema,
+        } as FormLogicSchema,
         {
           _id: logicId2,
           logicType: LogicType.ShowFields,
-        } as ILogicSchema,
+        } as FormLogicSchema,
       ],
     }
 
     const createLogicBody = {
       logicType: LogicType.PreventSubmit,
-    } as ILogicSchema
+    } as LogicDto
 
     const mockFormLogicUpdated = {
       form_logics: [
         {
           _id: logicId1,
           logicType: LogicType.ShowFields,
-        } as ILogicSchema,
+        } as FormLogicSchema,
         {
           _id: logicId2,
           logicType: LogicType.ShowFields,
-        } as ILogicSchema,
+        } as FormLogicSchema,
         {
           _id: logicId3,
           logicType: LogicType.PreventSubmit,
-        } as ILogicSchema,
+        } as FormLogicSchema,
       ],
     }
 
@@ -1757,7 +1759,7 @@ describe('admin-form.service', () => {
 
     it('should return ok(created logic) on successful form logic create for email mode form', async () => {
       // Arrange
-      CREATE_SPY.mockResolvedValue(mockEmailFormUpdated as IFormSchema)
+      CREATE_SPY.mockResolvedValue(mockEmailFormUpdated as IFormDocument)
 
       // Act
       const actualResult = await createFormLogic(mockEmailForm, createLogicBody)
@@ -1776,7 +1778,7 @@ describe('admin-form.service', () => {
 
     it('should return ok(created logic) on successful form logic create for encrypt mode form', async () => {
       // Arrange
-      CREATE_SPY.mockResolvedValue(mockEncryptFormUpdated as IFormSchema)
+      CREATE_SPY.mockResolvedValue(mockEncryptFormUpdated as IFormDocument)
 
       // Act
       const actualResult = await createFormLogic(
@@ -1798,7 +1800,7 @@ describe('admin-form.service', () => {
 
     it('should return err(FormNotFoundError) if db does not return form object', async () => {
       // Arrange
-      CREATE_SPY.mockResolvedValue(undefined as unknown as IFormSchema)
+      CREATE_SPY.mockResolvedValue(undefined as unknown as IFormDocument)
 
       // Act
       const actualResult = await createFormLogic(
@@ -1822,7 +1824,7 @@ describe('admin-form.service', () => {
         mockEncryptFormUpdated,
         'form_logics',
       )
-      CREATE_SPY.mockResolvedValue(updatedFormWithoutLogic as IFormSchema)
+      CREATE_SPY.mockResolvedValue(updatedFormWithoutLogic as IFormDocument)
 
       // Act
       const actualResult = await createFormLogic(
@@ -1846,7 +1848,7 @@ describe('admin-form.service', () => {
         ...mockEncryptFormUpdated,
         form_logics: [],
       }
-      CREATE_SPY.mockResolvedValue(updatedFormWithEmptyLogic as IFormSchema)
+      CREATE_SPY.mockResolvedValue(updatedFormWithEmptyLogic as IFormDocument)
 
       // Act
       const actualResult = await createFormLogic(
@@ -1999,8 +2001,12 @@ describe('admin-form.service', () => {
     const updateSpy = jest.spyOn(FormModel, 'updateStartPageById')
     const MOCK_FORM_ID = new ObjectId().toHexString()
     const MOCK_NEW_START_PAGE: StartPage = {
+      colorTheme: Colors.Blue,
       paragraph: 'some paragraph',
       estTimeTaken: 10000000,
+      logo: {
+        state: FormLogoState.Default,
+      },
     }
 
     it('should return updated start page when update is successful', async () => {
@@ -2057,29 +2063,34 @@ describe('admin-form.service', () => {
         {
           _id: logicId1,
           logicType: LogicType.ShowFields,
-        } as ILogicSchema,
+        } as FormLogicSchema,
         {
           _id: logicId2,
           logicType: LogicType.ShowFields,
-        } as ILogicSchema,
+        } as FormLogicSchema,
       ],
     }
+
+    const updateLogicBody = {
+      _id: String(logicId1),
+      logicType: LogicType.PreventSubmit,
+    } as LogicDto
 
     const updatedLogic = {
       _id: logicId1,
       logicType: LogicType.PreventSubmit,
-    } as ILogicSchema
+    } as FormLogicSchema
 
     const mockFormLogicUpdated = {
       form_logics: [
         {
           _id: logicId1,
           logicType: LogicType.PreventSubmit,
-        } as ILogicSchema,
+        } as FormLogicSchema,
         {
           _id: logicId2,
           logicType: LogicType.ShowFields,
-        } as ILogicSchema,
+        } as FormLogicSchema,
       ],
     }
 
@@ -2121,7 +2132,7 @@ describe('admin-form.service', () => {
       const actualResult = await updateFormLogic(
         mockEmailForm,
         logicId1.toHexString(),
-        updatedLogic,
+        updateLogicBody,
       )
 
       // Assert
@@ -2131,7 +2142,7 @@ describe('admin-form.service', () => {
       expect(UPDATE_SPY).toHaveBeenCalledWith(
         mockEmailForm._id.toHexString(),
         logicId1.toHexString(),
-        updatedLogic,
+        updateLogicBody,
       )
     })
 
@@ -2143,7 +2154,7 @@ describe('admin-form.service', () => {
       const actualResult = await updateFormLogic(
         mockEncryptForm,
         logicId1.toHexString(),
-        updatedLogic,
+        updateLogicBody,
       )
 
       // Assert
@@ -2153,7 +2164,7 @@ describe('admin-form.service', () => {
       expect(UPDATE_SPY).toHaveBeenCalledWith(
         mockEncryptFormId.toHexString(),
         logicId1.toHexString(),
-        updatedLogic,
+        updateLogicBody,
       )
     })
 
@@ -2163,7 +2174,7 @@ describe('admin-form.service', () => {
       const actualResult = await updateFormLogic(
         mockEmailForm,
         wrongLogicId,
-        updatedLogic,
+        updateLogicBody,
       )
 
       // Assert
@@ -2182,7 +2193,7 @@ describe('admin-form.service', () => {
         // Append created field to end of form_fields.
         form_fields: [MOCK_FIELD],
         _id: new ObjectId(),
-      } as IFormSchema
+      } as IFormDocument
 
       // Act
       const actual = await getFormField(MOCK_FORM, String(MOCK_FIELD._id))
@@ -2199,7 +2210,7 @@ describe('admin-form.service', () => {
         // Append created field to end of form_fields.
         form_fields: [],
         _id: new ObjectId(),
-      } as unknown as IFormSchema
+      } as unknown as IFormDocument
       const expectedError = new FieldNotFoundError(
         `Attempted to retrieve field ${MOCK_ID} from ${MOCK_FORM._id} but field was not present`,
       )

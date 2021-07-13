@@ -13,8 +13,8 @@ import {
   BasicField,
   Colors,
   FieldResponse,
+  FormFieldWithId,
   FormLogoState,
-  FormMetaView,
   FormSettings,
   IForm,
   IFormDocument,
@@ -23,18 +23,24 @@ import {
   LogicDto,
   LogicIfValue,
   LogicType,
+  PublicFormDto,
   ResponseMode,
 } from '../../../../types'
 import {
-  DuplicateFormBody,
+  AdminDashboardFormMetaDto,
+  CreateFormBodyDto,
+  DuplicateFormBodyDto,
   EncryptSubmissionDto,
   EndPageUpdateDto,
   ErrorDto,
   FieldCreateDto,
   FieldUpdateDto,
+  FormDto,
   FormFieldDto,
   FormUpdateParams,
   PermissionsUpdateDto,
+  PreviewFormViewDto,
+  PrivateFormErrorDto,
   SettingsUpdateDto,
   StartPageUpdateDto,
 } from '../../../../types/api'
@@ -127,7 +133,7 @@ const createFormValidator = celebrate({
 })
 
 const duplicateFormValidator = celebrate({
-  [Segments.BODY]: BaseJoi.object<DuplicateFormBody>({
+  [Segments.BODY]: BaseJoi.object<DuplicateFormBodyDto>({
     // Require valid responsesMode field.
     responseMode: Joi.string()
       .valid(...Object.values(ResponseMode))
@@ -189,7 +195,7 @@ const fileUploadValidator = celebrate({
  */
 export const handleListDashboardForms: ControllerHandler<
   unknown,
-  FormMetaView[] | ErrorDto
+  AdminDashboardFormMetaDto[] | ErrorDto
 > = async (req, res) => {
   const authedUserId = (req.session as Express.AuthedSession).user._id
 
@@ -824,7 +830,7 @@ export const handleArchiveForm: ControllerHandler<{ formId: string }> = async (
 export const duplicateAdminForm: ControllerHandler<
   { formId: string },
   unknown,
-  DuplicateFormBody
+  DuplicateFormBodyDto
 > = (req, res) => {
   const { formId } = req.params
   const userId = (req.session as Express.AuthedSession).user._id
@@ -886,10 +892,10 @@ export const handleDuplicateAdminForm = [
  * @returns 410 when form is archived
  * @returns 500 when database error occurs
  */
-export const handleGetTemplateForm: ControllerHandler<{ formId: string }> = (
-  req,
-  res,
-) => {
+export const handleGetTemplateForm: ControllerHandler<
+  { formId: string },
+  PreviewFormViewDto | ErrorDto | PrivateFormErrorDto
+> = (req, res) => {
   const { formId } = req.params
   const userId = (req.session as Express.AuthedSession).user._id
 
@@ -899,7 +905,9 @@ export const handleGetTemplateForm: ControllerHandler<{ formId: string }> = (
       // Step 2: Remove private form details before being returned.
       .map((populatedForm) => populatedForm.getPublicView())
       .map((scrubbedForm) =>
-        res.status(StatusCodes.OK).json({ form: scrubbedForm }),
+        res
+          .status(StatusCodes.OK)
+          .json({ form: scrubbedForm as PublicFormDto }),
       )
       .mapErr((error) => {
         logger.error({
@@ -945,8 +953,8 @@ export const handleGetTemplateForm: ControllerHandler<{ formId: string }> = (
  */
 export const handleCopyTemplateForm: ControllerHandler<
   { formId: string },
-  unknown,
-  DuplicateFormBody
+  AdminDashboardFormMetaDto | ErrorDto,
+  DuplicateFormBodyDto
 > = (req, res) => {
   const { formId } = req.params
   const userId = (req.session as Express.AuthedSession).user._id
@@ -1066,8 +1074,8 @@ export const handleTransferFormOwnership = [
  */
 export const createForm: ControllerHandler<
   unknown,
-  unknown,
-  { form: Omit<IForm, 'admin'> }
+  FormDto | ErrorDto,
+  { form: CreateFormBodyDto }
 > = async (req, res) => {
   const { form: formParams } = req.body
   const sessionUserId = (req.session as Express.AuthedSession).user._id
@@ -1079,7 +1087,9 @@ export const createForm: ControllerHandler<
       .andThen((user) =>
         AdminFormService.createForm({ ...formParams, admin: user._id }),
       )
-      .map((createdForm) => res.status(StatusCodes.OK).json(createdForm))
+      .map((createdForm) =>
+        res.status(StatusCodes.OK).json(createdForm as FormDto),
+      )
       .mapErr((error) => {
         logger.error({
           message: 'Error occurred when creating form',
@@ -1204,7 +1214,9 @@ export const handleDuplicateFormField: ControllerHandler<
       }),
     )
     .andThen((form) => AdminFormService.duplicateFormField(form, fieldId))
-    .map((duplicatedField) => res.status(StatusCodes.OK).json(duplicatedField))
+    .map((duplicatedField) =>
+      res.status(StatusCodes.OK).json(duplicatedField as FormFieldDto),
+    )
     .mapErr((error) => {
       logger.error({
         message: 'Error occurred when duplicating field',
@@ -1309,7 +1321,7 @@ export const _handleUpdateFormField: ControllerHandler<
         AdminFormService.updateFormField(form, fieldId, req.body),
       )
       .map((updatedFormField) =>
-        res.status(StatusCodes.OK).json(updatedFormField),
+        res.status(StatusCodes.OK).json(updatedFormField as FormFieldDto),
       )
       .mapErr((error) => {
         logger.error({
@@ -1675,7 +1687,7 @@ export const handleUpdateFormField = [
  */
 export const _handleCreateFormField: ControllerHandler<
   { formId: string },
-  FormFieldDto | ErrorDto,
+  FormFieldWithId | ErrorDto,
   FieldCreateDto
 > = (req, res) => {
   const { formId } = req.params
@@ -1695,7 +1707,7 @@ export const _handleCreateFormField: ControllerHandler<
       // Step 3: User has permissions, proceed to create form field with provided body.
       .andThen((form) => AdminFormService.createFormField(form, req.body))
       .map((createdFormField) =>
-        res.status(StatusCodes.OK).json(createdFormField),
+        res.status(StatusCodes.OK).json(createdFormField as FormFieldWithId),
       )
       .mapErr((error) => {
         logger.error({
@@ -1933,7 +1945,7 @@ export const _handleReorderFormField: ControllerHandler<
       // Step 3: User has permissions, proceed to reorder field
       .andThen((form) => AdminFormService.reorderFormField(form, fieldId, to))
       .map((reorderedFormFields) =>
-        res.status(StatusCodes.OK).json(reorderedFormFields),
+        res.status(StatusCodes.OK).json(reorderedFormFields as FormFieldDto[]),
       )
       .mapErr((error) => {
         logger.error({
@@ -2198,7 +2210,9 @@ export const handleGetFormField: ControllerHandler<
         }),
       )
       .andThen((form) => AdminFormService.getFormField(form, fieldId))
-      .map((formField) => res.status(StatusCodes.OK).json(formField))
+      .map((formField) =>
+        res.status(StatusCodes.OK).json(formField as FormFieldDto),
+      )
       .mapErr((error) => {
         logger.error({
           message: 'Error occurred when retrieving form field',

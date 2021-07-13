@@ -10,11 +10,10 @@ import {
   VALID_UPLOAD_FILE_TYPES,
 } from '../../../../shared/constants'
 import {
+  FormFieldSchema,
   FormLogicSchema,
   FormLogoState,
-  FormMetaView,
   FormSettings,
-  IFieldSchema,
   IForm,
   IFormDocument,
   IFormSchema,
@@ -24,7 +23,8 @@ import {
   Permission,
 } from '../../../../types'
 import {
-  DuplicateFormBody,
+  AdminDashboardFormMetaDto,
+  DuplicateFormBodyDto,
   EditFormFieldParams,
   EndPageUpdateDto,
   FieldCreateDto,
@@ -89,7 +89,10 @@ type PresignedPostUrlParams = {
  */
 export const getDashboardForms = (
   userId: string,
-): ResultAsync<FormMetaView[], MissingUserError | DatabaseError> => {
+): ResultAsync<
+  AdminDashboardFormMetaDto[],
+  MissingUserError | DatabaseError
+> => {
   // Step 1: Verify user exists.
   return (
     UserService.findUserById(userId)
@@ -225,7 +228,7 @@ export const createPresignedPostUrlForLogos = (
  * @returns List of IDs of MyInfo fields
  */
 export const extractMyInfoFieldIds = (
-  formFields: IFieldSchema[] | undefined,
+  formFields: FormFieldSchema[] | undefined,
 ): string[] => {
   return formFields
     ? formFields
@@ -388,7 +391,7 @@ export const createForm = (
 export const duplicateForm = (
   originalForm: IFormDocument,
   newAdminId: string,
-  overrideParams: DuplicateFormBody,
+  overrideParams: DuplicateFormBodyDto,
 ): ResultAsync<IFormDocument, FormNotFoundError | DatabaseError> => {
   const overrideProps = processDuplicateOverrideProps(
     overrideParams,
@@ -439,7 +442,7 @@ export const updateFormField = (
   form: IPopulatedForm,
   fieldId: string,
   newField: FieldUpdateDto,
-): ResultAsync<IFieldSchema, PossibleDatabaseError | FieldNotFoundError> => {
+): ResultAsync<FormFieldSchema, PossibleDatabaseError | FieldNotFoundError> => {
   return ResultAsync.fromPromise(
     form.updateFormFieldById(fieldId, newField),
     (error) => {
@@ -456,7 +459,7 @@ export const updateFormField = (
 
       return transformMongoError(error)
     },
-  ).andThen<IFieldSchema, FieldNotFoundError>((updatedForm) => {
+  ).andThen<FormFieldSchema, FieldNotFoundError>((updatedForm) => {
     if (!updatedForm) {
       return errAsync(new FieldNotFoundError())
     }
@@ -479,7 +482,7 @@ export const duplicateFormField = (
   form: IPopulatedForm,
   fieldId: string,
 ): ResultAsync<
-  IFieldSchema,
+  FormFieldSchema,
   PossibleDatabaseError | FormNotFoundError | FieldNotFoundError
 > => {
   return ResultAsync.fromPromise(
@@ -524,7 +527,7 @@ export const createFormField = (
   form: IPopulatedForm,
   newField: FieldCreateDto,
 ): ResultAsync<
-  IFieldSchema,
+  FormFieldSchema,
   PossibleDatabaseError | FormNotFoundError | FieldNotFoundError
 > => {
   return ResultAsync.fromPromise(form.insertFormField(newField), (error) => {
@@ -563,7 +566,10 @@ export const reorderFormField = (
   form: IPopulatedForm,
   fieldId: string,
   newPosition: number,
-): ResultAsync<IFieldSchema[], PossibleDatabaseError | FieldNotFoundError> => {
+): ResultAsync<
+  FormFieldSchema[],
+  PossibleDatabaseError | FieldNotFoundError
+> => {
   return ResultAsync.fromPromise(
     form.reorderFormFieldById(fieldId, newPosition),
     (error) => {
@@ -1002,7 +1008,7 @@ export const updateEndPage = (
 export const getFormField = (
   form: IPopulatedForm,
   fieldId: string,
-): Result<IFieldSchema, FieldNotFoundError> => {
+): Result<FormFieldSchema, FieldNotFoundError> => {
   const formField = getFormFieldById(form.form_fields, fieldId)
   if (!formField)
     return err(

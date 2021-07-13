@@ -43,12 +43,10 @@ import { EditFieldActions } from 'src/shared/constants'
 import {
   AuthType,
   BasicField,
-  FormMetaView,
   FormSettings,
   IEmailSubmissionSchema,
   IEncryptedSubmissionSchema,
   IFieldSchema,
-  IForm,
   IFormDocument,
   IFormSchema,
   ILogicSchema,
@@ -57,12 +55,15 @@ import {
   IPopulatedForm,
   IPopulatedUser,
   IUserSchema,
+  LogicDto,
   PublicForm,
   ResponseMode,
   Status,
 } from 'src/types'
 import {
-  DuplicateFormBody,
+  AdminDashboardFormMetaDto,
+  CreateFormBodyDto,
+  DuplicateFormBodyDto,
   EditFormFieldParams,
   EncryptSubmissionDto,
   FieldCreateDto,
@@ -216,7 +217,7 @@ describe('admin-form.controller', () => {
       _id: new ObjectId(),
       title: 'mock title',
     } as IFormSchema
-    const MOCK_FORM_PARAMS: Omit<IForm, 'admin'> = {
+    const MOCK_FORM_PARAMS: CreateFormBodyDto = {
       responseMode: ResponseMode.Encrypt,
       publicKey: 'some public key',
       title: 'some form title',
@@ -394,7 +395,7 @@ describe('admin-form.controller', () => {
     const MOCK_USER = {
       _id: MOCK_USER_ID,
       email: 'somerandom@example.com',
-    } as IPopulatedUser
+    } as unknown as IPopulatedUser
     const MOCK_FORM = {
       admin: MOCK_USER,
       _id: MOCK_FORM_ID,
@@ -925,7 +926,7 @@ describe('admin-form.controller', () => {
     const MOCK_USER = {
       _id: MOCK_USER_ID,
       email: 'somerandom@example.com',
-    } as IPopulatedUser
+    } as unknown as IPopulatedUser
     const MOCK_FORM = {
       admin: MOCK_USER,
       _id: MOCK_FORM_ID,
@@ -3011,17 +3012,19 @@ describe('admin-form.controller', () => {
           _id: MOCK_USER_ID,
         },
       },
-      body: {} as DuplicateFormBody,
+      body: {} as DuplicateFormBodyDto,
     })
 
     it('should return duplicated form view on duplicate success', async () => {
       // Arrange
-      const expectedParams: DuplicateFormBody = {
+      const expectedParams: DuplicateFormBodyDto = {
         responseMode: ResponseMode.Encrypt,
         publicKey: 'some public key',
         title: 'mock title',
       }
-      const mockDupedFormView = { title: 'mock view' } as FormMetaView
+      const mockDupedFormView = {
+        title: 'mock view',
+      } as AdminDashboardFormMetaDto
       const mockDupedForm = merge({}, MOCK_FORM, {
         title: 'duped form with new title',
         _id: new ObjectId(),
@@ -3087,7 +3090,7 @@ describe('admin-form.controller', () => {
 
     it('should return 404 when form to duplicate cannot be found', async () => {
       // Arrange
-      const expectedParams: DuplicateFormBody = {
+      const expectedParams: DuplicateFormBodyDto = {
         responseMode: ResponseMode.Encrypt,
         publicKey: 'some public key',
         title: 'mock title',
@@ -3221,7 +3224,7 @@ describe('admin-form.controller', () => {
 
     it('should return 500 when database error occurs whilst duplicating form', async () => {
       // Arrange
-      const expectedParams: DuplicateFormBody = {
+      const expectedParams: DuplicateFormBodyDto = {
         responseMode: ResponseMode.Encrypt,
         publicKey: 'some public key',
         title: 'mock title',
@@ -3442,19 +3445,19 @@ describe('admin-form.controller', () => {
           _id: MOCK_USER_ID,
         },
       },
-      body: {} as DuplicateFormBody,
+      body: {} as DuplicateFormBodyDto,
     })
 
     it('should return copied template form view on duplicate success', async () => {
       // Arrange
-      const expectedParams: DuplicateFormBody = {
+      const expectedParams: DuplicateFormBodyDto = {
         responseMode: ResponseMode.Email,
         emails: ['some-email@example.com'],
         title: 'mock new template title',
       }
       const mockDupedFormView = {
         title: 'mock template view',
-      } as FormMetaView
+      } as AdminDashboardFormMetaDto
       const mockDupedForm = merge({}, MOCK_FORM, {
         title: 'duped form with new title',
         _id: new ObjectId(),
@@ -3522,7 +3525,7 @@ describe('admin-form.controller', () => {
 
     it('should return 404 when form to duplicate cannot be found', async () => {
       // Arrange
-      const expectedParams: DuplicateFormBody = {
+      const expectedParams: DuplicateFormBodyDto = {
         responseMode: ResponseMode.Encrypt,
         publicKey: 'some public key',
         title: 'mock title',
@@ -3670,7 +3673,7 @@ describe('admin-form.controller', () => {
 
     it('should return 500 when database error occurs whilst duplicating form', async () => {
       // Arrange
-      const expectedParams: DuplicateFormBody = {
+      const expectedParams: DuplicateFormBodyDto = {
         responseMode: ResponseMode.Encrypt,
         publicKey: 'some public key',
         title: 'mock title',
@@ -7942,7 +7945,7 @@ describe('admin-form.controller', () => {
       )
 
       MockAdminFormService.deleteFormLogic.mockReturnValue(
-        okAsync(MOCK_FORM as IFormSchema),
+        okAsync(MOCK_FORM as IFormDocument),
       )
     })
 
@@ -8297,7 +8300,7 @@ describe('admin-form.controller', () => {
     const MOCK_UPDATED_FORM = {
       ...MOCK_FORM,
       form_fields: [MOCK_FIELDS[0]],
-    } as IFormSchema
+    } as IFormDocument
 
     const MOCK_REQ = expressHandler.mockRequest({
       params: {
@@ -9103,7 +9106,7 @@ describe('admin-form.controller', () => {
 
     const mockUpdatedLogic = {
       _id: logicId,
-    } as ILogicSchema
+    } as LogicDto
 
     const MOCK_FORM = {
       admin: MOCK_USER,

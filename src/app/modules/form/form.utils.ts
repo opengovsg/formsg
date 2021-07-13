@@ -1,7 +1,7 @@
 import {
+  FormFieldSchema,
   FormLogicSchema,
   IEncryptedFormSchema,
-  IFieldSchema,
   IFormSchema,
   IPopulatedEmailForm,
   IPopulatedForm,
@@ -88,8 +88,8 @@ export const isEmailModeForm = (
  */
 export const getFormFieldById = (
   formFields: IFormSchema['form_fields'],
-  fieldId: IFieldSchema['_id'],
-): IFieldSchema | null => {
+  fieldId: FormFieldSchema['_id'],
+): FormFieldSchema | null => {
   if (!formFields) {
     return null
   }
