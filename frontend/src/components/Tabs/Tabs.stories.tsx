@@ -1,5 +1,7 @@
-import { Tab, TabList, Tabs, TabsProps } from '@chakra-ui/react'
+import { Tab, Tabs, TabsProps } from '@chakra-ui/react'
 import { Meta, Story } from '@storybook/react'
+
+import { TabList } from './TabList'
 
 export default {
   title: 'Components/Tabs',
@@ -30,7 +32,7 @@ DarkTab.args = {
 
 export const WithScrolling = TabTemplate.bind({})
 WithScrolling.args = {
-  variant: 'line-light',
+  variant: 'line-dark',
 }
 WithScrolling.parameters = {
   viewport: {
