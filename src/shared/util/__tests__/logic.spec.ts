@@ -33,11 +33,12 @@ describe('Logic validation', () => {
    */
   const makeResponse = (
     fieldId: string,
-    answer: string | number,
+    answer: string | number | null = null,
     answerArray: string[] | null = null,
+    fieldType: string | null = null,
     isVisible = true,
   ): FieldResponse => {
-    const response: Record<string, any> = { _id: fieldId, answer, isVisible }
+    const response: Record<string, any> = { _id: fieldId, isVisible, fieldType }
     if (answer !== null) {
       response.answer = answer
     }
