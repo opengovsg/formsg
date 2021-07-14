@@ -1,3 +1,4 @@
+import { Merge } from 'type-fest'
 import { DateString } from '../generic'
 import { FormDto } from './form'
 
@@ -14,10 +15,15 @@ export type FormFeedbackBase = {
   rating: number
   comment?: string
   formId: FormDto['_id']
-  created?: DateString
-  lastModified?: DateString
+  created?: Date
+  lastModified?: Date
 }
-export type FormFeedbackDto = FormFeedbackBase
+
+// Convert to serialized version.
+export type FormFeedbackDto = Merge<
+  FormFeedbackBase,
+  { created?: DateString; lastModified?: DateString }
+>
 
 export type ProcessedFeedbackMeta = {
   index: number
