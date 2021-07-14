@@ -7,7 +7,10 @@ import {
 import { getColor } from '@chakra-ui/theme-tools'
 import merge from 'lodash/merge'
 
-export const DRAG_SCROLL_SPEED = 0.8
+export const DRAG_SCROLL_SPEED = 0.9
+export const SCROLL_TO_VIEW_OPTIONS = {
+  inline: 'center',
+} as ScrollIntoViewOptions
 
 const variantLine: ThemingPropsThunk<SystemStyleObjectRecord, ChakraTheme> =
   () => {
@@ -17,7 +20,7 @@ const variantLine: ThemingPropsThunk<SystemStyleObjectRecord, ChakraTheme> =
       },
       tablist: {
         w: '100%',
-        overflowX: 'scroll',
+        overflowX: 'auto',
         borderColor: 'transparent',
         /* Hide scrollbar for IE and Edge */
         '&::MsOverflowStyle': 'none',
@@ -27,20 +30,23 @@ const variantLine: ThemingPropsThunk<SystemStyleObjectRecord, ChakraTheme> =
         '&::-webkit-scrollbar': {
           display: 'none',
         },
-        p: '1.5625rem',
+        pt: '1.5rem',
+        pb: '1.375rem',
+        whiteSpace: 'nowrap',
       },
       tab: {
         textTransform: 'uppercase',
         p: '0.25rem 0', // No horizontal padding to let bottom border be the same length as text
         borderColor: 'transparent',
         mx: '1rem',
-        transition: 'none',
+        // transition: 'borderColor 0.5s ease-out',
         //  margins to ensure text remains at the same position as selected tabs
         mb: '0.125rem',
         borderBottom: '0',
         _selected: {
           mb: '0',
           borderBottom: '0.125rem solid',
+          transition: 'common common ease-out',
           _focus: {
             // add horizontal padding
             p: '0.25rem',
@@ -76,7 +82,6 @@ const variantLight: ThemingPropsThunk<SystemStyleObjectRecord, ChakraTheme> = (
       _active: {
         bg: 'white',
       },
-      transitionProperty: 'common',
       color: 'primary.300',
     },
   })
@@ -102,7 +107,6 @@ const variantDark: ThemingPropsThunk<SystemStyleObjectRecord, ChakraTheme> = (
           boxShadow: '0 0 0 2px white',
         },
       },
-      transitionProperty: 'common',
       color: 'secondary.300',
     },
   })
