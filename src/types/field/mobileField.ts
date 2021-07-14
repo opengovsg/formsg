@@ -5,6 +5,10 @@ export interface IMobileField extends IField {
   isVerifiable: boolean
 }
 
+export interface IVerifiableMobileField extends IMobileField {
+  isVerifiable: true
+}
+
 export interface IMobileFieldSchema extends IMobileField, IFieldSchema {
   isVerifiable: boolean
 }

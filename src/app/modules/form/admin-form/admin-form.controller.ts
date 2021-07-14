@@ -1184,6 +1184,7 @@ export const handleUpdateForm: ControllerHandler<
  * @returns 400 when form field has invalid updates to be performed
  * @returns 403 when current user does not have permissions to update form
  * @returns 404 when form or field to duplicate cannot be found
+ * @returns 409 when saving updated form field causes sms limit to be exceeded
  * @returns 409 when saving updated form incurs a conflict in the database
  * @returns 410 when form to update is archived
  * @returns 413 when updated form is too large to be saved in the database
@@ -1207,6 +1208,12 @@ export const handleDuplicateFormField: ControllerHandler<
         level: PermissionLevel.Write,
       }),
     )
+    .andThen((form) => {
+      return AdminFormService.getFormField(form, fieldId).asyncAndThen(
+        (formFieldToDuplicate) =>
+          AdminFormService.shouldUpdateFormField(form, formFieldToDuplicate),
+      )
+    })
     .andThen((form) => AdminFormService.duplicateFormField(form, fieldId))
     .map((duplicatedField) => res.status(StatusCodes.OK).json(duplicatedField))
     .mapErr((error) => {
@@ -1295,6 +1302,7 @@ export const _handleUpdateFormField: ControllerHandler<
   FieldUpdateDto
 > = (req, res) => {
   const { formId, fieldId } = req.params
+  const updatedFormField = req.body
   const sessionUserId = (req.session as Express.AuthedSession).user._id
 
   // Step 1: Retrieve currently logged in user.
@@ -1308,9 +1316,13 @@ export const _handleUpdateFormField: ControllerHandler<
           level: PermissionLevel.Write,
         }),
       )
-      // Step 3: User has permissions, update form field of retrieved form.
+      // Step 3: Check if the user has exceeded the allowable limit for sms if the fieldType is mobile
       .andThen((form) =>
-        AdminFormService.updateFormField(form, fieldId, req.body),
+        AdminFormService.shouldUpdateFormField(form, updatedFormField),
+      )
+      // Step 4: User has permissions, update form field of retrieved form.
+      .andThen((form) =>
+        AdminFormService.updateFormField(form, fieldId, updatedFormField),
       )
       .map((updatedFormField) =>
         res.status(StatusCodes.OK).json(updatedFormField),
@@ -1324,7 +1336,7 @@ export const _handleUpdateFormField: ControllerHandler<
             userId: sessionUserId,
             formId,
             fieldId,
-            updateFieldBody: req.body,
+            updateFieldBody: updatedFormField,
           },
           error,
         })
@@ -1628,6 +1640,7 @@ export const handleEmailPreviewSubmission = [
  * @returns 403 when current user does not have permissions to update form field
  * @returns 404 when form cannot be found
  * @returns 404 when form field cannot be found
+ * @returns 409 when form field update conflicts with database state
  * @returns 410 when updating form field of an archived form
  * @returns 413 when updating form field causes form to be too large to be saved in the database
  * @returns 422 when an invalid form field update is attempted on the form
@@ -1668,6 +1681,7 @@ export const handleUpdateFormField = [
  * @returns 200 with created form field
  * @returns 403 when current user does not have permissions to create a form field
  * @returns 404 when form cannot be found
+ * @returns 409 when form field update conflicts with database state
  * @returns 410 when creating form field for an archived form
  * @returns 413 when creating form field causes form to be too large to be saved in the database
  * @returns 422 when an invalid form field creation is attempted on the form
@@ -1680,6 +1694,7 @@ export const _handleCreateFormField: ControllerHandler<
   FieldCreateDto
 > = (req, res) => {
   const { formId } = req.params
+  const formFieldToCreate = req.body
   const sessionUserId = (req.session as Express.AuthedSession).user._id
 
   // Step 1: Retrieve currently logged in user.
@@ -1693,8 +1708,14 @@ export const _handleCreateFormField: ControllerHandler<
           level: PermissionLevel.Write,
         }),
       )
-      // Step 3: User has permissions, proceed to create form field with provided body.
-      .andThen((form) => AdminFormService.createFormField(form, req.body))
+      // Step 3: Check if the user has exceeded the allowable limit for sms if the fieldType is mobile
+      .andThen((form) =>
+        AdminFormService.shouldUpdateFormField(form, formFieldToCreate),
+      )
+      // Step 4: User has permissions, proceed to create form field with provided body.
+      .andThen((form) =>
+        AdminFormService.createFormField(form, formFieldToCreate),
+      )
       .map((createdFormField) =>
         res.status(StatusCodes.OK).json(createdFormField),
       )
@@ -1706,7 +1727,7 @@ export const _handleCreateFormField: ControllerHandler<
             ...createReqMeta(req),
             userId: sessionUserId,
             formId,
-            createFieldBody: req.body,
+            createFieldBody: formFieldToCreate,
           },
           error,
         })

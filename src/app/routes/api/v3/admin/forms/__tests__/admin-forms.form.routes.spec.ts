@@ -1743,7 +1743,9 @@ describe('admin-form.form.routes', () => {
 
       // Assert
       expect(response.status).toEqual(404)
-      expect(response.body).toEqual({ message: 'Form not found' })
+      expect(response.body).toEqual({
+        message: `Attempted to retrieve field ${randomFieldId} from ${formToUpdate._id} but field was not present`,
+      })
     })
 
     it('should return 410 when form is already archived', async () => {

@@ -82,3 +82,14 @@ export class NonVerifiedFieldTypeError extends ApplicationError {
     )
   }
 }
+
+/**
+ * Agency user has sent too many SMSes using default Twilio credentials
+ */
+export class SmsLimitExceededError extends ApplicationError {
+  constructor(
+    message = 'You have exceeded the free sms limit. Please refresh and try again.',
+  ) {
+    super(message)
+  }
+}

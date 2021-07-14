@@ -20,6 +20,7 @@ import {
   IShortTextField,
   ITableFieldSchema,
   IUenField,
+  IVerifiableMobileField,
   IYesNoField,
 } from '..'
 
@@ -71,6 +72,12 @@ export const isMobileNumberField = (
   formField: IField,
 ): formField is IMobileField => {
   return formField.fieldType === BasicField.Mobile
+}
+
+export const isVerifiableMobileField = (
+  formField: IField,
+): formField is IVerifiableMobileField => {
+  return isMobileNumberField(formField) && formField.isVerifiable
 }
 
 export const isAttachmentField = (

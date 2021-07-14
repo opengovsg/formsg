@@ -20,6 +20,7 @@ import {
 } from 'src/app/modules/core/core.errors'
 import { MissingUserError } from 'src/app/modules/user/user.errors'
 import * as UserService from 'src/app/modules/user/user.service'
+import { SmsLimitExceededError } from 'src/app/modules/verification/verification.errors'
 import { formatErrorRecoveryMessage } from 'src/app/utils/handle-mongo-error'
 import { EditFieldActions, VALID_UPLOAD_FILE_TYPES } from 'src/shared/constants'
 import {
@@ -53,6 +54,8 @@ import {
 
 import { generateDefaultField } from 'tests/unit/backend/helpers/generate-form-data'
 
+import { smsConfig } from '../../../../config/features/sms.config'
+import * as SmsService from '../../../../services/sms/sms.service'
 import {
   FormNotFoundError,
   LogicNotFoundError,
@@ -80,6 +83,7 @@ import {
   getDashboardForms,
   getFormField,
   reorderFormField,
+  shouldUpdateFormField,
   transferFormOwnership,
   updateEndPage,
   updateForm,
@@ -2240,6 +2244,111 @@ describe('admin-form.service', () => {
       // Assert
       expect(disableSpy).toHaveBeenCalledWith(MOCK_ADMIN_ID)
       expect(expected._unsafeUnwrapErr()).toBeInstanceOf(DatabaseError)
+    })
+  })
+
+  describe('shouldUpdateFormField', () => {
+    const MOCK_FORM = {
+      admin: {
+        _id: new ObjectId(),
+      },
+    } as unknown as IPopulatedForm
+
+    const countSpy = jest.spyOn(SmsService, 'retrieveFreeSmsCounts')
+
+    describe('when update form field is not a BasicField.Mobile type', () => {
+      const MOCK_RATING_FIELD = generateDefaultField(BasicField.Rating)
+      it('should return the form without doing anything', async () => {
+        // Act
+        const actual = await shouldUpdateFormField(MOCK_FORM, MOCK_RATING_FIELD)
+
+        // Assert
+        expect(actual._unsafeUnwrap()).toEqual(MOCK_FORM)
+        expect(countSpy).not.toHaveBeenCalled()
+      })
+    })
+
+    describe('when update form field is a BasicField.Mobile type', () => {
+      const MOCK_UNVERIFIABLE_MOBILE_FIELD = generateDefaultField(
+        BasicField.Mobile,
+      )
+      const MOCK_VERIFIABLE_MOBILE_FIELD = generateDefaultField(
+        BasicField.Mobile,
+        { isVerifiable: true },
+      )
+
+      it('should return the given form when the admin is under the free sms limit', async () => {
+        // Arrange
+        countSpy.mockReturnValueOnce(okAsync(smsConfig.smsVerificationLimit))
+
+        // Act
+        const actual = await shouldUpdateFormField(
+          MOCK_FORM,
+          MOCK_VERIFIABLE_MOBILE_FIELD,
+        )
+
+        // Assert
+        expect(actual._unsafeUnwrap()).toBe(MOCK_FORM)
+      })
+
+      it('should return the given form when the form is onboarded with its own credentials', async () => {
+        // Arrange
+        const MOCK_ONBOARDED_FORM = { ...MOCK_FORM, msgSrvcName: 'form a form' }
+
+        // Act
+        const actual = await shouldUpdateFormField(
+          MOCK_ONBOARDED_FORM,
+          MOCK_VERIFIABLE_MOBILE_FIELD,
+        )
+
+        // Assert
+        expect(countSpy).not.toHaveBeenCalled()
+        expect(actual._unsafeUnwrap()).toEqual(MOCK_ONBOARDED_FORM)
+      })
+
+      it('should return the given form when mobile field is not verifiable', async () => {
+        // Act
+        const actual = await shouldUpdateFormField(
+          MOCK_FORM,
+          MOCK_UNVERIFIABLE_MOBILE_FIELD,
+        )
+
+        // Assert
+        expect(countSpy).not.toHaveBeenCalled()
+        expect(actual._unsafeUnwrap()).toEqual(MOCK_FORM)
+      })
+
+      it('should return sms retrieval error when sms limit exceeded and the given form has not been onboarded', async () => {
+        // Arrange
+        countSpy.mockReturnValueOnce(
+          okAsync(smsConfig.smsVerificationLimit + 1),
+        )
+
+        // Act
+        const actual = await shouldUpdateFormField(
+          MOCK_FORM,
+          MOCK_VERIFIABLE_MOBILE_FIELD,
+        )
+
+        // Assert
+        expect(actual._unsafeUnwrapErr()).toEqual(new SmsLimitExceededError())
+      })
+
+      it('should propagate any database errors encountered during retrieval', async () => {
+        // Arrange
+        const MOCK_ERROR_STRING = 'something went oopsie'
+        const expectedError = new DatabaseError(MOCK_ERROR_STRING)
+        countSpy.mockReturnValueOnce(errAsync(expectedError))
+
+        // Act
+        const actual = await shouldUpdateFormField(
+          MOCK_FORM,
+          MOCK_VERIFIABLE_MOBILE_FIELD,
+        )
+
+        // Assert
+        expect(actual._unsafeUnwrapErr()).toBe(expectedError)
+      })
     })
   })
 })
