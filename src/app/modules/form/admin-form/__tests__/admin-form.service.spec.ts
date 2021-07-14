@@ -2315,166 +2315,6 @@ describe('admin-form.service', () => {
     })
   })
 
-  describe('checkSmsCountAndPerformAction', () => {
-    const MOCK_FORM = {
-      title: 'some mock form',
-      _id: new ObjectId(),
-      admin: {
-        _id: new ObjectId(),
-      },
-      permissionList: [{ email: 'some@user.gov.sg' }],
-    } as IPopulatedForm
-
-    it('should disable sms verifications and send email when sms limit is exceeded', async () => {
-      // Arrange
-      const exceedSpy = jest.spyOn(
-        VerificationUtils,
-        'hasAdminExceededFreeSmsLimit',
-      )
-      MockMailService.sendSmsVerificationDisabledEmail.mockReturnValueOnce(
-        okAsync(true),
-      )
-      const disableSpy = jest.spyOn(
-        AdminFormService,
-        'disableSmsVerificationsForUser',
-      )
-      disableSpy.mockReturnValueOnce(okAsync(true))
-
-      // Act
-      const actual = await AdminFormService.checkSmsCountAndPerformAction(
-        MOCK_FORM,
-        smsConfig.smsVerificationLimit + 1,
-      )
-
-      // Assert
-      expect(actual._unsafeUnwrap()).toBe(true)
-      expect(exceedSpy).toHaveBeenCalledWith(smsConfig.smsVerificationLimit + 1)
-      expect(
-        MockMailService.sendSmsVerificationDisabledEmail,
-      ).toHaveBeenCalledWith(MOCK_FORM)
-      // NOTE: String casting is required so that the test recognises them as equal
-      expect(disableSpy).toHaveBeenCalledWith(String(MOCK_FORM.admin._id))
-    })
-
-    it('should send a warning when the admin has sent out a certain number of sms', async () => {
-      // Arrange
-      const exceedSpy = jest.spyOn(
-        VerificationUtils,
-        'hasAdminExceededFreeSmsLimit',
-      )
-      MockMailService.sendSmsVerificationWarningEmail.mockReturnValueOnce(
-        okAsync(true),
-      )
-      const disableSpy = jest.spyOn(
-        AdminFormService,
-        'disableSmsVerificationsForUser',
-      )
-
-      // Act
-      const actual = await AdminFormService.checkSmsCountAndPerformAction(
-        MOCK_FORM,
-        SMS_WARNING_TIERS.LOW,
-      )
-
-      // Assert
-      expect(actual._unsafeUnwrap()).toBe(true)
-      expect(exceedSpy).toHaveBeenCalledWith(SMS_WARNING_TIERS.LOW)
-      expect(disableSpy).not.toHaveBeenCalled()
-      expect(
-        MockMailService.sendSmsVerificationWarningEmail,
-      ).toHaveBeenCalledWith(MOCK_FORM, SMS_WARNING_TIERS.LOW)
-    })
-
-    it('should not do anything when the sms sent by admin is not at any limit', async () => {
-      // Arrange
-      const exceedSpy = jest.spyOn(
-        VerificationUtils,
-        'hasAdminExceededFreeSmsLimit',
-      )
-      const disableSpy = jest.spyOn(
-        AdminFormService,
-        'disableSmsVerificationsForUser',
-      )
-
-      // Act
-      const actual = await AdminFormService.checkSmsCountAndPerformAction(
-        MOCK_FORM,
-        SMS_WARNING_TIERS.LOW - 1,
-      )
-
-      // Assert
-      expect(actual._unsafeUnwrap()).toBe(true)
-      expect(exceedSpy).toHaveBeenCalledWith(SMS_WARNING_TIERS.LOW - 1)
-      expect(
-        MockMailService.sendSmsVerificationDisabledEmail,
-      ).not.toHaveBeenCalled()
-      expect(
-        MockMailService.sendSmsVerificationWarningEmail,
-      ).not.toHaveBeenCalled()
-      expect(disableSpy).not.toHaveBeenCalled()
-    })
-
-    it('should propagate any errors encountered during warning mail sending', async () => {
-      // Arrange
-      const expected = new MailGenerationError('big ded')
-      const exceedSpy = jest.spyOn(
-        VerificationUtils,
-        'hasAdminExceededFreeSmsLimit',
-      )
-      MockMailService.sendSmsVerificationWarningEmail.mockReturnValueOnce(
-        errAsync(expected),
-      )
-      const disableSpy = jest.spyOn(
-        AdminFormService,
-        'disableSmsVerificationsForUser',
-      )
-
-      // Act
-      const actual = await AdminFormService.checkSmsCountAndPerformAction(
-        MOCK_FORM,
-        SMS_WARNING_TIERS.LOW,
-      )
-
-      // Assert
-      expect(actual._unsafeUnwrapErr()).toBe(expected)
-      expect(exceedSpy).toHaveBeenCalledWith(SMS_WARNING_TIERS.LOW)
-      expect(disableSpy).not.toHaveBeenCalled()
-      expect(
-        MockMailService.sendSmsVerificationWarningEmail,
-      ).toHaveBeenCalledWith(MOCK_FORM, SMS_WARNING_TIERS.LOW)
-    })
-
-    it('should propagate any errors encountered during disabled mail sending', async () => {
-      // Arrange
-      const expected = new MailGenerationError('big ded')
-      const exceedSpy = jest.spyOn(
-        VerificationUtils,
-        'hasAdminExceededFreeSmsLimit',
-      )
-      MockMailService.sendSmsVerificationDisabledEmail.mockReturnValueOnce(
-        errAsync(expected),
-      )
-      const disableSpy = jest.spyOn(
-        AdminFormService,
-        'disableSmsVerificationsForUser',
-      )
-
-      // Act
-      const actual = await AdminFormService.checkSmsCountAndPerformAction(
-        MOCK_FORM,
-        smsConfig.smsVerificationLimit + 1,
-      )
-
-      // Assert
-      expect(actual._unsafeUnwrapErr()).toBe(expected)
-      expect(exceedSpy).toHaveBeenCalledWith(smsConfig.smsVerificationLimit + 1)
-      expect(disableSpy).not.toHaveBeenCalled()
-      expect(
-        MockMailService.sendSmsVerificationDisabledEmail,
-      ).toHaveBeenCalledWith(MOCK_FORM)
-    })
-  })
-
   describe('checkFreeSmsSentByAdminAndDeactivateVerification', () => {
     const MOCK_FORM = {
       title: 'some mock form',
@@ -2502,17 +2342,24 @@ describe('admin-form.service', () => {
       expect(retrievalSpy).not.toHaveBeenCalled()
     })
 
-    it('should call underlying methods succcessfully when form is not onboarded', async () => {
+    it('should disable sms verifications and send email when sms limit is exceeded', async () => {
       // Arrange
-      const onboardSpy = jest.spyOn(FormUtils, 'isFormOnboarded')
-      onboardSpy.mockReturnValueOnce(false)
-      const retrievalSpy = jest.spyOn(SmsService, 'retrieveFreeSmsCounts')
-      retrievalSpy.mockReturnValueOnce(okAsync(SMS_WARNING_TIERS.MED + 1))
-      const actionSpy = jest.spyOn(
-        AdminFormService,
-        'checkSmsCountAndPerformAction',
+      const exceedSpy = jest.spyOn(
+        VerificationUtils,
+        'hasAdminExceededFreeSmsLimit',
       )
-      actionSpy.mockReturnValueOnce(okAsync(true))
+      MockMailService.sendSmsVerificationDisabledEmail.mockReturnValueOnce(
+        okAsync(true),
+      )
+      const disableSpy = jest.spyOn(
+        AdminFormService,
+        'disableSmsVerificationsForUser',
+      )
+      disableSpy.mockReturnValueOnce(okAsync(true))
+      const retrievalSpy = jest.spyOn(SmsService, 'retrieveFreeSmsCounts')
+      retrievalSpy.mockReturnValueOnce(
+        okAsync(smsConfig.smsVerificationLimit + 1),
+      )
 
       // Act
       const actual =
@@ -2522,8 +2369,140 @@ describe('admin-form.service', () => {
 
       // Assert
       expect(actual._unsafeUnwrap()).toBe(true)
-      expect(retrievalSpy).toBeCalledWith(String(MOCK_FORM.admin._id))
-      expect(actionSpy).toBeCalledWith(MOCK_FORM, SMS_WARNING_TIERS.MED + 1)
+      expect(exceedSpy).toHaveBeenCalledWith(smsConfig.smsVerificationLimit + 1)
+      expect(
+        MockMailService.sendSmsVerificationDisabledEmail,
+      ).toHaveBeenCalledWith(MOCK_FORM)
+      // NOTE: String casting is required so that the test recognises them as equal
+      expect(disableSpy).toHaveBeenCalledWith(String(MOCK_FORM.admin._id))
+    })
+
+    it('should send a warning when the admin has sent out a certain number of sms', async () => {
+      // Arrange
+      const exceedSpy = jest.spyOn(
+        VerificationUtils,
+        'hasAdminExceededFreeSmsLimit',
+      )
+      MockMailService.sendSmsVerificationWarningEmail.mockReturnValueOnce(
+        okAsync(true),
+      )
+      const disableSpy = jest.spyOn(
+        AdminFormService,
+        'disableSmsVerificationsForUser',
+      )
+      const retrievalSpy = jest.spyOn(SmsService, 'retrieveFreeSmsCounts')
+      retrievalSpy.mockReturnValueOnce(okAsync(SMS_WARNING_TIERS.LOW))
+
+      // Act
+      const actual =
+        await AdminFormService.checkFreeSmsSentByAdminAndDeactivateVerification(
+          MOCK_FORM,
+        )
+
+      // Assert
+      expect(actual._unsafeUnwrap()).toBe(true)
+      expect(exceedSpy).toHaveBeenCalledWith(SMS_WARNING_TIERS.LOW)
+      expect(disableSpy).not.toHaveBeenCalled()
+      expect(
+        MockMailService.sendSmsVerificationWarningEmail,
+      ).toHaveBeenCalledWith(MOCK_FORM, SMS_WARNING_TIERS.LOW)
+    })
+
+    it('should not do anything when the sms sent by admin is not at any limit', async () => {
+      // Arrange
+      const exceedSpy = jest.spyOn(
+        VerificationUtils,
+        'hasAdminExceededFreeSmsLimit',
+      )
+      const disableSpy = jest.spyOn(
+        AdminFormService,
+        'disableSmsVerificationsForUser',
+      )
+      const retrievalSpy = jest.spyOn(SmsService, 'retrieveFreeSmsCounts')
+      retrievalSpy.mockReturnValueOnce(okAsync(SMS_WARNING_TIERS.LOW - 1))
+
+      // Act
+      const actual =
+        await AdminFormService.checkFreeSmsSentByAdminAndDeactivateVerification(
+          MOCK_FORM,
+        )
+
+      // Assert
+      expect(actual._unsafeUnwrap()).toBe(true)
+      expect(exceedSpy).toHaveBeenCalledWith(SMS_WARNING_TIERS.LOW - 1)
+      expect(
+        MockMailService.sendSmsVerificationDisabledEmail,
+      ).not.toHaveBeenCalled()
+      expect(
+        MockMailService.sendSmsVerificationWarningEmail,
+      ).not.toHaveBeenCalled()
+      expect(disableSpy).not.toHaveBeenCalled()
+    })
+
+    it('should propagate any errors encountered during warning mail sending', async () => {
+      // Arrange
+      const expected = new MailGenerationError('big ded')
+      const exceedSpy = jest.spyOn(
+        VerificationUtils,
+        'hasAdminExceededFreeSmsLimit',
+      )
+      MockMailService.sendSmsVerificationWarningEmail.mockReturnValueOnce(
+        errAsync(expected),
+      )
+      const disableSpy = jest.spyOn(
+        AdminFormService,
+        'disableSmsVerificationsForUser',
+      )
+      const retrievalSpy = jest.spyOn(SmsService, 'retrieveFreeSmsCounts')
+      retrievalSpy.mockReturnValueOnce(okAsync(SMS_WARNING_TIERS.LOW))
+
+      // Act
+      const actual =
+        await AdminFormService.checkFreeSmsSentByAdminAndDeactivateVerification(
+          MOCK_FORM,
+        )
+
+      // Assert
+      expect(actual._unsafeUnwrapErr()).toBe(expected)
+      expect(exceedSpy).toHaveBeenCalledWith(SMS_WARNING_TIERS.LOW)
+      expect(disableSpy).not.toHaveBeenCalled()
+      expect(
+        MockMailService.sendSmsVerificationWarningEmail,
+      ).toHaveBeenCalledWith(MOCK_FORM, SMS_WARNING_TIERS.LOW)
+    })
+
+    it('should propagate any errors encountered during disabled mail sending', async () => {
+      // Arrange
+      const expected = new MailGenerationError('big ded')
+      const exceedSpy = jest.spyOn(
+        VerificationUtils,
+        'hasAdminExceededFreeSmsLimit',
+      )
+      MockMailService.sendSmsVerificationDisabledEmail.mockReturnValueOnce(
+        errAsync(expected),
+      )
+      const disableSpy = jest.spyOn(
+        AdminFormService,
+        'disableSmsVerificationsForUser',
+      )
+      const retrievalSpy = jest.spyOn(SmsService, 'retrieveFreeSmsCounts')
+      retrievalSpy.mockReturnValueOnce(
+        okAsync(smsConfig.smsVerificationLimit + 1),
+      )
+
+      // Act
+      const actual =
+        await AdminFormService.checkFreeSmsSentByAdminAndDeactivateVerification(
+          MOCK_FORM,
+        )
+
+      // Assert
+      expect(actual._unsafeUnwrapErr()).toBe(expected)
+      expect(exceedSpy).toHaveBeenCalledWith(smsConfig.smsVerificationLimit + 1)
+      expect(disableSpy).not.toHaveBeenCalled()
+      expect(
+        MockMailService.sendSmsVerificationDisabledEmail,
+      ).toHaveBeenCalledWith(MOCK_FORM)
     })
 
     it('should return the error receieved when retrieval of sms counts fails', async () => {
@@ -2543,31 +2522,6 @@ describe('admin-form.service', () => {
       // Assert
       expect(actual._unsafeUnwrapErr()).toBe(expected)
       expect(retrievalSpy).toBeCalledWith(String(MOCK_FORM.admin._id))
-    })
-
-    it('should return the error received when mail sending fails', async () => {
-      // Arrange
-      const expected = new MailGenerationError('mail ded')
-      const onboardSpy = jest.spyOn(FormUtils, 'isFormOnboarded')
-      onboardSpy.mockReturnValueOnce(false)
-      const retrievalSpy = jest.spyOn(SmsService, 'retrieveFreeSmsCounts')
-      retrievalSpy.mockReturnValueOnce(okAsync(SMS_WARNING_TIERS.HIGH + 1))
-      const actionSpy = jest.spyOn(
-        AdminFormService,
-        'checkSmsCountAndPerformAction',
-      )
-      actionSpy.mockReturnValueOnce(errAsync(expected))
-
-      // Act
-      const actual =
-        await AdminFormService.checkFreeSmsSentByAdminAndDeactivateVerification(
-          MOCK_FORM,
-        )
-
-      // Assert
-      expect(actual._unsafeUnwrapErr()).toBe(expected)
-      expect(retrievalSpy).toBeCalledWith(String(MOCK_FORM.admin._id))
-      expect(actionSpy).toBeCalledWith(MOCK_FORM, SMS_WARNING_TIERS.HIGH + 1)
     })
   })
 })
