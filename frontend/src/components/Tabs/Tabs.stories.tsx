@@ -1,6 +1,9 @@
-import { Tab, Tabs, TabsProps } from '@chakra-ui/react'
+import { Tabs, TabsProps } from '@chakra-ui/react'
 import { Meta, Story } from '@storybook/react'
 
+import { viewports } from '~utils/storybook'
+
+import { Tab } from './Tab'
 import { TabList } from './TabList'
 
 export default {
@@ -38,4 +41,5 @@ WithScrolling.parameters = {
   viewport: {
     defaultViewport: 'mobile1',
   },
+  chromatic: { viewports: [viewports.xs] },
 }
