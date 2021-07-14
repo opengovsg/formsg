@@ -8,12 +8,9 @@ import {
 } from 'src/shared/util/logic'
 import {
   BasicField,
-<<<<<<< HEAD
   FieldResponse,
+  ICheckboxFieldSchema,
   IField,
-=======
-  CheckboxConditionValue,
->>>>>>> 4c2ffe1b (feat: add checkbox to logic module with tests)
   IFieldSchema,
   IFormDocument,
   IPreventSubmitLogicSchema,
@@ -21,7 +18,6 @@ import {
   IShortTextFieldSchema,
   IShowFieldsLogicSchema,
   LogicConditionState,
-  LogicFieldResponse,
   LogicIfValue,
   LogicType,
 } from 'src/types'
@@ -39,10 +35,10 @@ describe('Logic validation', () => {
   const makeResponse = (
     fieldId: string,
     answer: string | number | null = null,
-    answerArray: string[] | CheckboxConditionValue | null = null,
+    answerArray: string[] | null = null,
     fieldType: string | null = null,
     isVisible = true,
-  ): LogicFieldResponse => {
+  ): FieldResponse => {
     const response: Record<string, any> = { _id: fieldId, isVisible, fieldType }
     if (answer !== null) {
       response.answer = answer
@@ -50,7 +46,7 @@ describe('Logic validation', () => {
     if (answerArray) {
       response.answerArray = answerArray
     }
-    return response as LogicFieldResponse
+    return response as FieldResponse
   }
 
   describe('visibility for different states', () => {
@@ -222,6 +218,81 @@ describe('Logic validation', () => {
       expect(
         getVisibleFieldIds(
           [makeResponse(CONDITION_FIELD._id, 'invalid option'), LOGIC_RESPONSE],
+          form,
+        ).has(LOGIC_FIELD._id),
+      ).toEqual(false)
+    })
+    it('should compute the correct visibility for checkbox fields with state "is one of the following"', () => {
+      // Arrange
+      const validOptions = ['Option 1', 'Option 2', 'Option 3']
+      // Set up checkbox field
+      const checkboxConditionField = {
+        _id: new ObjectId().toHexString(),
+        fieldType: BasicField.Checkbox,
+        fieldOptions: validOptions,
+        othersRadioButton: true,
+      } as ICheckboxFieldSchema
+
+      const conditions = [
+        { options: [validOptions[0], validOptions[1]], others: false },
+        { options: [validOptions[2]], others: true },
+      ]
+      const anyOfCondition = {
+        show: [LOGIC_FIELD._id],
+        conditions: [
+          {
+            ifValueType: LogicIfValue.MultiValue,
+            _id: '58169',
+            field: checkboxConditionField._id,
+            state: LogicConditionState.AnyOf,
+            value: conditions,
+          },
+        ],
+        _id: MOCK_LOGIC_ID,
+        logicType: LogicType.ShowFields,
+      } as IShowFieldsLogicSchema
+      const validResponses = [
+        [validOptions[0], validOptions[1]],
+        [validOptions[1], validOptions[0]], // valid even if options are in different order
+        [validOptions[2], 'Others: user input'],
+      ]
+      const invalidResponse = [
+        validOptions[2],
+        validOptions[0],
+        'Others: user input',
+      ]
+      form.form_fields = [LOGIC_FIELD, checkboxConditionField]
+      form.form_logics = [anyOfCondition]
+
+      // Act + Assert
+      for (let i = 0; i < validResponses.length; i++) {
+        expect(
+          getVisibleFieldIds(
+            [
+              makeResponse(
+                checkboxConditionField._id,
+                null,
+                validResponses[i],
+                BasicField.Checkbox,
+              ),
+              LOGIC_RESPONSE,
+            ],
+            form,
+          ).has(LOGIC_FIELD._id),
+        ).toEqual(true)
+      }
+
+      expect(
+        getVisibleFieldIds(
+          [
+            makeResponse(
+              checkboxConditionField._id,
+              null,
+              invalidResponse,
+              BasicField.Checkbox,
+            ),
+            LOGIC_RESPONSE,
+          ],
           form,
         ).has(LOGIC_FIELD._id),
       ).toEqual(false)
@@ -398,6 +469,78 @@ describe('Logic validation', () => {
       expect(
         getLogicUnitPreventingSubmit(
           [makeResponse(CONDITION_FIELD._id, 'Option 3'), LOGIC_RESPONSE],
+          form,
+        ),
+      ).toBeUndefined()
+    })
+    it('should compute that submission should be prevented for checkbox fields with state "is one of the following"', () => {
+      // Arrange
+      const validOptions = ['Option 1', 'Option 2', 'Option 3']
+      // Set up checkbox field
+      const checkboxConditionField = {
+        _id: new ObjectId().toHexString(),
+        fieldType: BasicField.Checkbox,
+        fieldOptions: validOptions,
+        othersRadioButton: true,
+      } as ICheckboxFieldSchema
+      const conditions = [
+        { options: [validOptions[0], validOptions[1]], others: false },
+        { options: [validOptions[2]], others: true },
+      ]
+      const anyOfCondition = {
+        conditions: [
+          {
+            ifValueType: LogicIfValue.MultiValue,
+            _id: '58169',
+            field: checkboxConditionField._id,
+            state: LogicConditionState.AnyOf,
+            value: conditions,
+          },
+        ],
+        _id: MOCK_LOGIC_ID,
+        logicType: LogicType.PreventSubmit,
+        preventSubmitMessage: 'you shall not pass',
+      } as IPreventSubmitLogicSchema
+
+      const validResponses = [
+        [validOptions[0], validOptions[1]],
+        [validOptions[1], validOptions[0]], // valid even if options are in different order
+        [validOptions[2], 'Others: user input'],
+      ]
+      const invalidResponse = [validOptions[2]]
+
+      form.form_fields = [LOGIC_FIELD, checkboxConditionField]
+      form.form_logics = [anyOfCondition]
+
+      // Act + Assert
+      for (let i = 0; i < validResponses.length; i++) {
+        expect(
+          getVisibleFieldIds(
+            [
+              makeResponse(
+                checkboxConditionField._id,
+                null,
+                validResponses[i],
+                BasicField.Checkbox,
+              ),
+              LOGIC_RESPONSE,
+            ],
+            form,
+          ).has(LOGIC_FIELD._id),
+        ).toEqual(true)
+      }
+
+      expect(
+        getLogicUnitPreventingSubmit(
+          [
+            makeResponse(
+              checkboxConditionField._id,
+              null,
+              invalidResponse,
+              BasicField.Checkbox,
+            ),
+            LOGIC_RESPONSE,
+          ],
           form,
         ),
       ).toBeUndefined()
