@@ -4,7 +4,6 @@ import {
   getLogicUnitPreventingSubmit,
   getVisibleFieldIds,
 } from '../../../../shared/util/logic'
-import { formatFieldsForLogic } from '../../../../shared/util/logic-utils'
 import {
   AuthType,
   FieldResponse,
@@ -84,18 +83,14 @@ export default class ParsedResponsesObject {
     }
 
     const filteredResponses = filteredResponsesResult.value
-    const formattedResponses = formatFieldsForLogic(
-      filteredResponses,
-      form.form_fields,
-    )
 
     // Set of all visible fields
-    const visibleFieldIds = getVisibleFieldIds(formattedResponses, form)
+    const visibleFieldIds = getVisibleFieldIds(filteredResponses, form)
 
     // Guard against invalid form submissions that should have been prevented by
     // logic.
     if (
-      getLogicUnitPreventingSubmit(formattedResponses, form, visibleFieldIds)
+      getLogicUnitPreventingSubmit(filteredResponses, form, visibleFieldIds)
     ) {
       return err(new ProcessingError('Submission prevented by form logic'))
     }

@@ -10,9 +10,6 @@ const {
   getVisibleFieldIds,
   getLogicUnitPreventingSubmit,
 } = require('../../../../../shared/util/logic')
-const {
-  formatFieldsForLogic,
-} = require('../../../../../shared/util/logic-utils')
 
 /**
  * @typedef {number} FormState
@@ -177,12 +174,8 @@ function submitFormDirective(
 
       function advanceLogic() {
         try {
-          const formattedFields = formatFieldsForLogic(
-            scope.form.form_fields,
-            scope.form.form_fields,
-          )
           const visibleFieldIds = getVisibleFieldIds(
-            formattedFields,
+            scope.form.form_fields,
             scope.form,
           )
           scope.form.form_fields.forEach(function (field) {
@@ -194,7 +187,7 @@ function submitFormDirective(
             }
           })
           const preventSubmitLogicUnit = getLogicUnitPreventingSubmit(
-            formattedFields,
+            scope.form.form_fields,
             scope.form,
             visibleFieldIds,
           )
