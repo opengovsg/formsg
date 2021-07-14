@@ -3,7 +3,6 @@ import { celebrate, Joi as BaseJoi, Segments } from 'celebrate'
 import { StatusCodes } from 'http-status-codes'
 import JSONStream from 'JSONStream'
 import { ResultAsync } from 'neverthrow'
-import { FormFeedbackMetaDto } from 'shared/types/form/form_feedback'
 
 import {
   MAX_UPLOAD_FILE_SIZE,
@@ -37,6 +36,7 @@ import {
   FieldCreateDto,
   FieldUpdateDto,
   FormDto,
+  FormFeedbackMetaDto,
   FormFieldDto,
   FormUpdateParams,
   PermissionsUpdateDto,
