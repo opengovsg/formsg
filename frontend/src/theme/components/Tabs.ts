@@ -35,11 +35,11 @@ const variantLine: ThemingPropsThunk<SystemStyleObjectRecord, ChakraTheme> =
         whiteSpace: 'nowrap',
       },
       tab: {
+        textStyle: 'subhead-3',
         textTransform: 'uppercase',
         p: '0.25rem 0', // No horizontal padding to let bottom border be the same length as text
         borderColor: 'transparent',
         mx: '1rem',
-        // transition: 'borderColor 0.5s ease-out',
         //  margins to ensure text remains at the same position as selected tabs
         mb: '0.125rem',
         borderBottom: '0',
@@ -122,7 +122,6 @@ export const Tabs: ComponentMultiStyleConfig = {
   sizes: {
     md: {
       tab: {
-        textStyle: 'subhead-3',
         p: '0rem',
       },
     },
