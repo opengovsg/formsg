@@ -4,6 +4,7 @@ export const Tile: ComponentMultiStyleConfig = {
   parts: ['container', 'title', 'icon', 'subtitle'],
   baseStyle: {
     container: {
+      color: 'inherit',
       borderRadius: '0.25rem',
       padding: '1.5rem',
       _active: {
@@ -19,7 +20,8 @@ export const Tile: ComponentMultiStyleConfig = {
         border: '2px solid var(--chakra-colors-primary-500)',
       },
       bgColor: 'white',
-      border: '1px solid var(--chakra-colors-neutral-300)',
+      border: '1px solid',
+      borderColor: 'neutral.300',
     },
     title: {
       color: 'secondary.700',

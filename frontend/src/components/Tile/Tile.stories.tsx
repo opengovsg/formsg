@@ -1,5 +1,5 @@
 import { BiLockAlt, BiMailSend } from 'react-icons/bi'
-import { Box, ListItem, Text, UnorderedList } from '@chakra-ui/react'
+import { Box, Flex, ListItem, Text, UnorderedList } from '@chakra-ui/react'
 import { Meta, Story } from '@storybook/react'
 import _ from 'lodash'
 
@@ -20,7 +20,7 @@ const List = ({
   listTitle: string
   listItems: string[]
 }) => (
-  <>
+  <Flex alignItems="flex-start" flexDir="column">
     <Text>{listTitle}</Text>
     <UnorderedList>
       {listItems.map((text) => (
@@ -29,7 +29,7 @@ const List = ({
         </ListItem>
       ))}
     </UnorderedList>
-  </>
+  </Flex>
 )
 
 const Template: Story<TileProps> = (args) => (

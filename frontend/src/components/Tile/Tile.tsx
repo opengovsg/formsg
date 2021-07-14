@@ -2,6 +2,7 @@ import React, { ReactChild } from 'react'
 import { IconType } from 'react-icons/lib'
 import {
   Box,
+  Button,
   forwardRef,
   HStack,
   Icon,
@@ -46,22 +47,20 @@ export const Tile = forwardRef<TileProps, 'div'>(
 
     return (
       // Ref passed into the component as a whole so that it can be focused
-      <Box sx={styles.container} ref={ref}>
+      <Button sx={styles.container} ref={ref}>
         <VStack spacing="1rem" alignItems="flex-start">
           <HStack spacing="1rem">
             <Icon sx={styles.icon} as={icon}></Icon>
             {tag}
           </HStack>
-          <Box>
-            <Text sx={styles.title} as="h4">
-              {title}
-            </Text>
-            <Text sx={styles.subtitle}>{subtitle}</Text>
-          </Box>
+          <Text sx={styles.title} as="h4">
+            {title}
+          </Text>
+          <Text sx={styles.subtitle}>{subtitle}</Text>
           {/* Box used to wrap children prop so that it doesn't overflow */}
           {children && <Box>{children}</Box>}
         </VStack>
-      </Box>
+      </Button>
     )
   },
 )
