@@ -3,6 +3,7 @@ import { celebrate, Joi as BaseJoi, Segments } from 'celebrate'
 import { StatusCodes } from 'http-status-codes'
 import JSONStream from 'JSONStream'
 import { ResultAsync } from 'neverthrow'
+import { FormFeedbackMetaDto } from 'shared/types/form/form_feedback'
 
 import {
   MAX_UPLOAD_FILE_SIZE,
@@ -589,9 +590,10 @@ export const handleCountFormSubmissions = [
  * @returns 422 when user in session cannot be retrieved from the database
  * @returns 500 when database error occurs
  */
-export const handleCountFormFeedback: ControllerHandler<{
-  formId: string
-}> = async (req, res) => {
+export const handleCountFormFeedback: ControllerHandler<
+  { formId: string },
+  number | ErrorDto
+> = async (req, res) => {
   const { formId } = req.params
   const sessionUserId = (req.session as Express.AuthedSession).user._id
 
@@ -732,9 +734,10 @@ export const handleStreamFormFeedback: ControllerHandler<{
  * @returns 422 when user in session cannot be retrieved from the database
  * @returns 500 when database error occurs
  */
-export const handleGetFormFeedback: ControllerHandler<{
-  formId: string
-}> = (req, res) => {
+export const handleGetFormFeedback: ControllerHandler<
+  { formId: string },
+  FormFeedbackMetaDto | ErrorDto
+> = (req, res) => {
   const { formId } = req.params
   const sessionUserId = (req.session as Express.AuthedSession).user._id
 

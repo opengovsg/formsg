@@ -4,8 +4,8 @@ import mongoose from 'mongoose'
 import { ResultAsync } from 'neverthrow'
 
 import { IFormFeedbackSchema } from '../../../types'
-import { GetFormFeedbackDto } from '../../../types/api/form_feedback'
-import { ProcessedFeedback } from '../../../types/form_feedback'
+import { FormFeedbackMetaDto } from '../../../types/api/form_feedback'
+import { ProcessedFeedbackMeta } from '../../../types/form_feedback'
 import { createLoggerWithLabel } from '../../config/logger'
 import getFormFeedbackModel from '../../models/form_feedback.server.model'
 import { getMongoErrorMessage } from '../../utils/handle-mongo-error'
@@ -61,7 +61,7 @@ export const getFormFeedbackStream = (
  */
 export const getFormFeedbacks = (
   formId: string,
-): ResultAsync<GetFormFeedbackDto, DatabaseError> => {
+): ResultAsync<FormFeedbackMetaDto, DatabaseError> => {
   return ResultAsync.fromPromise(
     FormFeedbackModel.find({ formId }).sort({ created: 1 }).exec(),
     (error) => {
@@ -89,7 +89,7 @@ export const getFormFeedbacks = (
     let totalRating = 0
     const processedFeedback = feedbacks.map((fb, idx) => {
       totalRating += fb.rating
-      const response: ProcessedFeedback = {
+      const response: ProcessedFeedbackMeta = {
         // 1-based indexing.
         index: idx + 1,
         timestamp: moment(fb.created).valueOf(),

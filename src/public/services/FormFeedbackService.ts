@@ -1,10 +1,11 @@
 import axios from 'axios'
 
+import { SuccessMessageDto } from '../../../shared/types/core'
 import {
-  FormFeedbackPostDto,
-  FormFeedbackResponseDto,
-  GetFormFeedbackDto,
-} from '../../types/api/form_feedback'
+  FormFeedbackDto,
+  FormFeedbackMetaDto,
+  SubmitFormFeedbackBodyDto,
+} from '../../../shared/types/form/form_feedback'
 import { FeedbackCsvGenerator } from '../modules/forms/helpers/FeedbackCsvGenerator'
 
 // Exported for testing
@@ -15,14 +16,14 @@ export const ADMIN_FORM_ENDPOINT = '/api/v3/admin/forms'
  * Post feedback for a given form.
  * @param formId the id of the form to post feedback for
  * @param feedbackToPost object containing the feedback
- * @returns the posted feedback
+ * @returns success message
  */
 export const postFeedback = async (
   formId: string,
-  feedbackToPost: FormFeedbackPostDto,
-): Promise<FormFeedbackResponseDto> => {
+  feedbackToPost: SubmitFormFeedbackBodyDto,
+): Promise<SuccessMessageDto> => {
   return axios
-    .post<FormFeedbackResponseDto>(
+    .post<SuccessMessageDto>(
       `${PUBLIC_FORM_ENDPOINT}/${formId}/feedback`,
       feedbackToPost,
     )
@@ -36,9 +37,9 @@ export const postFeedback = async (
  */
 export const getFeedback = async (
   formId: string,
-): Promise<GetFormFeedbackDto> => {
+): Promise<FormFeedbackMetaDto> => {
   return axios
-    .get<GetFormFeedbackDto>(`${ADMIN_FORM_ENDPOINT}/${formId}/feedback`)
+    .get<FormFeedbackMetaDto>(`${ADMIN_FORM_ENDPOINT}/${formId}/feedback`)
     .then(({ data }) => data)
 }
 
@@ -65,7 +66,7 @@ export const downloadFeedback = async (
   const expectedNumResponses = await countFeedback(formId)
 
   return axios
-    .get<FormFeedbackResponseDto[]>(
+    .get<FormFeedbackDto[]>(
       `${ADMIN_FORM_ENDPOINT}/${formId}/feedback/download`,
     )
     .then(({ data }) => {

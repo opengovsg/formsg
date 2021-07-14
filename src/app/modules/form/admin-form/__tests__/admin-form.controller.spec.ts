@@ -69,7 +69,7 @@ import {
   FieldCreateDto,
   FieldUpdateDto,
 } from 'src/types/api'
-import { GetFormFeedbackDto } from 'src/types/api/form_feedback'
+import { FormFeedbackMetaDto } from 'src/types/api/form_feedback'
 
 import {
   generateDefaultField,
@@ -2421,7 +2421,7 @@ describe('admin-form.controller', () => {
     it('should return 200 with feedback response successfully', async () => {
       // Arrange
       const mockRes = expressHandler.mockResponse()
-      const expectedFormFeedback: GetFormFeedbackDto = {
+      const expectedFormFeedback: FormFeedbackMetaDto = {
         count: 212,
         feedback: [
           {

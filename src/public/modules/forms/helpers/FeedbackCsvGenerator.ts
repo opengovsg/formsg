@@ -1,6 +1,6 @@
 import moment from 'moment-timezone'
 
-import { FormFeedbackResponseDto } from '../../../../types/api/form_feedback'
+import { FormFeedbackDto } from '../../../../../shared/types/form/form_feedback'
 
 import { CsvGenerator } from './CsvGenerator'
 
@@ -16,7 +16,7 @@ export class FeedbackCsvGenerator extends CsvGenerator {
   /**
    * Generate a string representing a form feedback CSV line record
    */
-  addLineFromFeedback(feedback: FormFeedbackResponseDto) {
+  addLineFromFeedback(feedback: FormFeedbackDto) {
     const createdAt = moment(feedback.created)
       .tz('Asia/Singapore')
       .format('DD MMM YYYY hh:mm:ss A')
