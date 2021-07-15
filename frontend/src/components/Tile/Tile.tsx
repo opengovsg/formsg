@@ -71,13 +71,13 @@ export const Tile = forwardRef<TileProps, 'button'>(
 export const TileTitle = (props: TextProps): JSX.Element => {
   const styles = useStyles()
   // Allow consumers to override default style props with their own styling
-  return <TileText sx={styles.title} {...props} />
+  return <Text sx={styles.title} {...props} />
 }
 
 export const TileSubtitle = (props: TextProps): JSX.Element => {
   const styles = useStyles()
   // Allow consumers to override default style props with their own styling
-  return <TileText sx={styles.subtitle} {...props} />
+  return <Text sx={styles.subtitle} {...props} />
 }
 
 export const TileText = (props: TextProps): JSX.Element => {

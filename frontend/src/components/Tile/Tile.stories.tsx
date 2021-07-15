@@ -1,11 +1,12 @@
+import { useState } from 'react'
 import { BiLockAlt, BiMailSend } from 'react-icons/bi'
-import { Box, Flex, ListItem, Text, UnorderedList } from '@chakra-ui/react'
+import { ListItem, Stack, UnorderedList } from '@chakra-ui/react'
 import { Meta, Story } from '@storybook/react'
 import _ from 'lodash'
 
 import Tag from '~components/Tag'
 
-import { Tile, TileProps } from './Tile'
+import { Tile, TileProps, TileSubtitle, TileText, TileTitle } from './Tile'
 
 export default {
   title: 'Components/Tiles',
@@ -15,67 +16,142 @@ export default {
 
 const List = ({
   listTitle,
-  listItems,
+  listItems = [],
 }: {
   listTitle: string
   listItems: string[]
 }) => (
-  <Flex alignItems="flex-start" flexDir="column">
-    <Text>{listTitle}</Text>
+  <>
+    <TileText textStyle="subhead-2">{listTitle}</TileText>
     <UnorderedList>
       {listItems.map((text) => (
-        <ListItem color="secondary.400" textStyle="body-2">
-          <Text>{text}</Text>
+        <ListItem>
+          <TileText textStyle="body-2" textAlign="left">
+            {text}
+          </TileText>
         </ListItem>
       ))}
     </UnorderedList>
-  </Flex>
+  </>
 )
 
-const Template: Story<TileProps> = (args) => (
-  <Box width="332px">
-    <Tile {...args} />
-  </Box>
-)
-export const Complex = Template.bind({})
-Complex.args = {
-  tag: <Tag>recommended</Tag>,
-  title: 'Title',
-  subtitle: 'Receive responses in forms',
-  icon: BiLockAlt,
-  children: <List listTitle="description" listItems={['item 1', 'item 2']} />,
+interface TileTemplateProps extends TileProps {
+  title: string
+  subtitle: string
+  listTitle: string
+  listItems: Record<string, string>
 }
 
-export const Simple = Template.bind({})
-Simple.args = {
-  title: 'Title',
-  subtitle: 'Subtitle',
-  icon: BiMailSend,
-}
-
-export const Playground: Story = ({
+const Template: Story<TileTemplateProps> = ({
   title,
   subtitle,
   listTitle,
   listItems,
+  ...args
 }) => {
-  // NOTE: This is required because storybook allows complete removal of the list
-  // And it's added back as an object
-  const actualListItems =
-    typeof listItems === 'object' ? _.values(listItems) : listItems
-
+  const [isClicked, setIsClicked] = useState<boolean>(false)
+  const hasDescription = listTitle || listItems
   return (
-    <Box width="332px">
-      <Tile icon={BiLockAlt} title={title} subtitle={subtitle}>
-        <List listTitle={listTitle} listItems={actualListItems ?? []}></List>
-      </Tile>
-    </Box>
+    <Tile
+      {...args}
+      onClick={() => setIsClicked(!isClicked)}
+      isActive={isClicked}
+    >
+      <TileTitle>{title}</TileTitle>
+      <TileSubtitle>{subtitle}</TileSubtitle>
+      {hasDescription && (
+        <List listTitle={listTitle} listItems={_.values(listItems)} />
+      )}
+    </Tile>
   )
 }
 
-Playground.args = {
-  title: 'Playground',
-  subtitle: 'For you to have fun',
-  listTitle: 'Title',
-  listItems: ['item 1', 'item 2'],
+export const Complex = Template.bind({})
+Complex.args = {
+  variant: 'complex',
+  title: 'Complex',
+  subtitle: 'Receive responses in forms',
+  tag: <Tag>recommended</Tag>,
+  icon: BiLockAlt,
+  listTitle: 'description',
+  listItems: {
+    1: 'item 1',
+    2: 'item 2',
+  },
 }
+
+export const Simple = Template.bind({})
+Simple.args = {
+  variant: 'simple',
+  title: 'Simple',
+  subtitle: 'Receive responses in forms',
+  icon: BiMailSend,
+}
+
+export const Playground: Story = () => {
+  const [isStorageClicked, setIsStorageClicked] = useState<boolean>(false)
+  const [isEmailClicked, setIsEmailClicked] = useState<boolean>(false)
+
+  return (
+    <Stack
+      width={{ md: '100%' }}
+      direction={{ base: 'column', md: 'row' }}
+      spacing="1rem"
+    >
+      <StorageTile
+        onClick={() => {
+          setIsStorageClicked(true)
+          setIsEmailClicked(false)
+        }}
+        isActive={isStorageClicked}
+      />
+      <EmailTile
+        onClick={() => {
+          setIsStorageClicked(false)
+          setIsEmailClicked(true)
+        }}
+        isActive={isEmailClicked}
+      />
+    </Stack>
+  )
+}
+
+interface StoryTileProps {
+  onClick: () => void
+  isActive?: boolean
+}
+
+const EmailTile = ({ onClick, isActive }: StoryTileProps) => (
+  <Tile
+    variant="complex"
+    icon={BiMailSend}
+    isActive={isActive}
+    onClick={onClick}
+    isFullWidth
+  >
+    <TileTitle>Email Mode</TileTitle>
+    <TileSubtitle>Receive responses in your inbox</TileSubtitle>
+    <List
+      listTitle="Who is it for:"
+      listItems={['Emailed copy of response', 'MyInfo fields']}
+    />
+  </Tile>
+)
+
+const StorageTile = ({ onClick, isActive }: StoryTileProps) => (
+  <Tile
+    variant="complex"
+    icon={BiLockAlt}
+    tag={<Tag>recommended</Tag>}
+    isActive={isActive}
+    onClick={onClick}
+    isFullWidth
+  >
+    <TileTitle>Storage Mode</TileTitle>
+    <TileSubtitle>Receive responses in Form</TileSubtitle>
+    <List
+      listTitle="Who is it for:"
+      listItems={['High-volume forms', 'End to end encryption needs']}
+    />
+  </Tile>
+)
