@@ -5,6 +5,8 @@ import { mocked } from 'ts-jest/utils'
 
 import { SubmissionMetadataList } from 'src/types'
 
+import { DateString } from '../../../../shared/types/generic'
+import { SubmissionId } from '../../../../shared/types/submission'
 import * as AdminSubmissionService from '../AdminSubmissionsService'
 import * as formsSdk from '../FormSgSdkService'
 import { ADMIN_FORM_ENDPOINT } from '../UpdateFormService'
@@ -22,8 +24,8 @@ const mockDecodeBase64 = mocked(decode)
 describe('AdminSubmissionsService', () => {
   describe('countFormSubmissions', () => {
     const MOCK_FORM_ID = 'mock–form-id'
-    const MOCK_START_DATE = new Date(2020, 11, 17)
-    const MOCK_END_DATE = new Date(2021, 1, 10)
+    const MOCK_START_DATE = new Date(2020, 11, 17).toISOString() as DateString
+    const MOCK_END_DATE = new Date(2021, 1, 10).toISOString() as DateString
 
     it('should call api successfully when all parameters are provided', async () => {
       // Arrange
@@ -73,7 +75,7 @@ describe('AdminSubmissionsService', () => {
       metadata: [
         {
           number: 1,
-          refNo: '1234',
+          refNo: '1234' as SubmissionId,
           submissionTime: 'sometime',
         },
       ],
@@ -86,7 +88,7 @@ describe('AdminSubmissionsService', () => {
       // Act
       const actual = await AdminSubmissionService.getSubmissionsMetadataByPage({
         formId: MOCK_FORM_ID,
-        pageNum: MOCK_PAGE_NUM,
+        page: MOCK_PAGE_NUM,
       })
 
       // Assert
@@ -110,7 +112,7 @@ describe('AdminSubmissionsService', () => {
       metadata: [
         {
           number: 1,
-          refNo: '1234',
+          refNo: '1234' as SubmissionId,
           submissionTime: 'sometime',
         },
       ],
@@ -178,7 +180,11 @@ describe('AdminSubmissionsService', () => {
 
     it('should decrypt successfully when there is data', async () => {
       // Arrange
-      mockFormSgSdk.crypto.decryptFile.mockReturnValueOnce('great decryption')
+      // Do not really want to mock an Uint8Array since it does not matter for
+      // this test.
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      mockFormSgSdk.crypto.decryptFile.mockResolvedValueOnce('great decryption')
       const MOCK_ENCRYPTED_ATTACHMENT = {
         encryptedFile: {
           submissionPublicKey: MOCK_PUBLIC_KEY,

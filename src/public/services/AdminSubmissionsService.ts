@@ -2,13 +2,12 @@ import { decode as decodeBase64 } from '@stablelib/base64'
 import axios from 'axios'
 import JSZip from 'jszip'
 
-import { EncryptedSubmissionDto, SubmissionMetadataList } from 'src/types'
 import {
-  FormsSubmissionMetadataQueryDto,
   FormSubmissionMetadataQueryDto,
+  StorageModeSubmissionDto,
+  StorageModeSubmissionMetadataList,
   SubmissionCountQueryDto,
-  SubmissionResponseQueryDto,
-} from 'src/types/api'
+} from '../../../shared/types/submission'
 
 import { FormSgSdk } from './FormSgSdkService'
 import { ADMIN_FORM_ENDPOINT } from './UpdateFormService'
@@ -21,7 +20,10 @@ import { ADMIN_FORM_ENDPOINT } from './UpdateFormService'
 export const countFormSubmissions = async ({
   formId,
   dates,
-}: SubmissionCountQueryDto): Promise<number> => {
+}: {
+  formId: string
+  dates?: SubmissionCountQueryDto
+}): Promise<number> => {
   const queryUrl = `${ADMIN_FORM_ENDPOINT}/${formId}/submissions/count`
   if (dates) {
     return axios
@@ -41,12 +43,15 @@ export const countFormSubmissions = async ({
  */
 export const getSubmissionsMetadataByPage = async ({
   formId,
-  pageNum,
-}: FormsSubmissionMetadataQueryDto): Promise<SubmissionMetadataList> => {
+  page,
+}: {
+  formId: string
+  page: NonNullable<FormSubmissionMetadataQueryDto['page']>
+}): Promise<StorageModeSubmissionMetadataList> => {
   return axios
     .get(`${ADMIN_FORM_ENDPOINT}/${formId}/submissions/metadata`, {
       params: {
-        page: pageNum,
+        page,
       },
     })
     .then(({ data }) => data)
@@ -61,7 +66,10 @@ export const getSubmissionsMetadataByPage = async ({
 export const getSubmissionMetadataById = async ({
   formId,
   submissionId,
-}: FormSubmissionMetadataQueryDto): Promise<SubmissionMetadataList> => {
+}: {
+  formId: string
+  submissionId: NonNullable<FormSubmissionMetadataQueryDto['submissionId']>
+}): Promise<StorageModeSubmissionMetadataList> => {
   return axios
     .get(`${ADMIN_FORM_ENDPOINT}/${formId}/submissions/metadata`, {
       params: {
@@ -80,7 +88,10 @@ export const getSubmissionMetadataById = async ({
 export const getEncryptedResponse = async ({
   formId,
   submissionId,
-}: SubmissionResponseQueryDto): Promise<EncryptedSubmissionDto> => {
+}: {
+  formId: string
+  submissionId: string
+}): Promise<StorageModeSubmissionDto> => {
   return axios
     .get(`${ADMIN_FORM_ENDPOINT}/${formId}/submissions/${submissionId}`)
     .then(({ data }) => data)

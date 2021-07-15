@@ -418,7 +418,7 @@ function ViewResponsesController(
               })
             : AdminSubmissionsService.getSubmissionsMetadataByPage({
                 formId: vm.myform._id,
-                pageNum: page,
+                page,
               })
           return $q
             .when(getMetadataPromise)
