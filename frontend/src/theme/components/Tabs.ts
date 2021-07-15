@@ -22,14 +22,6 @@ const variantLine: ThemingPropsThunk<SystemStyleObjectRecord, ChakraTheme> =
         w: '100%',
         overflowX: 'auto',
         borderColor: 'transparent',
-        /* Hide scrollbar for IE and Edge */
-        '&::MsOverflowStyle': 'none',
-        /* Hide scrollbar for Firefox */
-        '&::scrollbarWidth': 'none',
-        /* Hide scrollbar for Chrome, Safari and Opera */
-        '&::-webkit-scrollbar': {
-          display: 'none',
-        },
         pt: '1.5rem',
         pb: '1.375rem',
         whiteSpace: 'nowrap',
@@ -69,7 +61,26 @@ const variantLight: ThemingPropsThunk<SystemStyleObjectRecord, ChakraTheme> = (
     root: {
       bg: 'white',
     },
+    tablist: {
+      /* Hide scrollbar for IE and Edge */
+      '&::MsOverflowStyle': 'none',
+      /* Hide scrollbar for Firefox */
+      '&::scrollbarWidth': 'none',
+      /* Scrollbar for Chrome, Safari and Opera */
+      '&::-webkit-scrollbar': {
+        height: '0.75rem',
+        backgroundColor: 'white',
+      },
+      '&::-webkit-scrollbar-thumb': {
+        backgroundColor: 'secondary.200',
+        border: '0.25rem solid',
+        borderColor: 'white',
+        borderRadius: '0.5rem',
+        borderBox: 'padding-box',
+      },
+    },
     tab: {
+      color: 'primary.500',
       _hover: {
         color: 'primary.400',
       },
@@ -82,7 +93,6 @@ const variantLight: ThemingPropsThunk<SystemStyleObjectRecord, ChakraTheme> = (
       _active: {
         bg: 'white',
       },
-      color: 'primary.300',
     },
   })
 }
@@ -93,6 +103,24 @@ const variantDark: ThemingPropsThunk<SystemStyleObjectRecord, ChakraTheme> = (
   return merge(variantLine(props), {
     root: {
       bg: 'secondary.500',
+    },
+    tablist: {
+      /* Hide scrollbar for IE and Edge */
+      '&::MsOverflowStyle': 'none',
+      /* Hide scrollbar for Firefox */
+      '&::scrollbarWidth': 'none',
+      /* Scrollbar for Chrome, Safari and Opera */
+      '&::-webkit-scrollbar': {
+        height: '0.75rem',
+        backgroundColor: 'secondary.500',
+      },
+      '&::-webkit-scrollbar-thumb': {
+        backgroundColor: 'secondary.400',
+        border: '0.25rem solid',
+        borderColor: 'secondary.500',
+        borderRadius: '0.5rem',
+        borderBox: 'padding-box',
+      },
     },
     tab: {
       _active: {
