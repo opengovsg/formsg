@@ -7,6 +7,7 @@ import { FormError } from './FormError'
 import { FormLabel } from './FormLabel'
 import { Input } from './Input'
 import { Link } from './Link'
+import { NumberInput } from './NumberInput'
 import { PhoneNumberInput } from './PhoneNumberInput'
 import { Textarea } from './Textarea'
 
@@ -18,6 +19,7 @@ export const components = {
   FormLabel,
   Input,
   Link,
+  NumberInput,
   PhoneNumberInput,
   Textarea,
   [RATING_THEME_KEY]: RatingField,
