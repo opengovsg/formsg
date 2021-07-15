@@ -1,17 +1,30 @@
-import React, { ReactChild } from 'react'
+import React, { ReactNode } from 'react'
 import { IconType } from 'react-icons/lib'
 import {
-  Box,
   Button,
+  ButtonProps,
   forwardRef,
   HStack,
   Icon,
+  StylesProvider,
   Text,
+  TextProps,
   useMultiStyleConfig,
-  VStack,
+  useStyles,
 } from '@chakra-ui/react'
 
-export interface TileProps {
+export interface TileProps
+  extends Omit<
+    ButtonProps,
+    | 'colorScheme'
+    | 'iconSpacing'
+    | 'leftIcon'
+    | 'rightIcon'
+    | 'loadingText'
+    | 'spinner'
+    | 'spinnerPlacement'
+    | 'title'
+  > {
   // The typing here is to satisfy the ts compiler
   // because otherwise, it will complain about assigning null to the as prop
   /**
@@ -20,47 +33,53 @@ export interface TileProps {
   icon: IconType
 
   /**
-   * The title of the tile
+   * The components to be displayed
+   * Refer here for correct typing: https://stackoverflow.com/questions/53688899/typescript-and-react-children-type
    */
-  title: string
-  /**
-   * The subtitle of the tile
-   */
-  subtitle: string
-
-  /**
-   * The components to be displayed below the title/subtitle
-   */
-  children: ReactChild
+  children: ReactNode
 
   /**
    * The tag, if any, to be displayed alongside the title
    */
   tag?: JSX.Element
+  /**
+   * The variant of the tile - whether it is complex (many elements) or simple (title and subtitle only).
+   * Defaults to simple.
+   */
+  variant: TileVariant
 }
 
 type TileVariant = 'complex' | 'simple'
-export const Tile = forwardRef<TileProps, 'div'>(
-  ({ tag, icon, title, subtitle, children }, ref) => {
-    const variant: TileVariant = children ? 'complex' : 'simple'
-    const styles = useMultiStyleConfig('Tile', { variant })
-
+export const Tile = forwardRef<TileProps, 'button'>(
+  ({ tag, icon, variant = 'simple', children, isActive, ...props }, ref) => {
+    const styles = useMultiStyleConfig('Tile', { variant, isActive })
     return (
       // Ref passed into the component as a whole so that it can be focused
-      <Button sx={styles.container} ref={ref}>
-        <VStack spacing="1rem" alignItems="flex-start">
+      <StylesProvider value={styles}>
+        <Button sx={styles.container} ref={ref} {...props}>
           <HStack spacing="1rem">
             <Icon sx={styles.icon} as={icon}></Icon>
             {tag}
           </HStack>
-          <Text sx={styles.title} as="h4">
-            {title}
-          </Text>
-          <Text sx={styles.subtitle}>{subtitle}</Text>
-          {/* Box used to wrap children prop so that it doesn't overflow */}
-          {children && <Box>{children}</Box>}
-        </VStack>
-      </Button>
+          {children}
+        </Button>
+      </StylesProvider>
     )
   },
 )
+
+export const TileTitle = (props: TextProps): JSX.Element => {
+  const styles = useStyles()
+  // Allow consumers to override default style props with their own styling
+  return <TileText sx={styles.title} {...props} />
+}
+
+export const TileSubtitle = (props: TextProps): JSX.Element => {
+  const styles = useStyles()
+  // Allow consumers to override default style props with their own styling
+  return <TileText sx={styles.subtitle} {...props} />
+}
+
+export const TileText = (props: TextProps): JSX.Element => {
+  return <Text color="secondary.400" {...props} />
+}
