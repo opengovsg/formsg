@@ -1,27 +1,22 @@
 import { Document, Model } from 'mongoose'
 
+import { FormBillingStatistic, LoginBase } from '../../shared/types/billing'
+
 import { IAgencySchema } from './agency'
-import { AuthType, IFormSchema, IPopulatedForm } from './form'
+import { IFormSchema, IPopulatedForm } from './form'
 import { IUserSchema } from './user'
 
-export interface ILogin {
+export interface ILogin extends LoginBase {
   admin: IUserSchema['_id']
   form: IFormSchema['_id']
   agency: IAgencySchema['_id']
-  authType: AuthType
-  esrvcId: string
+}
+
+export interface ILoginSchema extends ILogin, Document {
   created?: Date
 }
 
-export interface ILoginSchema extends ILogin, Document {}
-
-export type LoginStatistic = {
-  adminEmail: IUserSchema['email']
-  formName: IFormSchema['title']
-  total: number
-  formId: IFormSchema['_id']
-  authType: ILoginSchema['authType']
-}
+export type LoginStatistic = FormBillingStatistic
 
 export interface ILoginModel extends Model<ILoginSchema> {
   aggregateLoginStats: (
