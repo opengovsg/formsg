@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-import { BillingInfoDto, BillingQueryDto } from '../../types/api/billing'
+import { BillingInfoDto, BillingQueryDto } from '../../../shared/types/billing'
 
 // Exported for testing
 export const BILLING_ENDPOINT = '/api/v3/billings'
