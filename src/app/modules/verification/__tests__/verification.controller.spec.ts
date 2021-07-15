@@ -13,12 +13,13 @@ import {
 import { HashingError } from 'src/app/utils/hash'
 import * as OtpUtils from 'src/app/utils/otp'
 import { WAIT_FOR_OTP_SECONDS } from 'src/shared/util/verification'
-import { IFormSchema, IVerificationSchema } from 'src/types'
+import { IFormSchema, IPopulatedForm, IVerificationSchema } from 'src/types'
 
 import dbHandler from 'tests/unit/backend/helpers/jest-db'
 
 import expressHandler from '../../../../../tests/unit/backend/helpers/jest-express'
 import { DatabaseError, MalformedParametersError } from '../../core/core.errors'
+import * as AdminFormService from '../../form/admin-form/admin-form.service'
 import { FormNotFoundError } from '../../form/form.errors'
 import * as FormService from '../../form/form.service'
 import * as VerificationController from '../verification.controller'
@@ -614,9 +615,21 @@ describe('Verification controller', () => {
       },
     })
 
+    const MOCK_FORM = {
+      admin: {
+        _id: new ObjectId(),
+      },
+      title: 'i am a form',
+      _id: new ObjectId(),
+      permissionList: [{ email: 'former@forms.sg' }],
+    } as IPopulatedForm
+
     beforeEach(() => {
       MockFormService.retrieveFormById.mockReturnValue(
         okAsync({} as IFormSchema),
+      )
+      MockFormService.retrieveFullFormById.mockReturnValueOnce(
+        okAsync(MOCK_FORM),
       )
 
       MockOtpUtils.generateOtpWithHash.mockReturnValue(
@@ -631,6 +644,12 @@ describe('Verification controller', () => {
     })
 
     it('should return 201 when params are valid', async () => {
+      // Arrange
+      const disableSpy = jest.spyOn(
+        AdminFormService,
+        'checkFreeSmsSentByAdminAndDeactivateVerification',
+      )
+
       // Act
       await VerificationController._handleGenerateOtp(
         MOCK_REQ,
@@ -651,6 +670,7 @@ describe('Verification controller', () => {
         recipient: MOCK_ANSWER,
       })
       expect(mockRes.sendStatus).toHaveBeenCalledWith(StatusCodes.CREATED)
+      expect(disableSpy).toBeCalledWith(MOCK_FORM)
     })
 
     it('should return 400 when form SMS parameters are malformed', async () => {
