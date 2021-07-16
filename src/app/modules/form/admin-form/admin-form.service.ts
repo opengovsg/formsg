@@ -361,24 +361,27 @@ export const transferFormOwnership = (
 export const createForm = (
   formParams: Merge<IForm, { admin: string }>,
 ): ResultAsync<
-  IFormSchema,
+  IFormDocument,
   | DatabaseError
   | DatabaseValidationError
   | DatabaseConflictError
   | DatabasePayloadSizeError
 > => {
-  return ResultAsync.fromPromise(FormModel.create(formParams), (error) => {
-    logger.error({
-      message: 'Database error encountered when creating form',
-      meta: {
-        action: 'createForm',
-        formParams,
-      },
-      error,
-    })
+  return ResultAsync.fromPromise(
+    FormModel.create(formParams) as Promise<IFormDocument>,
+    (error) => {
+      logger.error({
+        message: 'Database error encountered when creating form',
+        meta: {
+          action: 'createForm',
+          formParams,
+        },
+        error,
+      })
 
-    return transformMongoError(error)
-  })
+      return transformMongoError(error)
+    },
+  )
 }
 
 /**

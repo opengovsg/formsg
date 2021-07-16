@@ -1,5 +1,5 @@
 import { Document, LeanDocument, Model, ToObjectOptions, Types } from 'mongoose'
-import { Merge, SetRequired } from 'type-fest'
+import { Merge, SetOptional } from 'type-fest'
 
 import {
   AdminDashboardFormMetaDto,
@@ -68,18 +68,42 @@ export type FormOtpData = {
 
 export type Permission = FormPermission
 
-export interface IForm extends FormBase {
-  // Loosen types here to allow for IPopulatedForm extension
-  admin: any
-  permission?: Permission[]
-  form_fields?: FormFieldSchema[]
-  form_logics?: FormLogicSchema[]
+/**
+ * Keys with defaults in schema.
+ */
+type FormDefaultableKey =
+  | 'form_fields'
+  | 'form_logics'
+  | 'permissionList'
+  | 'startPage'
+  | 'endPage'
+  | 'hasCaptcha'
+  | 'authType'
+  | 'status'
+  | 'inactiveMessage'
+  | 'submissionLimit'
+  | 'isListed'
+  | 'webhook'
 
-  publicKey?: string
-  // string type is allowed due to a setter on the form schema that transforms
-  // strings to string array.
-  emails?: string[] | string
-}
+export type IForm = Merge<
+  SetOptional<FormBase, FormDefaultableKey>,
+  {
+    // Loosen types here to allow for IPopulatedForm extension
+    admin: any
+    permission?: Permission[]
+    form_fields?: FormFieldSchema[]
+    form_logics?: FormLogicSchema[]
+
+    webhook?: Partial<FormBase['webhook']>
+    startPage?: Partial<FormBase['startPage']>
+    endPage?: Partial<FormBase['endPage']>
+
+    publicKey?: string
+    // string type is allowed due to a setter on the form schema that transforms
+    // strings to string array.
+    emails?: string[] | string
+  }
+>
 
 /**
  * Typing for duplicate form with specific keys.
@@ -99,6 +123,9 @@ export type PickDuplicateForm = Pick<
 export interface IFormSchema extends IForm, Document, PublicView<PublicForm> {
   form_fields?: Types.DocumentArray<FormFieldSchema> | FormFieldSchema[]
   form_logics?: Types.DocumentArray<FormLogicSchema> | FormLogicSchema[]
+
+  created?: Date
+  lastModified?: Date
 
   /**
    * Replaces the field corresponding to given id to given new field
@@ -201,12 +228,9 @@ export interface IFormDocument extends IFormSchema {
   // Hence, using Exclude here over NonNullable.
   submissionLimit: Exclude<IFormSchema['submissionLimit'], undefined>
   isListed: NonNullable<IFormSchema['isListed']>
-  startPage: SetRequired<NonNullable<IFormSchema['startPage']>, 'colorTheme'>
-  endPage: SetRequired<
-    NonNullable<IFormSchema['endPage']>,
-    'title' | 'buttonText'
-  >
-  webhook: SetRequired<NonNullable<IFormSchema['webhook']>, 'url'>
+  startPage: Required<NonNullable<IFormSchema['startPage']>>
+  endPage: Required<NonNullable<IFormSchema['endPage']>>
+  webhook: Required<NonNullable<IFormSchema['webhook']>>
 }
 
 export interface IPopulatedForm extends Omit<IFormDocument, 'toJSON'> {

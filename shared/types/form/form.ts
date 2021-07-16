@@ -3,7 +3,7 @@ import { FormField, FormFieldDto } from '../field'
 
 import { FormLogic } from './form_logic'
 import { FormLogo } from './form_logo'
-import { Merge, PartialDeep, SetRequired } from 'type-fest'
+import { Merge, Opaque, PartialDeep } from 'type-fest'
 import {
   ADMIN_FORM_META_FIELDS,
   EMAIL_FORM_SETTINGS_FIELDS,
@@ -11,6 +11,9 @@ import {
   STORAGE_FORM_SETTINGS_FIELDS,
   STORAGE_PUBLIC_FORM_FIELDS,
 } from '../../constants/form'
+import { DateString } from '../generic'
+
+export type FormId = Opaque<string, 'FormId'>
 
 export enum FormColorTheme {
   Blue = 'blue',
@@ -69,32 +72,29 @@ export interface FormBase {
   title: string
   admin: UserDto['_id']
 
-  form_fields?: FormField[]
-  form_logics?: FormLogic[]
-  permissionList?: FormPermission[]
+  form_fields: FormField[]
+  form_logics: FormLogic[]
+  permissionList: FormPermission[]
 
-  startPage?: FormStartPage
-  endPage?: FormEndPage
+  startPage: FormStartPage
+  endPage: FormEndPage
 
-  hasCaptcha?: boolean
-  authType?: FormAuthType
+  hasCaptcha: boolean
+  authType: FormAuthType
 
-  status?: FormStatus
+  status: FormStatus
 
-  inactiveMessage?: string
-  submissionLimit?: number | null
-  isListed?: boolean
+  inactiveMessage: string
+  submissionLimit: number | null
+  isListed: boolean
 
   esrvcId?: string
 
   msgSrvcName?: string
 
-  webhook?: FormWebhook
+  webhook: FormWebhook
 
   responseMode: FormResponseMode
-
-  created?: Date
-  lastModified?: Date
 }
 
 export interface EmailFormBase extends FormBase {
@@ -107,39 +107,19 @@ export interface StorageFormBase extends FormBase {
   publicKey: string
 }
 
-export type Form<T extends FormBase = FormBase> = SetRequired<
-  T,
-  | 'form_fields'
-  | 'form_logics'
-  | 'permissionList'
-  | 'startPage'
-  | 'endPage'
-  | 'hasCaptcha'
-  | 'authType'
-  | 'status'
-  | 'inactiveMessage'
-  | 'submissionLimit'
-  | 'isListed'
-  | 'webhook'
-  | 'created'
-  | 'lastModified'
->
+/**
+ * Additional props to be added/replaced when tranformed into DTO.
+ */
+type FormDtoBase = {
+  _id: FormId
+  form_fields: FormFieldDto[]
+  created: DateString
+  lastModified: DateString
+}
 
-export type StorageFormDto = Merge<
-  Form<StorageFormBase>,
-  {
-    form_fields: FormFieldDto[]
-    _id: string
-  }
->
+export type StorageFormDto = Merge<StorageFormBase, FormDtoBase>
 
-export type EmailFormDto = Merge<
-  Form<EmailFormBase>,
-  {
-    form_fields: FormFieldDto[]
-    _id: string
-  }
->
+export type EmailFormDto = Merge<EmailFormBase, FormDtoBase>
 
 export type FormDto = StorageFormDto | EmailFormDto
 

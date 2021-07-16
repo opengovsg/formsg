@@ -44,6 +44,7 @@ import {
   SettingsUpdateDto,
   StartPageUpdateDto,
 } from '../../../../types/api'
+import { DeserializeTransform } from '../../../../types/utils'
 import { createLoggerWithLabel } from '../../../config/logger'
 import MailService from '../../../services/mail/mail.service'
 import { createReqMeta } from '../../../utils/request'
@@ -1074,7 +1075,7 @@ export const handleTransferFormOwnership = [
  */
 export const createForm: ControllerHandler<
   unknown,
-  FormDto | ErrorDto,
+  DeserializeTransform<FormDto> | ErrorDto,
   { form: CreateFormBodyDto }
 > = async (req, res) => {
   const { form: formParams } = req.body
@@ -1087,9 +1088,11 @@ export const createForm: ControllerHandler<
       .andThen((user) =>
         AdminFormService.createForm({ ...formParams, admin: user._id }),
       )
-      .map((createdForm) =>
-        res.status(StatusCodes.OK).json(createdForm as FormDto),
-      )
+      .map((createdForm) => {
+        return res
+          .status(StatusCodes.OK)
+          .json(createdForm as DeserializeTransform<FormDto>)
+      })
       .mapErr((error) => {
         logger.error({
           message: 'Error occurred when creating form',
