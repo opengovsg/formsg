@@ -25,6 +25,7 @@ import {
 } from './logic-utils'
 
 const LOGIC_CONDITIONS: LogicCondition[] = [
+  [BasicField.Checkbox, [LogicConditionState.AnyOf]],
   [
     BasicField.Dropdown,
     [LogicConditionState.Equal, LogicConditionState.Either],

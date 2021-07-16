@@ -40,14 +40,24 @@ export interface ICondition {
 // Override ObjectId with String type since the field id passed in is in
 // String form.
 export interface IConditionSchema extends ICondition, Document<string> {}
-
+export interface IClientConditionSchema
+  extends Omit<IConditionSchema, 'value'> {
+  value:
+    | string
+    | number
+    | string[]
+    | number[]
+    | ClientCheckboxConditionOption[][]
+}
 export interface ILogic {
   conditions: IConditionSchema[]
   logicType: LogicType
 }
 
 export interface ILogicSchema extends ILogic, Document {}
-
+export interface IClientLogicSchema extends Omit<ILogicSchema, 'conditions'> {
+  conditions: IClientConditionSchema[]
+}
 export interface IShowFieldsLogic extends ILogic {
   show: IFieldSchema['_id'][]
 }
