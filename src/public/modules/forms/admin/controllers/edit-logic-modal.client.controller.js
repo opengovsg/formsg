@@ -214,7 +214,7 @@ function EditLogicModalController(
       if (field.fieldType === BasicField.Checkbox && field.othersRadioButton) {
         condition.ifValues.push({ value: 'Others', other: true })
       }
-      condition.ifValueType = LogicIfValue.MultiValue
+      condition.ifValueType = LogicIfValue.MultiCombination
     } else if (field.fieldType === BasicField.Rating) {
       condition.ifValues = range(1, field.ratingOptions.steps + 1)
       condition.ifValueType = LogicIfValue.SingleSelect

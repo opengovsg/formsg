@@ -8,7 +8,6 @@ import {
 } from 'src/shared/util/logic'
 import {
   BasicField,
-  FieldResponse,
   ICheckboxFieldSchema,
   IField,
   IFieldSchema,
@@ -19,6 +18,7 @@ import {
   IShowFieldsLogicSchema,
   LogicConditionState,
   LogicIfValue,
+  LogicInputFieldResponse,
   LogicType,
 } from 'src/types'
 
@@ -38,7 +38,7 @@ describe('Logic validation', () => {
     answerArray: string[] | null = null,
     fieldType: string | null = null,
     isVisible = true,
-  ): FieldResponse => {
+  ): LogicInputFieldResponse => {
     const response: Record<string, any> = { _id: fieldId, isVisible, fieldType }
     if (answer !== null) {
       response.answer = answer
@@ -46,7 +46,7 @@ describe('Logic validation', () => {
     if (answerArray) {
       response.answerArray = answerArray
     }
-    return response as FieldResponse
+    return response as LogicInputFieldResponse
   }
 
   describe('visibility for different states', () => {
@@ -241,7 +241,7 @@ describe('Logic validation', () => {
         show: [LOGIC_FIELD._id],
         conditions: [
           {
-            ifValueType: LogicIfValue.MultiValue,
+            ifValueType: LogicIfValue.MultiCombination,
             _id: '58169',
             field: checkboxConditionField._id,
             state: LogicConditionState.AnyOf,
@@ -490,7 +490,7 @@ describe('Logic validation', () => {
       const anyOfCondition = {
         conditions: [
           {
-            ifValueType: LogicIfValue.MultiValue,
+            ifValueType: LogicIfValue.MultiCombination,
             _id: '58169',
             field: checkboxConditionField._id,
             state: LogicConditionState.AnyOf,
@@ -1223,8 +1223,8 @@ describe('Logic util', () => {
       })
     })
     it('should return valid logic states for multi-value field types', () => {
-      const multiValueFields = [BasicField.Checkbox]
-      multiValueFields.forEach((fieldType) => {
+      const multiCombiFields = [BasicField.Checkbox]
+      multiCombiFields.forEach((fieldType) => {
         const states = getApplicableIfStates(fieldType)
         expect(states).toIncludeSameMembers([LogicConditionState.AnyOf])
         expect(states).toBeArrayOfSize(1)

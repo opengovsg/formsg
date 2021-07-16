@@ -1,5 +1,6 @@
 import {
   CheckboxConditionValue,
+  ClientCheckboxCondition,
   IConditionSchema,
   LogicCheckboxCondition,
 } from '../../../../types'
@@ -30,4 +31,24 @@ export const isCheckboxConditionValue = (
     hasProp(value, 'others') && typeof value.others === 'boolean'
 
   return hasValue && hasOthers
+}
+
+export const isClientCheckboxConditionValue = (
+  value: unknown,
+): value is ClientCheckboxCondition['value'] => {
+  return (
+    Array.isArray(value) &&
+    (value as unknown[]).every((val) => {
+      return Array.isArray(val) && val.every(isCheckboxConditionOption)
+    })
+  )
+}
+
+const isCheckboxConditionOption = (value: unknown) => {
+  return (
+    hasProp(value, 'value') &&
+    typeof value.value === 'string' &&
+    hasProp(value, 'other') &&
+    typeof value.other === 'boolean'
+  )
 }
