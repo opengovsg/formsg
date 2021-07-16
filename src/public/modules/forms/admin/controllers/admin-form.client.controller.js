@@ -3,15 +3,14 @@
 const { StatusCodes } = require('http-status-codes')
 const get = require('lodash/get')
 const moment = require('moment-timezone')
-const {
-  LogicType,
-  BasicField,
-  LogicConditionState,
-} = require('../../../../../types')
+const { LogicType } = require('../../../../../types')
 const UpdateFormService = require('../../../../services/UpdateFormService')
 const UserService = require('../../../../services/UserService')
 const FieldFactory = require('../../helpers/field-factory')
 const { UPDATE_FORM_TYPES } = require('../constants/update-form-types')
+const {
+  checkIfHasInvalidValues,
+} = require('../../../../../shared/util/logic-utils/logic-values-checker')
 
 // All viewable tabs. readOnly is true if that tab cannot be used to edit form.
 const VIEW_TABS = [
@@ -405,7 +404,7 @@ function AdminFormController(
    */
   const hasInvalidValues = (logicUnit) => {
     return logicUnit.conditions.some((condition) => {
-      return $scope.checkIfHasInvalidValues(
+      return checkIfHasInvalidValues(
         condition.value,
         $scope.myform.form_fields.find(
           (field) => field._id === condition.field,
@@ -413,57 +412,5 @@ function AdminFormController(
         condition.state,
       )
     })
-  }
-
-  $scope.checkIfHasInvalidValues = function (values, field, state) {
-    if (
-      !field ||
-      !state ||
-      !values ||
-      ((Array.isArray(values) || String(values)) && values.length === 0)
-    ) {
-      // if field, state, value has not been chosen has not been chosen, no error
-      return false
-    }
-    if (
-      field.fieldType === BasicField.Dropdown ||
-      field.fieldType === BasicField.Radio
-    ) {
-      const flattenedValues = [].concat(values).reduce((options, val) => {
-        return options.concat(val)
-      }, [])
-      return flattenedValues.some((val) => {
-        if (field.fieldOptions.includes(val)) {
-          return false
-        }
-        return val === 'Others' ? !field.othersRadioButton : true
-      })
-    } else if (field.fieldType === BasicField.Checkbox) {
-      const flattenedValues = [].concat(values).reduce((options, val) => {
-        return options.concat(val)
-      }, [])
-      return flattenedValues.some((val) => {
-        if (val.other) {
-          return !field.othersRadioButton
-        }
-        return !field.fieldOptions.includes(val.value)
-      })
-    } else if (field.fieldType === BasicField.Rating) {
-      return values > field.ratingOptions.steps
-    } else if (field.fieldType === BasicField.Decimal) {
-      const min = field.ValidationOptions.customMin
-      const max = field.ValidationOptions.customMax
-      const belowMin = min ? values < min : false
-      const aboveMax = max ? max < values : false
-      if (state === LogicConditionState.Lte) {
-        return belowMin
-      } else if (state === LogicConditionState.Gte) {
-        return aboveMax
-      } else {
-        return belowMin || aboveMax
-      }
-    } else {
-      return false
-    }
   }
 }

@@ -13,6 +13,9 @@ const {
   transformBackendLogic,
   transformFrontendLogic,
 } = require('../../services/form-logic/form-logic.client.service')
+const {
+  checkIfHasInvalidValues,
+} = require('../../../../../shared/util/logic-utils/logic-values-checker')
 
 angular
   .module('forms')
@@ -38,7 +41,7 @@ function EditLogicModalController(
   vm.myform = angular.copy(externalScope.myform)
   vm.logic = angular.copy(externalScope.currLogic)
 
-  vm.checkIfHasInvalidValues = externalScope.checkIfHasInvalidValues
+  vm.checkIfHasInvalidValues = checkIfHasInvalidValues
 
   /**
    * The current logic being edited in the modal
