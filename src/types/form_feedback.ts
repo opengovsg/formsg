@@ -1,21 +1,10 @@
 import { Document, Model, QueryCursor } from 'mongoose'
 
-import { IFormSchema } from './form'
+import { FormFeedbackBase } from '../../shared/types/form/form_feedback'
 
-export type ProcessedFeedback = {
-  index: number
-  timestamp: number
-  rating: number
-  comment: string
-  date: string
-  dateShort: string
-}
+export { ProcessedFeedbackMeta } from '../../shared/types/form/form_feedback'
 
-export interface IFormFeedback {
-  formId: IFormSchema['_id']
-  rating: number
-  comment?: string
-}
+export type IFormFeedback = FormFeedbackBase
 export interface IFormFeedbackSchema extends IFormFeedback, Document {
   created?: Date
   lastModified?: Date
@@ -24,13 +13,6 @@ export interface IFormFeedbackSchema extends IFormFeedback, Document {
 export interface IFormFeedbackDocument extends IFormFeedbackSchema {
   created: Date
   lastModified: Date
-}
-
-export interface IFormFeedbackSchema extends Document, IFormFeedback {}
-
-export interface IFormFeedbackDoc extends IFormFeedbackSchema {
-  lastModified: Date
-  created: Date
 }
 
 export interface IFormFeedbackModel extends Model<IFormFeedbackSchema> {
