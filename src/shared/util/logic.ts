@@ -12,6 +12,7 @@ import {
   ILogicSchema,
   IPreventSubmitLogicSchema,
   IShowFieldsLogicSchema,
+  ITableRow,
   LogicCondition,
   LogicConditionState,
   LogicFieldResponse,
