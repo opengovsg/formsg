@@ -1,49 +1,23 @@
 import { Document, Model, QueryCursor } from 'mongoose'
 
-import { MyInfoAttribute } from './field'
-import { AuthType, IFormSchema } from './form'
+import {
+  EmailModeSubmissionBase,
+  StorageModeSubmissionBase,
+  StorageModeSubmissionDto,
+  StorageModeSubmissionMetadata,
+  StorageModeSubmissionMetadataList,
+  SubmissionBase,
+  SubmissionType,
+  WebhookResponse,
+} from '../../shared/types/submission'
 
-export enum SubmissionType {
-  Email = 'emailSubmission',
-  Encrypt = 'encryptSubmission',
-}
+import { IFormSchema } from './form'
 
-export type SubmissionMetadata = {
-  number: number
-  refNo: IEncryptedSubmissionSchema['_id']
-  submissionTime: string
-}
+export { SubmissionType }
 
-export type EncryptedSubmissionDto = {
-  refNo: string
-  submissionTime: string
-  content: string
-  verified?: string
-  attachmentMetadata: Record<string, string>
-  version: number
-}
-
-export type SubmissionMetadataList = {
-  metadata: SubmissionMetadata[]
-  count: number
-}
-export interface ISubmission {
-  form: IFormSchema['_id']
-  authType?: AuthType
-  myInfoFields?: MyInfoAttribute[]
-  submissionType: SubmissionType
-  created?: Date
-  lastModified?: Date
-  recipientEmails?: string[]
-  responseHash?: string
-  responseSalt?: string
-  hasBounced?: boolean
-  encryptedContent?: string
-  verifiedContent?: string
-  version?: number
-  attachmentMetadata?: Map<string, string>
-  webhookResponses?: IWebhookResponse[]
-}
+export type EncryptedSubmissionDto = StorageModeSubmissionDto
+export type SubmissionMetadata = StorageModeSubmissionMetadata
+export type SubmissionMetadataList = StorageModeSubmissionMetadataList
 
 export interface WebhookData {
   formId: string
@@ -65,6 +39,11 @@ export type SubmissionWebhookInfo = {
   webhookView: WebhookView
 }
 
+export type FindFormsWithSubsAboveResult = {
+  _id: IFormSchema['_id']
+  count: number
+}
+
 export interface IPopulatedWebhookSubmission
   extends IEncryptedSubmissionSchema {
   form: {
@@ -73,11 +52,10 @@ export interface IPopulatedWebhookSubmission
   }
 }
 
-export interface ISubmissionSchema extends ISubmission, Document {}
-
-export type FindFormsWithSubsAboveResult = {
-  _id: IFormSchema['_id']
-  count: number
+export interface ISubmissionSchema extends SubmissionBase, Document {
+  // Allows for population and correct typing
+  form: any
+  created?: Date
 }
 
 export interface ISubmissionModel extends Model<ISubmissionSchema> {
@@ -86,47 +64,24 @@ export interface ISubmissionModel extends Model<ISubmissionSchema> {
   ): Promise<FindFormsWithSubsAboveResult[]>
 }
 
-export interface IEmailSubmission extends ISubmission {
-  recipientEmails: string[]
-  responseHash: string
-  responseSalt: string
-  hasBounced?: boolean
-  encryptedContent: never
-  verifiedContent: never
-  version: never
-  attachmentMetadata: never
-  webhookResponses: never
+export interface IEmailSubmissionSchema
+  extends EmailModeSubmissionBase,
+    ISubmissionSchema {
+  // Allows for population and correct typing
+  form: any
+  submissionType: SubmissionType.Email
   getWebhookView(): null
 }
-
-export interface IEmailSubmissionSchema extends IEmailSubmission, Document {}
-
-export interface IEncryptedSubmission extends ISubmission {
-  recipientEmails: never
-  responseHash: never
-  responseSalt: never
-  hasBounced: never
-  encryptedContent: string
-  verifiedContent?: string
-  version: number
-  attachmentMetadata?: Map<string, string>
-  webhookResponses?: IWebhookResponse[]
+export interface IEncryptedSubmissionSchema
+  extends StorageModeSubmissionBase,
+    ISubmissionSchema {
+  // Allows for population and correct typing
+  form: any
+  submissionType: SubmissionType.Encrypt
   getWebhookView(): WebhookView
 }
 
-export interface IEncryptedSubmissionSchema
-  extends IEncryptedSubmission,
-    Document {}
-
-export interface IWebhookResponse {
-  webhookUrl: string
-  signature: string
-  response: {
-    status: number
-    headers: string
-    data: string
-  }
-}
+export type IWebhookResponse = WebhookResponse
 
 // When retrieving from database, the attachmentMetadata type becomes an object
 // instead of a Map.

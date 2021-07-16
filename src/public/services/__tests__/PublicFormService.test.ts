@@ -2,12 +2,9 @@
 import MockAxios from 'jest-mock-axios'
 
 import { BasicField } from 'src/types'
-import {
-  EmailSubmissionDto,
-  EncryptSubmissionDto,
-  SubmissionResponseDto,
-} from 'src/types/api'
+import { EmailSubmissionDto, EncryptSubmissionDto } from 'src/types/api'
 
+import { SubmissionResponseDto } from '../../../../shared/types/submission'
 import * as SubmissionUtil from '../../utils/submission'
 import {
   getPublicFormView,

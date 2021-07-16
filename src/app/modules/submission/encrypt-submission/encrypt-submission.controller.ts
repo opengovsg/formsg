@@ -3,7 +3,7 @@ import { celebrate, Joi as BaseJoi, Segments } from 'celebrate'
 import { StatusCodes } from 'http-status-codes'
 import JSONStream from 'JSONStream'
 import mongoose from 'mongoose'
-import { RequireAtLeastOne, SetOptional } from 'type-fest'
+import { SetOptional } from 'type-fest'
 
 import {
   AuthType,
@@ -13,6 +13,7 @@ import {
 import {
   EncryptSubmissionDto,
   ErrorDto,
+  FormSubmissionMetadataQueryDto,
   SubmissionErrorDto,
   SubmissionResponseDto,
 } from '../../../../types/api'
@@ -690,10 +691,7 @@ export const getMetadata: ControllerHandler<
   { formId: string },
   SubmissionMetadataList | ErrorDto,
   unknown,
-  RequireAtLeastOne<
-    { page?: number; submissionId?: string },
-    'page' | 'submissionId'
-  >
+  FormSubmissionMetadataQueryDto
 > = async (req, res) => {
   const sessionUserId = (req.session as Express.AuthedSession).user._id
   const { formId } = req.params

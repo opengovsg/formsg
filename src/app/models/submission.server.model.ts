@@ -185,7 +185,7 @@ EncryptSubmissionSchema.methods.getWebhookView = function (
   this: IEncryptedSubmissionSchema | IPopulatedWebhookSubmission,
 ): WebhookView {
   const formId = this.populated('form')
-    ? String(this.form._id)
+    ? String((this as IPopulatedWebhookSubmission).form._id)
     : String(this.form)
   const attachmentRecords = Object.fromEntries(
     this.attachmentMetadata ?? new Map(),

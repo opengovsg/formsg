@@ -3,12 +3,9 @@ import { ObjectId } from 'bson'
 import { StatusCodes } from 'http-status-codes'
 import MockAxios from 'jest-mock-axios'
 
-import {
-  EmailSubmissionDto,
-  EncryptSubmissionDto,
-  SubmissionResponseDto,
-} from 'src/types/api'
+import { EmailSubmissionDto, EncryptSubmissionDto } from 'src/types/api'
 
+import { SubmissionResponseDto } from '../../../../shared/types/submission'
 import { BasicField, IPopulatedForm, IYesNoFieldSchema } from '../../../types'
 import { FormUpdateParams } from '../../../types/api'
 import * as SubmissionUtil from '../../utils/submission'

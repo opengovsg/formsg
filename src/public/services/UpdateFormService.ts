@@ -12,6 +12,7 @@ import {
   SettingsUpdateDto,
 } from '../../../shared/types/form/form'
 import { LogicDto } from '../../../shared/types/form/form_logic'
+import { SubmissionResponseDto } from '../../../shared/types/submission'
 import {
   EmailSubmissionDto,
   EncryptSubmissionDto,
@@ -19,7 +20,6 @@ import {
   FormUpdateParams,
   PermissionsUpdateDto,
   StartPageUpdateDto,
-  SubmissionResponseDto,
 } from '../../types/api'
 import { createEmailSubmissionFormData } from '../utils/submission'
 
