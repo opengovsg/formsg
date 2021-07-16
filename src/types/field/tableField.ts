@@ -12,7 +12,7 @@ export type IColumnSchema = Column &
     /** Returns the top level document of this sub-document. */
     ownerDocument(): IFormSchema
     /** Returns this sub-documents parent document. */
-    parent(): IFormSchema
+    parent(): ITableFieldSchema
   }
 
 export interface ITableField extends TableFieldBase {

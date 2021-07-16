@@ -11,9 +11,9 @@ import {
 import { FIELDS_TO_REJECT } from '../../../shared/resources/basic'
 import {
   BasicField,
-  FormFieldSchema,
-  IFieldSchema,
+  FieldValidationSchema,
   ITableFieldSchema,
+  OmitUnusedValidatorProps,
 } from '../../../types/field'
 import { ResponseValidator } from '../../../types/field/utils/validation'
 import { createLoggerWithLabel } from '../../config/logger'
@@ -47,7 +47,7 @@ const isValidResponseFieldType = (response: ProcessedFieldResponse): boolean =>
  * @param response The submitted response
  */
 const doFieldTypesMatch = (
-  formField: IFieldSchema,
+  formField: FieldValidationSchema,
   response: ProcessedFieldResponse,
 ): Either<string, undefined> => {
   return response.fieldType !== formField.fieldType
@@ -100,23 +100,23 @@ const isResponsePresentOnHiddenField = (
  * @param response The submitted response
  */
 const singleAnswerRequiresValidation = (
-  formField: IFieldSchema,
+  formField: FieldValidationSchema,
   response: ProcessedSingleAnswerResponse,
 ) => (formField.required && response.isVisible) || response.answer.trim() !== ''
 
 const attachmentRequiresValidation = (
-  formField: IFieldSchema,
+  formField: FieldValidationSchema,
   response: ProcessedAttachmentResponse,
 ) => (formField.required && response.isVisible) || response.answer.trim() !== ''
 
 const checkboxRequiresValidation = (
-  formField: IFieldSchema,
+  formField: FieldValidationSchema,
   response: ProcessedCheckboxResponse,
 ) =>
   (formField.required && response.isVisible) || response.answerArray.length > 0
 
 const tableRequiresValidation = (
-  formField: ITableFieldSchema,
+  formField: OmitUnusedValidatorProps<ITableFieldSchema>,
   response: ProcessedTableResponse,
 ) => {
   const { columns } = formField
@@ -138,7 +138,7 @@ const tableRequiresValidation = (
  */
 const logInvalidAnswer = (
   formId: string,
-  formField: IFieldSchema,
+  formField: FieldValidationSchema,
   message: string,
 ) => {
   logger.error({
@@ -159,7 +159,7 @@ const logInvalidAnswer = (
 const validateResponseWithValidator = <T extends ProcessedFieldResponse>(
   validator: ResponseValidator<T>,
   formId: string,
-  formField: IFieldSchema,
+  formField: FieldValidationSchema,
   response: T,
 ): Result<true, ValidateFieldError> => {
   const validEither = validator(response)
@@ -180,7 +180,7 @@ const validateResponseWithValidator = <T extends ProcessedFieldResponse>(
  */
 export const validateField = (
   formId: string,
-  formField: FormFieldSchema,
+  formField: FieldValidationSchema,
   response: ProcessedFieldResponse,
 ): Result<true, ValidateFieldError> => {
   if (!isValidResponseFieldType(response)) {

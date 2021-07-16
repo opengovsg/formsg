@@ -1,6 +1,6 @@
 import { left } from 'fp-ts/lib/Either'
 
-import { BasicField, FormFieldSchema } from '../../../types'
+import { BasicField, FieldValidationSchema } from '../../../types'
 import { ResponseValidator } from '../../../types/field/utils/validation'
 import {
   ProcessedAttachmentResponse,
@@ -32,7 +32,7 @@ import { constructYesNoValidator } from './validators/yesNoValidator'
  * @param formField A form field from a form object
  */
 export const constructSingleAnswerValidator = (
-  formField: FormFieldSchema,
+  formField: FieldValidationSchema,
 ): ResponseValidator<ProcessedSingleAnswerResponse> => {
   switch (formField.fieldType) {
     case BasicField.Section:
@@ -72,7 +72,7 @@ export const constructSingleAnswerValidator = (
 export const constructAttachmentFieldValidator = (
   // Separate from constructSingleAnswerValidator as
   // constructAttachmentValidator returns different type
-  formField: FormFieldSchema,
+  formField: FieldValidationSchema,
 ): ResponseValidator<ProcessedAttachmentResponse> => {
   if (formField.fieldType === BasicField.Attachment) {
     return constructAttachmentValidator(formField)
@@ -81,7 +81,7 @@ export const constructAttachmentFieldValidator = (
 }
 
 export const constructCheckboxFieldValidator = (
-  formField: FormFieldSchema,
+  formField: FieldValidationSchema,
 ): ResponseValidator<ProcessedCheckboxResponse> => {
   if (formField.fieldType === BasicField.Checkbox) {
     return constructCheckboxValidator(formField)
@@ -90,7 +90,7 @@ export const constructCheckboxFieldValidator = (
 }
 
 export const constructTableFieldValidator = (
-  formField: FormFieldSchema,
+  formField: FieldValidationSchema,
 ): ResponseValidator<ProcessedTableResponse> => {
   if (formField.fieldType === BasicField.Table) {
     return constructTableValidator(formField)

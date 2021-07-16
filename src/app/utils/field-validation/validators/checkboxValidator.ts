@@ -2,14 +2,14 @@ import { chain, left, right } from 'fp-ts/lib/Either'
 import { flow } from 'fp-ts/lib/function'
 
 import { ProcessedCheckboxResponse } from 'src/app/modules/submission/submission.types'
-import { ICheckboxField } from 'src/types/field'
+import { ICheckboxFieldSchema, OmitUnusedValidatorProps } from 'src/types/field'
 import { ResponseValidator } from 'src/types/field/utils/validation'
 
 import { isOtherOption } from './options'
 
 type CheckboxValidator = ResponseValidator<ProcessedCheckboxResponse>
 type CheckboxValidatorConstructor = (
-  checkboxField: ICheckboxField,
+  checkboxField: OmitUnusedValidatorProps<ICheckboxFieldSchema>,
 ) => CheckboxValidator
 
 /**

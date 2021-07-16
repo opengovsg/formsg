@@ -3,13 +3,15 @@ import { flow } from 'fp-ts/lib/function'
 import isInt from 'validator/lib/isInt'
 
 import { ProcessedSingleAnswerResponse } from 'src/app/modules/submission/submission.types'
-import { IRatingField } from 'src/types/field'
+import { IRatingFieldSchema, OmitUnusedValidatorProps } from 'src/types/field'
 import { ResponseValidator } from 'src/types/field/utils/validation'
 
 import { notEmptySingleAnswerResponse } from './common'
 
 type RatingValidator = ResponseValidator<ProcessedSingleAnswerResponse>
-type RatingValidatorConstructor = (ratingField: IRatingField) => RatingValidator
+type RatingValidatorConstructor = (
+  ratingField: OmitUnusedValidatorProps<IRatingFieldSchema>,
+) => RatingValidator
 
 /**
  * Returns a validation function to check if the

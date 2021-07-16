@@ -1,7 +1,11 @@
 import { chain, left, right } from 'fp-ts/lib/Either'
 import { flow } from 'fp-ts/lib/function'
 
-import { BasicField, ITableFieldSchema } from '../../../../types/field'
+import {
+  BasicField,
+  ITableFieldSchema,
+  OmitUnusedValidatorProps,
+} from '../../../../types/field'
 import { ResponseValidator } from '../../../../types/field/utils/validation'
 import {
   ProcessedSingleAnswerResponse,
@@ -14,7 +18,7 @@ const ALLOWED_COLUMN_TYPES = [BasicField.ShortText, BasicField.Dropdown]
 
 type TableValidator = ResponseValidator<ProcessedTableResponse>
 type TableValidatorConstructor = (
-  tableField: ITableFieldSchema,
+  tableField: OmitUnusedValidatorProps<ITableFieldSchema>,
 ) => TableValidator
 
 /**
