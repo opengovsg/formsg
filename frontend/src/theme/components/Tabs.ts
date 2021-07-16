@@ -20,10 +20,11 @@ const variantLine: ThemingPropsThunk<SystemStyleObjectRecord, ChakraTheme> =
       },
       tablist: {
         w: '100%',
-        overflowX: 'auto',
+        overflowX: 'scroll',
         borderColor: 'transparent',
-        pt: '1.5rem',
-        pb: '1.375rem',
+        px: '1.5rem',
+        pt: '1.25rem',
+        pb: '0.75rem',
         whiteSpace: 'nowrap',
       },
       tab: {
@@ -54,6 +55,34 @@ const variantLine: ThemingPropsThunk<SystemStyleObjectRecord, ChakraTheme> =
     }
   }
 
+const scrollBarStyles = (
+  thumbColor: string,
+  trackColor: string,
+  theme: ChakraTheme,
+) => {
+  return {
+    /* Scrollbar for Firefox */
+    // Firefox only has these two css properties to customise scrollbar
+    scrollbarColor: `${getColor(theme, thumbColor)} ${getColor(
+      theme,
+      trackColor,
+    )}`,
+    scrollbarWidth: 'thin',
+    /* Scrollbar for Chrome, Safari, Opera and Microsoft Edge */
+    '&::-webkit-scrollbar': {
+      height: '0.75rem',
+      backgroundColor: 'trackColor',
+    },
+    '&::-webkit-scrollbar-thumb': {
+      backgroundColor: thumbColor,
+      border: '0.25rem solid',
+      borderColor: trackColor,
+      borderRadius: '0.5rem',
+      borderBox: 'padding-box',
+    },
+  }
+}
+
 const variantLight: ThemingPropsThunk<SystemStyleObjectRecord, ChakraTheme> = (
   props,
 ) => {
@@ -61,24 +90,7 @@ const variantLight: ThemingPropsThunk<SystemStyleObjectRecord, ChakraTheme> = (
     root: {
       bg: 'white',
     },
-    tablist: {
-      /* Hide scrollbar for IE and Edge */
-      '&::MsOverflowStyle': 'none',
-      /* Hide scrollbar for Firefox */
-      '&::scrollbarWidth': 'none',
-      /* Scrollbar for Chrome, Safari and Opera */
-      '&::-webkit-scrollbar': {
-        height: '0.75rem',
-        backgroundColor: 'white',
-      },
-      '&::-webkit-scrollbar-thumb': {
-        backgroundColor: 'secondary.200',
-        border: '0.25rem solid',
-        borderColor: 'white',
-        borderRadius: '0.5rem',
-        borderBox: 'padding-box',
-      },
-    },
+    tablist: scrollBarStyles('secondary.200', 'white', props.theme),
     tab: {
       color: 'primary.500',
       _hover: {
@@ -104,24 +116,7 @@ const variantDark: ThemingPropsThunk<SystemStyleObjectRecord, ChakraTheme> = (
     root: {
       bg: 'secondary.500',
     },
-    tablist: {
-      /* Hide scrollbar for IE and Edge */
-      '&::MsOverflowStyle': 'none',
-      /* Hide scrollbar for Firefox */
-      '&::scrollbarWidth': 'none',
-      /* Scrollbar for Chrome, Safari and Opera */
-      '&::-webkit-scrollbar': {
-        height: '0.75rem',
-        backgroundColor: 'secondary.500',
-      },
-      '&::-webkit-scrollbar-thumb': {
-        backgroundColor: 'secondary.400',
-        border: '0.25rem solid',
-        borderColor: 'secondary.500',
-        borderRadius: '0.5rem',
-        borderBox: 'padding-box',
-      },
-    },
+    tablist: scrollBarStyles('secondary.400', 'secondary.500', props.theme),
     tab: {
       _active: {
         bg: 'secondary.500',
