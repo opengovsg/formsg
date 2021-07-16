@@ -1,8 +1,12 @@
 import { ObjectId } from 'bson'
 import MockAxios from 'jest-mock-axios'
 
+import {
+  CreateEmailFormBodyDto,
+  CreateStorageFormBodyDto,
+  DuplicateFormBodyDto,
+} from '../../../../shared/types/form/form'
 import { IPopulatedUser, IYesNoFieldSchema } from '../../../types'
-import { DuplicateFormBody } from '../../../types/api'
 import { ResponseMode } from '../../../types/form'
 import {
   ADMIN_FORM_ENDPOINT,
@@ -69,46 +73,48 @@ describe('CreateFormService', () => {
     it('should return created form if POST request succeeds', async () => {
       // Arrange
       const expected = { form_fields: [{} as IYesNoFieldSchema] }
-      const MOCK_FORM_PARAMS = {
+      const mockFormParams: CreateStorageFormBodyDto = {
         title: 'title',
-        responseMode: ResponseMode.Email,
+        responseMode: ResponseMode.Encrypt,
+        publicKey: 'test',
       }
       MockAxios.post.mockResolvedValueOnce({ data: expected })
 
       // Act
-      const actual = await createForm(MOCK_FORM_PARAMS)
+      const actual = await createForm(mockFormParams)
 
       // Assert
       expect(actual).toEqual(expected)
       expect(MockAxios.post).toHaveBeenCalledWith(`${ADMIN_FORM_ENDPOINT}`, {
-        form: MOCK_FORM_PARAMS,
+        form: mockFormParams,
       })
     })
 
     it('should reject with error message if POST request fails', async () => {
       // Arrange
       const expected = new Error('error')
-      const MOCK_FORM_PARAMS = {
+      const mockFormParams: CreateEmailFormBodyDto = {
         title: 'title',
         responseMode: ResponseMode.Email,
+        emails: ['mock'],
       }
       MockAxios.post.mockRejectedValueOnce(expected)
       // Act
-      const actualPromise = createForm(MOCK_FORM_PARAMS)
+      const actualPromise = createForm(mockFormParams)
 
       // Assert
       await expect(actualPromise).rejects.toEqual(expected)
       expect(MockAxios.post).toHaveBeenCalledWith(`${ADMIN_FORM_ENDPOINT}`, {
-        form: MOCK_FORM_PARAMS,
+        form: mockFormParams,
       })
     })
   })
 })
 
-const _generateDuplicateFormBody = (): DuplicateFormBody => {
+const _generateDuplicateFormBody = (): DuplicateFormBodyDto => {
   return {
     title: 'title',
     responseMode: ResponseMode.Email,
     emails: 'test@example.com',
-  } as DuplicateFormBody
+  } as DuplicateFormBodyDto
 }

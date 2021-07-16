@@ -1,6 +1,10 @@
-import { Document, Model, ObjectId } from 'mongoose'
+import { ObjectId } from 'bson-ext'
+import { Document, Model } from 'mongoose'
+import { SetOptional } from 'type-fest'
 
-import { AgencyDocument, PublicAgency } from './agency'
+import { UserBase } from '../../shared/types/user'
+
+import { AgencyDocument, IAgencySchema, PublicAgency } from './agency'
 import { PublicView } from './database'
 
 export type PublicUser = {
@@ -11,22 +15,14 @@ export type AdminContactOtpData = {
   admin: IUserSchema['_id']
 }
 
-export interface IUser {
-  email: string
-  agency: AgencyDocument['_id']
-  contact?: string
-  betaFlags?: {
-    sgid?: boolean
-  }
-  lastAccessed?: Date
-  updatedAt?: Date
+export interface IUser
+  extends SetOptional<UserBase, 'created' | 'lastAccessed' | 'updatedAt'> {
+  agency: IAgencySchema['_id']
 }
 
 export type UserContactView = Pick<IUser, 'email' | 'contact'>
 
-export interface IUserSchema extends IUser, Document, PublicView<PublicUser> {
-  created?: Date
-}
+export interface IUserSchema extends IUser, Document, PublicView<PublicUser> {}
 
 export interface IUserModel extends Model<IUserSchema> {
   /**
@@ -49,5 +45,6 @@ export interface IUserModel extends Model<IUserSchema> {
 }
 
 export interface IPopulatedUser extends IUserSchema {
+  _id: any
   agency: AgencyDocument
 }

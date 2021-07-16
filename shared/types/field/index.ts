@@ -65,7 +65,16 @@ export type FormField =
   | UenFieldBase
   | YesNoFieldBase
 
+export type FormFieldWithId = FormField & { _id: string }
+
+export type PossiblyPrefilledFormField = FormFieldWithId & {
+  fieldValue?: string
+}
+
 /**
  * Form field POJO with id
  */
-export type FormFieldDto = FormField & { _id: string }
+export type FormFieldDto = PossiblyPrefilledFormField | FormFieldWithId
+
+export type FieldCreateDto = FormField
+export type FieldUpdateDto = FormField & { _id: string }

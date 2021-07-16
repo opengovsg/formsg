@@ -1,9 +1,9 @@
 import axios from 'axios'
 
+import { PublicFormViewDto } from '../../../shared/types/form/form'
 import {
   EmailSubmissionDto,
   EncryptSubmissionDto,
-  PublicFormViewDto,
   SubmissionResponseDto,
 } from '../../types/api'
 import { createEmailSubmissionFormData } from '../utils/submission'

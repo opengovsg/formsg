@@ -9,7 +9,10 @@ import {
   ResponseMode,
   Status,
 } from '../../../../types'
-import { DuplicateFormBody, EditFormFieldParams } from '../../../../types/api'
+import {
+  DuplicateFormBodyDto,
+  EditFormFieldParams,
+} from '../../../../types/api'
 import { createLoggerWithLabel } from '../../../config/logger'
 import { isPossibleEmailFieldSchema } from '../../../utils/field-validation/field-validation.guards'
 import {
@@ -234,7 +237,7 @@ export const getAssertPermissionFn = (level: PermissionLevel): AssertFormFn => {
  * @returns override props for use in duplicating a form
  */
 export const processDuplicateOverrideProps = (
-  params: DuplicateFormBody,
+  params: DuplicateFormBodyDto,
   newAdminId: string,
 ): OverrideProps => {
   const { responseMode, title } = params

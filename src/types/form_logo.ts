@@ -1,22 +1,17 @@
 import { Document } from 'mongoose'
 
-export enum FormLogoState {
-  Default = 'DEFAULT',
-  None = 'NONE',
-  Custom = 'CUSTOM',
-}
+import {
+  CustomFormLogo,
+  FormLogoBase,
+  FormLogoState,
+} from '../../shared/types/form/form_logo'
 
-export interface IFormLogo {
-  state: FormLogoState
-}
+export { FormLogoState }
+
+export type IFormLogo = FormLogoBase
 
 export type IFormLogoSchema = IFormLogo & Document
 
-export interface ICustomFormLogo extends IFormLogo {
-  state: FormLogoState.Custom
-  fileId: string
-  fileName: string
-  fileSizeInBytes: number
-}
+export type ICustomFormLogo = CustomFormLogo
 
 export type ICustomFormLogoSchema = ICustomFormLogo & Document

@@ -1,7 +1,24 @@
-import range from 'lodash/range'
 import { Document, LeanDocument, Model, ToObjectOptions, Types } from 'mongoose'
-import { SetRequired } from 'type-fest'
+import { Merge, SetOptional } from 'type-fest'
 
+import {
+  AdminDashboardFormMetaDto,
+  EmailFormSettings,
+  FormAuthType,
+  FormBase,
+  FormColorTheme,
+  FormEndPage,
+  FormPermission,
+  FormResponseMode,
+  FormSettings,
+  FormStartPage,
+  FormStatus,
+  FormWebhook,
+  PublicEmailFormDto,
+  PublicFormDto,
+  PublicStorageFormDto,
+  StorageFormSettings,
+} from '../../shared/types/form/form'
 import { OverrideProps } from '../app/modules/form/admin-form/admin-form.types'
 
 import { PublicView } from './database'
@@ -9,65 +26,35 @@ import {
   FormField,
   FormFieldSchema,
   FormFieldWithId,
-  IFieldSchema,
   MyInfoAttribute,
 } from './field'
-import { ILogicSchema, LogicDto } from './form_logic'
-import { ICustomFormLogo, IFormLogo } from './form_logo'
+import { FormLogicSchema, LogicDto } from './form_logic'
 import { IPopulatedUser, IUserSchema, PublicUser } from './user'
 
-export enum AuthType {
-  NIL = 'NIL',
-  SP = 'SP',
-  CP = 'CP',
-  MyInfo = 'MyInfo',
-  SGID = 'SGID',
+export {
+  FormAuthType as AuthType,
+  FormColorTheme as ColorTheme,
+  FormEndPage as EndPage,
+  FormStartPage as StartPage,
+  FormStatus as Status,
+  FormColorTheme as Colors,
+  FormResponseMode as ResponseMode,
+  FormWebhook as Webhook,
+  FormSettings,
+  StorageFormSettings,
+  EmailFormSettings,
+  PublicFormDto,
+  PublicStorageFormDto,
+  PublicEmailFormDto,
 }
-
-export enum Status {
-  Private = 'PRIVATE',
-  Public = 'PUBLIC',
-  Archived = 'ARCHIVED',
-}
-
-export enum Colors {
-  Blue = 'blue',
-  Red = 'red',
-  Green = 'green',
-  Orange = 'orange',
-  Brown = 'brown',
-  Grey = 'grey',
-}
-
-export enum ResponseMode {
-  Encrypt = 'encrypt',
-  Email = 'email',
-}
-
-export const Rating = range(1, 11).map(String)
 
 // Typings
-// Make sure this is kept in sync with form.server.model#FORM_PUBLIC_FIELDS.
-export type PublicFormValues = Pick<
-  IFormDocument,
-  | 'admin'
-  | 'authType'
-  | 'endPage'
-  | 'esrvcId'
-  | 'form_fields'
-  | 'form_logics'
-  | 'hasCaptcha'
-  | 'publicKey'
-  | 'startPage'
-  | 'status'
-  | 'title'
-  | '_id'
-  | 'responseMode'
+export type PublicForm = Merge<
+  PublicFormDto,
+  {
+    admin: PublicUser
+  }
 >
-
-export type PublicForm = Omit<PublicFormValues, 'admin'> & {
-  admin: PublicUser
-}
 
 export type FormOtpData = {
   form: IFormSchema['_id']
@@ -79,30 +66,44 @@ export type FormOtpData = {
   msgSrvcName?: string
 }
 
-export type StartPage = {
-  paragraph?: string
-  estTimeTaken?: number
-  colorTheme?: Colors
-  logo?: IFormLogo | ICustomFormLogo
-}
+export type Permission = FormPermission
 
-export type EndPage = {
-  title?: string
-  paragraph?: string
-  buttonLink?: string
-  buttonText?: string
-}
+/**
+ * Keys with defaults in schema.
+ */
+type FormDefaultableKey =
+  | 'form_fields'
+  | 'form_logics'
+  | 'permissionList'
+  | 'startPage'
+  | 'endPage'
+  | 'hasCaptcha'
+  | 'authType'
+  | 'status'
+  | 'inactiveMessage'
+  | 'submissionLimit'
+  | 'isListed'
+  | 'webhook'
 
-export type Permission = {
-  email: string
-  write: boolean
-  _id?: string
-}
+export type IForm = Merge<
+  SetOptional<FormBase, FormDefaultableKey>,
+  {
+    // Loosen types here to allow for IPopulatedForm extension
+    admin: any
+    permission?: Permission[]
+    form_fields?: FormFieldSchema[]
+    form_logics?: FormLogicSchema[]
 
-export type Webhook = {
-  url: string
-  isRetryEnabled: boolean
-}
+    webhook?: Partial<FormBase['webhook']>
+    startPage?: Partial<FormBase['startPage']>
+    endPage?: Partial<FormBase['endPage']>
+
+    publicKey?: string
+    // string type is allowed due to a setter on the form schema that transforms
+    // strings to string array.
+    emails?: string[] | string
+  }
+>
 
 /**
  * Typing for duplicate form with specific keys.
@@ -118,56 +119,13 @@ export type PickDuplicateForm = Pick<
   | 'submissionLimit'
   | 'responseMode'
 >
-export interface IForm {
-  title: string
-  form_fields?: IFieldSchema[]
-  form_logics?: ILogicSchema[]
-  admin: IUserSchema['_id']
-  permissionList?: Permission[]
-
-  startPage?: StartPage
-  endPage?: EndPage
-
-  hasCaptcha?: boolean
-  authType?: AuthType
-
-  status?: Status
-
-  inactiveMessage?: string
-  submissionLimit?: number | null
-  isListed?: boolean
-  esrvcId?: string
-  webhook?: Webhook
-  msgSrvcName?: string
-
-  responseMode: ResponseMode
-
-  // Schema properties
-  created?: Date
-  lastModified?: Date
-
-  publicKey?: string
-  // string type is allowed due to a setter on the form schema that transforms
-  // strings to string array.
-  emails?: string[] | string
-}
-
-export type FormSettings = Pick<
-  IFormDocument,
-  | 'authType'
-  | 'emails'
-  | 'esrvcId'
-  | 'hasCaptcha'
-  | 'inactiveMessage'
-  | 'status'
-  | 'submissionLimit'
-  | 'title'
-  | 'webhook'
->
 
 export interface IFormSchema extends IForm, Document, PublicView<PublicForm> {
   form_fields?: Types.DocumentArray<FormFieldSchema> | FormFieldSchema[]
-  form_logics?: Types.DocumentArray<ILogicSchema> | ILogicSchema[]
+  form_logics?: Types.DocumentArray<FormLogicSchema> | FormLogicSchema[]
+
+  created?: Date
+  lastModified?: Date
 
   /**
    * Replaces the field corresponding to given id to given new field
@@ -223,7 +181,7 @@ export interface IFormSchema extends IForm, Document, PublicView<PublicForm> {
    * @param admin the admin to inject into the returned object
    * @returns dashboard form view object
    */
-  getDashboardView(admin: IPopulatedUser): FormMetaView
+  getDashboardView(admin: IPopulatedUser): AdminDashboardFormMetaDto
   getUniqueMyInfoAttrs(): MyInfoAttribute[]
   /**
    * Retrieve form settings.
@@ -270,13 +228,11 @@ export interface IFormDocument extends IFormSchema {
   // Hence, using Exclude here over NonNullable.
   submissionLimit: Exclude<IFormSchema['submissionLimit'], undefined>
   isListed: NonNullable<IFormSchema['isListed']>
-  startPage: SetRequired<NonNullable<IFormSchema['startPage']>, 'colorTheme'>
-  endPage: SetRequired<
-    NonNullable<IFormSchema['endPage']>,
-    'title' | 'buttonText'
-  >
-  webhook: SetRequired<NonNullable<IFormSchema['webhook']>, 'url'>
+  startPage: Required<NonNullable<IFormSchema['startPage']>>
+  endPage: Required<NonNullable<IFormSchema['endPage']>>
+  webhook: Required<NonNullable<IFormSchema['webhook']>>
 }
+
 export interface IPopulatedForm extends Omit<IFormDocument, 'toJSON'> {
   admin: IPopulatedUser
   // Override types.
@@ -314,8 +270,11 @@ export interface IFormModel extends Model<IFormSchema> {
   createFormLogic(
     formId: string,
     createLogicBody: LogicDto,
-  ): Promise<IFormSchema | null>
-  deleteFormLogic(formId: string, logicId: string): Promise<IFormSchema | null>
+  ): Promise<IFormDocument | null>
+  deleteFormLogic(
+    formId: string,
+    logicId: string,
+  ): Promise<IFormDocument | null>
 
   /**
    * Deletes specified form field by its id from the form corresponding to given form id.
@@ -333,7 +292,7 @@ export interface IFormModel extends Model<IFormSchema> {
   getMetaByUserIdOrEmail(
     userId: IUserSchema['_id'],
     userEmail: IUserSchema['email'],
-  ): Promise<FormMetaView[]>
+  ): Promise<AdminDashboardFormMetaDto[]>
 
   /**
    * Update the end page of form with given endpage object.
@@ -343,7 +302,7 @@ export interface IFormModel extends Model<IFormSchema> {
    */
   updateEndPageById(
     formId: string,
-    newEndPage: EndPage,
+    newEndPage: FormEndPage,
   ): Promise<IFormDocument | null>
 
   /**
@@ -354,7 +313,7 @@ export interface IFormModel extends Model<IFormSchema> {
    */
   updateStartPageById(
     formId: string,
-    newStartPage: StartPage,
+    newStartPage: FormStartPage,
   ): Promise<IFormDocument | null>
 
   updateFormLogic(
@@ -366,11 +325,3 @@ export interface IFormModel extends Model<IFormSchema> {
 
 export type IEncryptedFormModel = IFormModel & Model<IEncryptedFormSchema>
 export type IEmailFormModel = IFormModel & Model<IEmailFormSchema>
-
-/** Typing for the shape of the important meta subset for form document. */
-export type FormMetaView = Pick<
-  IFormSchema,
-  'title' | 'lastModified' | 'status' | '_id' | 'responseMode'
-> & {
-  admin: IPopulatedUser
-}

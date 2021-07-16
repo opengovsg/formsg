@@ -158,7 +158,7 @@ export const updateUserContact = (
     if (!admin) {
       return errAsync(new MissingUserError())
     }
-    return okAsync(admin)
+    return okAsync(admin as IPopulatedUser)
   })
 }
 
@@ -201,7 +201,7 @@ export const getPopulatedUserById = (
       })
       return errAsync(new MissingUserError())
     }
-    return okAsync(retrievedUser)
+    return okAsync(retrievedUser as IPopulatedUser)
   })
 }
 

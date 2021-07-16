@@ -4,7 +4,8 @@ import { err } from 'neverthrow'
 import querystring from 'querystring'
 import { UnreachableCaseError } from 'ts-essentials'
 
-import { AuthType } from '../../../../types'
+import { FormFieldDto } from '../../../../../shared/types/field'
+import { AuthType, PublicFormDto } from '../../../../types'
 import {
   ErrorDto,
   PrivateFormErrorDto,
@@ -261,7 +262,7 @@ export const handleGetPublicForm: ControllerHandler<
   }
 
   const form = formResult.value
-  const publicForm = form.getPublicView()
+  const publicForm = form.getPublicView() as PublicFormDto
   const { authType } = form
   const isIntranetUser = FormService.checkIsIntranetFormAccess(
     getRequestIp(req),
@@ -333,7 +334,10 @@ export const handleGetPublicForm: ControllerHandler<
               )
               .json({
                 spcpSession,
-                form: { ...publicForm, form_fields: prefilledFields },
+                form: {
+                  ...publicForm,
+                  form_fields: prefilledFields as FormFieldDto[],
+                },
                 isIntranetUser,
               })
           })

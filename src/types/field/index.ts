@@ -4,7 +4,7 @@ import { ConditionalExcept, Merge } from 'type-fest'
 import {
   BasicField,
   FormField,
-  FormFieldDto,
+  FormFieldWithId,
   MyInfoAttribute,
 } from '../../../shared/types/field'
 
@@ -52,7 +52,8 @@ export * from './statementField'
 export * from './tableField'
 export * from './uenField'
 export * from './yesNoField'
-export { BasicField, MyInfoAttribute, FormField }
+
+export { BasicField, MyInfoAttribute, FormField, FormFieldWithId }
 
 export enum SPCPFieldTitle {
   SpNric = 'SingPass Validated NRIC',
@@ -125,8 +126,3 @@ export type FieldValidationSchema =
   | OmitUnusedValidatorProps<ITableFieldSchema>
   | OmitUnusedValidatorProps<IUenFieldSchema>
   | OmitUnusedValidatorProps<IYesNoFieldSchema>
-
-/**
- * Form field POJO with id
- */
-export type FormFieldWithId = FormFieldDto

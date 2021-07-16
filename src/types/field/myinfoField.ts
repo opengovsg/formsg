@@ -1,7 +1,7 @@
 import { LeanDocument } from 'mongoose'
 
-import { IFieldSchema } from '../field'
+import { FormFieldSchema } from '../field'
 
-export interface IPossiblyPrefilledField extends LeanDocument<IFieldSchema> {
+export type IPossiblyPrefilledField = LeanDocument<FormFieldSchema> & {
   fieldValue?: string
 }

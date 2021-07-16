@@ -1,7 +1,10 @@
 import axios from 'axios'
 
-import { FormViewDto } from '../..//types/api'
-import { FormMetaView, PublicForm } from '../../types'
+import {
+  AdminDashboardFormMetaDto,
+  AdminFormViewDto,
+  PreviewFormViewDto,
+} from '../../../shared/types/form/form'
 
 // endpoint exported for testing
 export const ADMIN_FORM_ENDPOINT = '/api/v3/admin/forms'
@@ -11,9 +14,11 @@ export const ADMIN_FORM_ENDPOINT = '/api/v3/admin/forms'
  * owns or collaborates on
  * @returns Metadata required for forms on dashboard view
  */
-export const getDashboardView = async (): Promise<FormMetaView[]> => {
+export const getDashboardView = async (): Promise<
+  AdminDashboardFormMetaDto[]
+> => {
   return axios
-    .get<FormMetaView[]>(`${ADMIN_FORM_ENDPOINT}`)
+    .get<AdminDashboardFormMetaDto[]>(`${ADMIN_FORM_ENDPOINT}`)
     .then(({ data }) => data)
 }
 
@@ -24,9 +29,9 @@ export const getDashboardView = async (): Promise<FormMetaView[]> => {
  */
 export const getAdminFormView = async (
   formId: string,
-): Promise<FormViewDto> => {
+): Promise<AdminFormViewDto> => {
   return axios
-    .get<FormViewDto>(`${ADMIN_FORM_ENDPOINT}/${formId}`)
+    .get<AdminFormViewDto>(`${ADMIN_FORM_ENDPOINT}/${formId}`)
     .then(({ data }) => data)
 }
 
@@ -38,8 +43,8 @@ export const getAdminFormView = async (
  */
 export const previewForm = async (
   formId: string,
-): Promise<{ form: PublicForm }> => {
+): Promise<PreviewFormViewDto> => {
   return axios
-    .get<{ form: PublicForm }>(`${ADMIN_FORM_ENDPOINT}/${formId}/preview`)
+    .get<PreviewFormViewDto>(`${ADMIN_FORM_ENDPOINT}/${formId}/preview`)
     .then(({ data }) => data)
 }
