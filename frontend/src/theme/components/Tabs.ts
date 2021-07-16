@@ -24,7 +24,7 @@ const variantLine: ThemingPropsThunk<SystemStyleObjectRecord, ChakraTheme> =
         borderColor: 'transparent',
         px: '1.5rem',
         pt: '1.25rem',
-        pb: '0.75rem',
+        pb: '0.625rem',
         whiteSpace: 'nowrap',
       },
       tab: {
