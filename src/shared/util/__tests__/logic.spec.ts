@@ -8,6 +8,7 @@ import {
 } from 'src/shared/util/logic'
 import {
   BasicField,
+  FieldResponse,
   ICheckboxFieldSchema,
   IField,
   IFieldSchema,
@@ -18,7 +19,6 @@ import {
   IShowFieldsLogicSchema,
   LogicConditionState,
   LogicIfValue,
-  LogicInputFieldResponse,
   LogicType,
 } from 'src/types'
 
@@ -38,7 +38,7 @@ describe('Logic validation', () => {
     answerArray: string[] | null = null,
     fieldType: string | null = null,
     isVisible = true,
-  ): LogicInputFieldResponse => {
+  ): FieldResponse => {
     const response: Record<string, any> = { _id: fieldId, isVisible, fieldType }
     if (answer !== null) {
       response.answer = answer
@@ -46,7 +46,7 @@ describe('Logic validation', () => {
     if (answerArray) {
       response.answerArray = answerArray
     }
-    return response as LogicInputFieldResponse
+    return response as FieldResponse
   }
 
   describe('visibility for different states', () => {
