@@ -139,7 +139,7 @@ angular.module('forms').config([
             template: `<edit-logic-component 
                 myform="myform"
                 update-form="updateForm(update)"
-                is-logic-error="isLogicError">
+                is-logic-error="isLogicError"
               </edit-logic-component>`,
           },
           'share@viewForm': {

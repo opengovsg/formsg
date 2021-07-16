@@ -1,16 +1,12 @@
 import { cloneDeep, omit } from 'lodash'
 
+import { isClientCheckboxConditionValue } from '../../../../../shared/util/logic-utils'
 import {
+  ClientCheckboxCondition,
   ClientCheckboxConditionOption,
   IClientConditionSchema,
   LogicCheckboxCondition,
 } from '../../../../../types'
-
-// exported for testing
-export interface ClientCheckboxCondition
-  extends Omit<IClientConditionSchema, 'value'> {
-  value: ClientCheckboxConditionOption[][]
-}
 
 /**
  * Converts checkbox condition value with backend representation to frontend 2D array representation.
@@ -68,17 +64,5 @@ export const isClientCheckboxCondition = (
   condition: IClientConditionSchema,
 ): condition is ClientCheckboxCondition => {
   const conditionValue = condition.value
-  return (
-    Array.isArray(conditionValue) &&
-    (conditionValue as unknown[]).every((val) => {
-      return (
-        Array.isArray(val) &&
-        val.every(
-          (option) =>
-            typeof option.value === 'string' &&
-            typeof option.other === 'boolean',
-        )
-      )
-    })
-  )
+  return isClientCheckboxConditionValue(conditionValue)
 }

@@ -19,6 +19,7 @@ import {
   LogicType,
 } from '../../types'
 
+import { formatFieldsForLogic } from './logic-utils/logic-formatter'
 import {
   isCheckboxConditionValue,
   isLogicCheckboxCondition,
@@ -201,7 +202,7 @@ export const getLogicUnitPreventingSubmit = (
   const preventSubmitConditions = getPreventSubmitConditions(form)
   return preventSubmitConditions.find((logicUnit) =>
     isLogicUnitSatisfied(
-      submission,
+      formatFieldsForLogic(submission, form.form_fields),
       logicUnit.conditions,
       definedVisibleFieldIds,
     ),
@@ -256,7 +257,11 @@ export const getVisibleFieldIds = (
         !visibleFieldIds.has(field._id.toString()) &&
         (!logicUnits ||
           logicUnits.some((logicUnit) =>
-            isLogicUnitSatisfied(submission, logicUnit, visibleFieldIds),
+            isLogicUnitSatisfied(
+              formatFieldsForLogic(submission, form.form_fields),
+              logicUnit,
+              visibleFieldIds,
+            ),
           ))
       ) {
         visibleFieldIds.add(field._id.toString())
@@ -275,7 +280,7 @@ export const getVisibleFieldIds = (
  * @returns true if all the conditions are satisfied, false otherwise
  */
 const isLogicUnitSatisfied = (
-  submission: FieldSchemaOrResponse[],
+  submission: LogicFieldSchemaOrResponse[],
   logicUnit: IConditionSchema[],
   visibleFieldIds: FieldIdSet,
 ): boolean => {
@@ -290,7 +295,7 @@ const isLogicUnitSatisfied = (
 }
 
 const getCurrentValue = (
-  field: FieldSchemaOrResponse,
+  field: LogicFieldSchemaOrResponse,
 ):
   | string
   | string[]
@@ -318,7 +323,7 @@ const getCurrentValue = (
  * @param {String} condition.state - The type of condition
  */
 const isConditionFulfilled = (
-  field: FieldSchemaOrResponse,
+  field: LogicFieldSchemaOrResponse,
   condition: IConditionSchema,
 ): boolean => {
   if (!field || !condition) {
@@ -399,9 +404,9 @@ const isConditionFulfilled = (
  * @returns the condition field if it exists, `undefined` otherwise
  */
 const findConditionField = (
-  submission: FieldSchemaOrResponse[],
+  submission: LogicFieldSchemaOrResponse[],
   fieldId: IConditionSchema['field'],
-): FieldSchemaOrResponse | undefined => {
+): LogicFieldSchemaOrResponse | undefined => {
   return submission.find(
     (submittedField) => String(submittedField._id) === String(fieldId),
   )

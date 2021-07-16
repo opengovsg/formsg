@@ -224,6 +224,22 @@
   text-align: center;
 }
 
+.logic-modal .inline-option .inline-input {
+  display: table-cell;
+}
+
+.logic-modal .inline-option .inline-btn {
+  width: 10%;
+  padding: 0 auto;
+  display: table-cell;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.logic-modal .inline-option .inline-btn button {
+  padding: 0;
+}
+
 .logic-modal .remove-condition-btn {
   background-color: #db4545;
 }

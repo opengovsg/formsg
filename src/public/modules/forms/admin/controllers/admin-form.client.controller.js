@@ -8,6 +8,9 @@ const UpdateFormService = require('../../../../services/UpdateFormService')
 const UserService = require('../../../../services/UserService')
 const FieldFactory = require('../../helpers/field-factory')
 const { UPDATE_FORM_TYPES } = require('../constants/update-form-types')
+const {
+  checkIfHasInvalidValues,
+} = require('../../../../../shared/util/logic-utils/logic-values-checker')
 
 // All viewable tabs. readOnly is true if that tab cannot be used to edit form.
 const VIEW_TABS = [
@@ -358,11 +361,15 @@ function AdminFormController(
 
   /**
    * Updates $scope.isLogicError based on whether form has logic units with fields
-   * that no longer exist.
+   * that no longer exist or deleted field options.
    */
   $scope.checkLogicError = () => {
     $scope.isLogicError = $scope.myform.form_logics.some((logicUnit) => {
-      return hasConditionError(logicUnit) || hasShowError(logicUnit)
+      return (
+        hasConditionError(logicUnit) ||
+        hasShowError(logicUnit) ||
+        hasInvalidValues(logicUnit)
+      )
     })
   }
 
@@ -388,6 +395,22 @@ function AdminFormController(
   let getField = (fieldId) => {
     return $scope.myform.form_fields.find(function (field) {
       return field._id === fieldId
+    })
+  }
+
+  /**
+   * Checks if a logic unit has any errors in its field values.
+   * @param {Object} logicUnit
+   */
+  const hasInvalidValues = (logicUnit) => {
+    return logicUnit.conditions.some((condition) => {
+      return checkIfHasInvalidValues(
+        condition.value,
+        $scope.myform.form_fields.find(
+          (field) => field._id === condition.field,
+        ), // must use the myform.form_fields and not condition.fieldInfo because condition.fieldInfo has not been updated
+        condition.state,
+      )
     })
   }
 }
