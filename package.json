@@ -81,7 +81,7 @@
     "angular-ui-bootstrap": "~2.5.6",
     "angular-ui-router": "~1.0.29",
     "aws-info": "^1.2.0",
-    "aws-sdk": "^2.946.0",
+    "aws-sdk": "^2.948.0",
     "axios": "^0.21.1",
     "bcrypt": "^5.0.1",
     "bluebird": "^3.5.2",
@@ -155,7 +155,7 @@
     "web-streams-polyfill": "^3.0.3",
     "whatwg-fetch": "^3.6.2",
     "winston": "^3.3.3",
-    "winston-cloudwatch": "^2.5.2",
+    "winston-cloudwatch": "^3.0.0",
     "zod": "^3.5.1"
   },
   "devDependencies": {
