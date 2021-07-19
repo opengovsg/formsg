@@ -1,6 +1,6 @@
 import { ValidateFieldError } from 'src/app/modules/submission/submission.errors'
 import { validateField } from 'src/app/utils/field-validation'
-import { BasicField, TextSelectedValidation } from 'src/types'
+import { BasicField, TextSelectedValidation } from 'src/types/field'
 
 import {
   generateDefaultField,

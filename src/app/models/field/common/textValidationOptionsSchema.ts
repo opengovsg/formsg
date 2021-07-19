@@ -1,7 +1,9 @@
 import { Schema } from 'mongoose'
 
-import { TextSelectedValidation } from '../../../../types/field/baseField'
-import { TextValidationOptions } from '../../../../types/field/utils/textField'
+import {
+  TextSelectedValidation,
+  TextValidationOptions,
+} from '../../../../types/field'
 import { WithCustomMinMax } from '../../../../types/field/utils/virtuals'
 
 export const TextValidationOptionsSchema = new Schema<

@@ -1,7 +1,6 @@
 import { Document } from 'mongoose'
 
-import { IFieldSchema } from './field/baseField'
-import { BasicField } from './field/fieldTypes'
+import { BasicField, IFieldSchema } from './field'
 
 export enum LogicConditionState {
   Equal = 'is equals to',

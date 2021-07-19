@@ -1,15 +1,14 @@
-import { IField, IFieldSchema } from './baseField'
+import {
+  BasicField,
+  RatingFieldBase,
+  RatingShape,
+} from '../../../shared/types/field'
 
-export enum RatingShape {
-  Heart = 'Heart',
-  Star = 'Star',
+import { IFieldSchema } from './baseField'
+
+export { RatingShape }
+
+export type IRatingField = RatingFieldBase
+export interface IRatingFieldSchema extends IRatingField, IFieldSchema {
+  fieldType: BasicField.Rating
 }
-
-export interface IRatingField extends IField {
-  ratingOptions: {
-    steps: number
-    shape: RatingShape
-  }
-}
-
-export interface IRatingFieldSchema extends IRatingField, IFieldSchema {}

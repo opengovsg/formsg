@@ -1,8 +1,8 @@
 import { EditFieldActions } from '../../shared/constants'
-import { IFieldSchema } from '../field'
+import { FormFieldSchema } from '../field'
 
 export type EditFormFieldParams = {
-  field: IFieldSchema
+  field: FormFieldSchema
 } & (
   | {
       action: {

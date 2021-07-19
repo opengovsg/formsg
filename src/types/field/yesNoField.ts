@@ -1,5 +1,9 @@
-import { IField, IFieldSchema } from './baseField'
+import { BasicField, YesNoFieldBase } from '../../../shared/types/field'
 
-export type IYesNoField = IField
+import { IFieldSchema } from './baseField'
 
-export interface IYesNoFieldSchema extends IYesNoField, IFieldSchema {}
+export type IYesNoField = YesNoFieldBase
+
+export interface IYesNoFieldSchema extends IYesNoField, IFieldSchema {
+  fieldType: BasicField.YesNo
+}

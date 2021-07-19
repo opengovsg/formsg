@@ -1,26 +1,6 @@
 import { left } from 'fp-ts/lib/Either'
 
-import { IField } from '../../../types/field/baseField'
-import {
-  isAttachmentField,
-  isCheckboxField,
-  isDateField,
-  isDecimalField,
-  isDropdownField,
-  isEmailField,
-  isHomeNumberField,
-  isLongTextField,
-  isMobileNumberField,
-  isNricField,
-  isNumberField,
-  isRadioButtonField,
-  isRatingField,
-  isSectionField,
-  isShortTextField,
-  isTableField,
-  isUenField,
-  isYesNoField,
-} from '../../../types/field/utils/guards'
+import { BasicField, FieldValidationSchema } from '../../../types'
 import { ResponseValidator } from '../../../types/field/utils/validation'
 import {
   ProcessedAttachmentResponse,
@@ -52,64 +32,67 @@ import { constructYesNoValidator } from './validators/yesNoValidator'
  * @param formField A form field from a form object
  */
 export const constructSingleAnswerValidator = (
-  formField: IField,
+  formField: FieldValidationSchema,
 ): ResponseValidator<ProcessedSingleAnswerResponse> => {
-  if (isSectionField(formField)) {
-    return constructSectionValidator()
-  } else if (isShortTextField(formField) || isLongTextField(formField)) {
-    return constructTextValidator(formField)
-  } else if (isNricField(formField)) {
-    return constructNricValidator()
-  } else if (isHomeNumberField(formField)) {
-    return constructHomeNoValidator(formField)
-  } else if (isRadioButtonField(formField)) {
-    return constructRadioButtonValidator(formField)
-  } else if (isRatingField(formField)) {
-    return constructRatingValidator(formField)
-  } else if (isMobileNumberField(formField)) {
-    return constructMobileNoValidator(formField)
-  } else if (isDateField(formField)) {
-    return constructDateValidator(formField)
-  } else if (isNumberField(formField)) {
-    return constructNumberValidator(formField)
-  } else if (isDecimalField(formField)) {
-    return constructDecimalValidator(formField)
-  } else if (isDropdownField(formField)) {
-    return constructDropdownValidator(formField)
-  } else if (isEmailField(formField)) {
-    return constructEmailValidator(formField)
-  } else if (isUenField(formField)) {
-    return constructUenValidator()
-  } else if (isYesNoField(formField)) {
-    return constructYesNoValidator()
+  switch (formField.fieldType) {
+    case BasicField.Section:
+      return constructSectionValidator()
+    case BasicField.ShortText:
+    case BasicField.LongText:
+      return constructTextValidator(formField)
+    case BasicField.Nric:
+      return constructNricValidator()
+    case BasicField.HomeNo:
+      return constructHomeNoValidator(formField)
+    case BasicField.Radio:
+      return constructRadioButtonValidator(formField)
+    case BasicField.Rating:
+      return constructRatingValidator(formField)
+    case BasicField.Mobile:
+      return constructMobileNoValidator(formField)
+    case BasicField.Date:
+      return constructDateValidator(formField)
+    case BasicField.Number:
+      return constructNumberValidator(formField)
+    case BasicField.Decimal:
+      return constructDecimalValidator(formField)
+    case BasicField.Dropdown:
+      return constructDropdownValidator(formField)
+    case BasicField.Email:
+      return constructEmailValidator(formField)
+    case BasicField.Uen:
+      return constructUenValidator()
+    case BasicField.YesNo:
+      return constructYesNoValidator()
+    default:
+      return () => left('Unsupported field type')
   }
-  return () => left('Unsupported field type')
 }
 
 export const constructAttachmentFieldValidator = (
   // Separate from constructSingleAnswerValidator as
   // constructAttachmentValidator returns different type
-  formField: IField,
+  formField: FieldValidationSchema,
 ): ResponseValidator<ProcessedAttachmentResponse> => {
-  if (isAttachmentField(formField)) {
+  if (formField.fieldType === BasicField.Attachment) {
     return constructAttachmentValidator(formField)
   }
   return () => left('Unsupported field type')
 }
 
 export const constructCheckboxFieldValidator = (
-  formField: IField,
+  formField: FieldValidationSchema,
 ): ResponseValidator<ProcessedCheckboxResponse> => {
-  if (isCheckboxField(formField)) {
+  if (formField.fieldType === BasicField.Checkbox) {
     return constructCheckboxValidator(formField)
   }
   return () => left('Unsupported field type')
 }
 
 export const constructTableFieldValidator = (
-  formField: IField,
+  formField: FieldValidationSchema,
 ): ResponseValidator<ProcessedTableResponse> => {
-  if (isTableField(formField)) {
+  if (formField.fieldType === BasicField.Table) {
     return constructTableValidator(formField)
   }
   return () => left('Unsupported field type')

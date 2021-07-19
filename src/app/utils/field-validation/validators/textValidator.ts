@@ -1,16 +1,21 @@
 import { chain, left, right } from 'fp-ts/lib/Either'
 import { flow } from 'fp-ts/lib/function'
 
-import { ProcessedSingleAnswerResponse } from 'src/app/modules/submission/submission.types'
-import { ILongTextField, IShortTextField } from 'src/types/field'
-import { ResponseValidator } from 'src/types/field/utils/validation'
-
-import { TextSelectedValidation } from '../../../../types/field/baseField'
+import { TextSelectedValidation } from '../../../../../shared/types/field'
+import {
+  ILongTextFieldSchema,
+  IShortTextFieldSchema,
+  OmitUnusedValidatorProps,
+} from '../../../../types/field'
+import { ResponseValidator } from '../../../../types/field/utils/validation'
+import { ProcessedSingleAnswerResponse } from '../../../modules/submission/submission.types'
 
 import { notEmptySingleAnswerResponse } from './common'
 
 type TextFieldValidatorConstructor = (
-  textField: IShortTextField | ILongTextField,
+  textField:
+    | OmitUnusedValidatorProps<IShortTextFieldSchema>
+    | OmitUnusedValidatorProps<ILongTextFieldSchema>,
 ) => ResponseValidator<ProcessedSingleAnswerResponse>
 
 /**

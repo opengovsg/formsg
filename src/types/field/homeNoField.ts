@@ -1,7 +1,9 @@
-import { IField, IFieldSchema } from './baseField'
+import { BasicField, HomenoFieldBase } from '../../../shared/types/field'
 
-export interface IHomenoField extends IField {
-  allowIntlNumbers: boolean
+import { IFieldSchema } from './baseField'
+
+export type IHomenoField = HomenoFieldBase
+
+export interface IHomenoFieldSchema extends IHomenoField, IFieldSchema {
+  fieldType: BasicField.HomeNo
 }
-
-export interface IHomenoFieldSchema extends IHomenoField, IFieldSchema {}

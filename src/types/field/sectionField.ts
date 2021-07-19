@@ -1,5 +1,8 @@
-import { IField, IFieldSchema } from './baseField'
+import { BasicField, SectionFieldBase } from '../../../shared/types/field'
 
-export type ISectionField = IField
+import { IFieldSchema } from './baseField'
 
-export interface ISectionFieldSchema extends ISectionField, IFieldSchema {}
+export type ISectionField = SectionFieldBase
+export interface ISectionFieldSchema extends ISectionField, IFieldSchema {
+  fieldType: BasicField.Section
+}

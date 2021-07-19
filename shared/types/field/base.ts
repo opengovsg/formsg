@@ -48,12 +48,22 @@ export enum MyInfoAttribute {
   WorkpassExpiryDate = 'workpassexpirydate',
 }
 
-export enum SPCPFieldTitle {
-  SpNric = 'SingPass Validated NRIC',
-  CpUid = 'CorpPass Validated UID',
-  CpUen = 'CorpPass Validated UEN',
+export type AllowMyInfoBase = {
+  myInfo?: {
+    attr: MyInfoAttribute
+  }
+}
+export type VerifiableFieldBase = {
+  isVerifiable: boolean
 }
 
-export enum SgidFieldTitle {
-  SgidNric = 'sgID Validated NRIC',
+export type FieldBase = {
+  globalId?: string
+  title: string
+  description: string
+  required: boolean
+  disabled: boolean
+  fieldType: BasicField
 }
+
+export type MyInfoableFieldBase = FieldBase & AllowMyInfoBase

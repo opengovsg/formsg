@@ -7,7 +7,7 @@ import {
 import {
   AuthType,
   FieldResponse,
-  IFieldSchema,
+  FormFieldSchema,
   IFormDocument,
   ResponseMode,
 } from '../../../../types'
@@ -102,7 +102,7 @@ export default class ParsedResponsesObject {
     }
 
     const fieldMap = form.form_fields.reduce<{
-      [fieldId: string]: IFieldSchema
+      [fieldId: string]: FormFieldSchema
     }>((acc, field) => {
       acc[field._id] = field
       return acc

@@ -1,18 +1,15 @@
-import { IField, IFieldSchema } from './baseField'
+import {
+  BasicField,
+  NumberFieldBase,
+  NumberSelectedValidation,
+  NumberValidationOptions,
+} from '../../../shared/types/field'
 
-export enum NumberSelectedValidation {
-  Max = 'Maximum',
-  Min = 'Minimum',
-  Exact = 'Exact',
+import { IFieldSchema } from './baseField'
+
+export { NumberValidationOptions, NumberSelectedValidation }
+
+export type INumberField = NumberFieldBase
+export interface INumberFieldSchema extends INumberField, IFieldSchema {
+  fieldType: BasicField.Number
 }
-
-export type NumberValidationOptions = {
-  customVal: number | null
-  selectedValidation: NumberSelectedValidation | null
-}
-
-export interface INumberField extends IField {
-  ValidationOptions: NumberValidationOptions
-}
-
-export interface INumberFieldSchema extends INumberField, IFieldSchema {}

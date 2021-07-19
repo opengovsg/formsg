@@ -1,15 +1,9 @@
-import { DateSelectedValidation } from '../../shared/constants'
+import { BasicField, DateFieldBase } from '../../../shared/types/field'
 
-import { IField, IFieldSchema } from './baseField'
+import { IFieldSchema } from './baseField'
 
-export type DateValidationOptions = {
-  customMaxDate: Date | null
-  customMinDate: Date | null
-  selectedDateValidation: DateSelectedValidation | null
+export type IDateField = DateFieldBase
+
+export interface IDateFieldSchema extends DateFieldBase, IFieldSchema {
+  fieldType: BasicField.Date
 }
-
-export interface IDateField extends IField {
-  dateValidation: DateValidationOptions
-}
-
-export interface IDateFieldSchema extends IDateField, IFieldSchema {}

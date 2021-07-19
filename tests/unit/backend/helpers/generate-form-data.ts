@@ -11,6 +11,7 @@ import {
 import {
   AttachmentSize,
   BasicField,
+  FormFieldSchema,
   IAttachmentField,
   IAttachmentFieldSchema,
   IAttachmentResponse,
@@ -23,7 +24,6 @@ import {
   IDropdownField,
   IDropdownFieldSchema,
   IField,
-  IFieldSchema,
   IHomenoFieldSchema,
   IImageFieldSchema,
   ILongTextField,
@@ -53,7 +53,7 @@ export const generateDefaultField = (
     | IShortTextField
     | ILongTextField
   > & { _id?: string },
-): IFieldSchema => {
+): FormFieldSchema => {
   const defaultParams = {
     title: `test ${fieldType} field title`,
     _id: new ObjectId().toHexString(),
@@ -168,12 +168,12 @@ export const generateDefaultField = (
         ...defaultParams,
         getQuestion: () => defaultParams.title,
         ...customParams,
-      } as IFieldSchema
+      } as FormFieldSchema
   }
 }
 
 export const generateProcessedSingleAnswerResponse = (
-  field: IFieldSchema,
+  field: FormFieldSchema,
   answer = 'answer',
 ): ProcessedSingleAnswerResponse => {
   if (
@@ -198,7 +198,7 @@ export const generateProcessedSingleAnswerResponse = (
 }
 
 export const generateSingleAnswerResponse = (
-  field: IFieldSchema,
+  field: FormFieldSchema,
   answer = field.fieldType === BasicField.Section ? '' : 'answer',
 ): ISingleAnswerResponse => {
   if (
@@ -315,7 +315,7 @@ export const generateTableResponse = (
           rowAnswer.push('answer')
           break
         case BasicField.Dropdown:
-          rowAnswer.push(((col as unknown) as IDropdownField).fieldOptions[0])
+          rowAnswer.push((col as unknown as IDropdownField).fieldOptions[0])
       }
     })
     answerArray = Array(field.minimumRows).fill(rowAnswer)

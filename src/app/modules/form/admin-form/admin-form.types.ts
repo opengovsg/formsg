@@ -1,7 +1,7 @@
 import { Result } from 'neverthrow'
 
 import {
-  IFieldSchema,
+  FormFieldSchema,
   IForm,
   IPopulatedForm,
   IUserSchema,
@@ -32,4 +32,4 @@ export type OverrideProps = {
   publicKey?: string
 }
 
-export type EditFormFieldResult = Result<IFieldSchema[], EditFieldError>
+export type EditFormFieldResult = Result<FormFieldSchema[], EditFieldError>

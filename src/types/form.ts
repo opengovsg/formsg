@@ -7,6 +7,7 @@ import { OverrideProps } from '../app/modules/form/admin-form/admin-form.types'
 import { PublicView } from './database'
 import {
   FormField,
+  FormFieldSchema,
   FormFieldWithId,
   IFieldSchema,
   MyInfoAttribute,
@@ -165,7 +166,7 @@ export type FormSettings = Pick<
 >
 
 export interface IFormSchema extends IForm, Document, PublicView<PublicForm> {
-  form_fields?: Types.DocumentArray<IFieldSchema> | IFieldSchema[]
+  form_fields?: Types.DocumentArray<FormFieldSchema> | FormFieldSchema[]
   form_logics?: Types.DocumentArray<ILogicSchema> | ILogicSchema[]
 
   /**

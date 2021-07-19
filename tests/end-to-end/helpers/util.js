@@ -28,9 +28,7 @@ const {
 
 const { types } = require('../../../dist/backend/src/shared/resources/basic')
 
-const {
-  SPCPFieldTitle,
-} = require('../../../dist/backend/src/types/field/fieldTypes')
+const { SPCPFieldTitle } = require('../../../dist/backend/src/types/field')
 
 const NON_SUBMITTED_FIELDS = types
   .filter((field) => !field.submitted)

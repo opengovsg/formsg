@@ -1,27 +1,37 @@
-import { IAttachmentField, IAttachmentFieldSchema } from './attachmentField'
-import { ICheckboxField, ICheckboxFieldSchema } from './checkboxField'
-import { IDateField, IDateFieldSchema } from './dateField'
-import { IDecimalField, IDecimalFieldSchema } from './decimalField'
-import { IDropdownField, IDropdownFieldSchema } from './dropdownField'
-import { IEmailField, IEmailFieldSchema } from './emailField'
-import { IHomenoField, IHomenoFieldSchema } from './homeNoField'
-import { IImageField, IImageFieldSchema } from './imageField'
-import { ILongTextField, ILongTextFieldSchema } from './longTextField'
-import { IMobileField, IMobileFieldSchema } from './mobileField'
-import { INricField, INricFieldSchema } from './nricField'
-import { INumberField, INumberFieldSchema } from './numberField'
-import { IRadioField, IRadioFieldSchema } from './radioField'
-import { IRatingField, IRatingFieldSchema } from './ratingField'
-import { ISectionField, ISectionFieldSchema } from './sectionField'
-import { IShortTextField, IShortTextFieldSchema } from './shortTextField'
-import { IStatementField, IStatementFieldSchema } from './statementField'
-import { ITableField, ITableFieldSchema } from './tableField'
-import { IUenField, IUenFieldSchema } from './uenField'
-import { IYesNoField, IYesNoFieldSchema } from './yesNoField'
+import { Document } from 'mongoose'
+import { ConditionalExcept, Merge } from 'type-fest'
 
-export * from './fieldTypes'
-export * from './baseField'
+import {
+  BasicField,
+  FormField,
+  FormFieldDto,
+  MyInfoAttribute,
+} from '../../../shared/types/field'
+
+import { IAttachmentFieldSchema } from './attachmentField'
+import { ICheckboxFieldSchema } from './checkboxField'
+import { IDateFieldSchema } from './dateField'
+import { IDecimalFieldSchema } from './decimalField'
+import { IDropdownFieldSchema } from './dropdownField'
+import { IEmailFieldSchema } from './emailField'
+import { IHomenoFieldSchema } from './homeNoField'
+import { IImageFieldSchema } from './imageField'
+import { ILongTextFieldSchema } from './longTextField'
+import { IMobileFieldSchema } from './mobileField'
+import { INricFieldSchema } from './nricField'
+import { INumberFieldSchema } from './numberField'
+import { IRadioFieldSchema } from './radioField'
+import { IRatingFieldSchema } from './ratingField'
+import { ISectionFieldSchema } from './sectionField'
+import { IShortTextFieldSchema } from './shortTextField'
+import { IStatementFieldSchema } from './statementField'
+import { ITableFieldSchema } from './tableField'
+import { IUenFieldSchema } from './uenField'
+import { IYesNoFieldSchema } from './yesNoField'
+
+export * from '../../../shared/types/field/utils'
 export * from './attachmentField'
+export * from './baseField'
 export * from './checkboxField'
 export * from './dateField'
 export * from './decimalField'
@@ -42,6 +52,17 @@ export * from './statementField'
 export * from './tableField'
 export * from './uenField'
 export * from './yesNoField'
+export { BasicField, MyInfoAttribute, FormField }
+
+export enum SPCPFieldTitle {
+  SpNric = 'SingPass Validated NRIC',
+  CpUid = 'CorpPass Validated UID',
+  CpUen = 'CorpPass Validated UEN',
+}
+
+export enum SgidFieldTitle {
+  SgidNric = 'sgID Validated NRIC',
+}
 
 export type FormFieldSchema =
   | IAttachmentFieldSchema
@@ -65,29 +86,47 @@ export type FormFieldSchema =
   | IUenFieldSchema
   | IYesNoFieldSchema
 
-export type FormField =
-  | IAttachmentField
-  | ICheckboxField
-  | IDateField
-  | IDecimalField
-  | IDropdownField
-  | IEmailField
-  | IHomenoField
-  | IImageField
-  | ILongTextField
-  | IMobileField
-  | INricField
-  | INumberField
-  | IRadioField
-  | IRatingField
-  | ISectionField
-  | IShortTextField
-  | IStatementField
-  | ITableField
-  | IUenField
-  | IYesNoField
+/**
+ * Helper type to only retain from FormFieldSchema the props required to create
+ * a validator for that field.
+ * I have created a monster.
+ */
+export type OmitUnusedValidatorProps<F extends FormFieldSchema> = Merge<
+  Omit<
+    // Remove all functions from the given field schema.
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    ConditionalExcept<F, Function>,
+    // Remove unused
+    'disabled' | 'description' | keyof Document
+  >,
+  // Omitting keyof Document removes the _id prop, but it is still needed for
+  // some validator functions.
+  { _id?: F['_id'] }
+>
+
+export type FieldValidationSchema =
+  | OmitUnusedValidatorProps<IAttachmentFieldSchema>
+  | OmitUnusedValidatorProps<ICheckboxFieldSchema>
+  | OmitUnusedValidatorProps<IDateFieldSchema>
+  | OmitUnusedValidatorProps<IDecimalFieldSchema>
+  | OmitUnusedValidatorProps<IDropdownFieldSchema>
+  | OmitUnusedValidatorProps<IEmailFieldSchema>
+  | OmitUnusedValidatorProps<IHomenoFieldSchema>
+  | OmitUnusedValidatorProps<IImageFieldSchema>
+  | OmitUnusedValidatorProps<ILongTextFieldSchema>
+  | OmitUnusedValidatorProps<IMobileFieldSchema>
+  | OmitUnusedValidatorProps<INricFieldSchema>
+  | OmitUnusedValidatorProps<INumberFieldSchema>
+  | OmitUnusedValidatorProps<IRadioFieldSchema>
+  | OmitUnusedValidatorProps<IRatingFieldSchema>
+  | OmitUnusedValidatorProps<ISectionFieldSchema>
+  | OmitUnusedValidatorProps<IShortTextFieldSchema>
+  | OmitUnusedValidatorProps<IStatementFieldSchema>
+  | OmitUnusedValidatorProps<ITableFieldSchema>
+  | OmitUnusedValidatorProps<IUenFieldSchema>
+  | OmitUnusedValidatorProps<IYesNoFieldSchema>
 
 /**
  * Form field POJO with id
  */
-export type FormFieldWithId = FormField & { _id: string }
+export type FormFieldWithId = FormFieldDto

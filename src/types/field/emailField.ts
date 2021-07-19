@@ -1,20 +1,15 @@
-import { IField, IFieldSchema } from './baseField'
+import {
+  AutoReplyOptions,
+  BasicField,
+  EmailFieldBase,
+} from '../../../shared/types/field'
 
-export type AutoReplyOptions = {
-  hasAutoReply: boolean
-  autoReplySubject: string
-  autoReplySender: string
-  autoReplyMessage: string
-  includeFormSummary: boolean
-}
+import { IFieldSchema } from './baseField'
 
-export interface IEmailField extends IField {
-  autoReplyOptions: AutoReplyOptions
-  isVerifiable: boolean
-  hasAllowedEmailDomains: boolean
-  allowedEmailDomains: string[]
-}
+export { AutoReplyOptions }
 
+export type IEmailField = EmailFieldBase
 export interface IEmailFieldSchema extends IEmailField, IFieldSchema {
+  fieldType: BasicField.Email
   isVerifiable: boolean
 }

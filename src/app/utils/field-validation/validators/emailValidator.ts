@@ -3,14 +3,14 @@ import { flow } from 'fp-ts/lib/function'
 import isEmail from 'validator/lib/isEmail'
 
 import { ProcessedSingleAnswerResponse } from 'src/app/modules/submission/submission.types'
-import { IEmailFieldSchema } from 'src/types/field'
+import { IEmailFieldSchema, OmitUnusedValidatorProps } from 'src/types/field'
 import { ResponseValidator } from 'src/types/field/utils/validation'
 
 import { makeSignatureValidator, notEmptySingleAnswerResponse } from './common'
 
 type EmailValidator = ResponseValidator<ProcessedSingleAnswerResponse>
 type EmailValidatorConstructor = (
-  emailField: IEmailFieldSchema,
+  emailField: OmitUnusedValidatorProps<IEmailFieldSchema>,
 ) => EmailValidator
 
 /**

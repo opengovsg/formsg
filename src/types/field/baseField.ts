@@ -1,13 +1,9 @@
 import { Document } from 'mongoose'
 
+import { AllowMyInfoBase, FieldBase } from '../../../shared/types/field'
 import { IFormSchema } from '../form'
 
-import { BasicField, MyInfoAttribute } from './fieldTypes'
-
-export interface IMyInfo {
-  attr: MyInfoAttribute
-}
-
+export type IMyInfo = NonNullable<AllowMyInfoBase['myInfo']>
 export interface IMyInfoSchema extends IMyInfo, Document {
   /** Returns the top level document of this sub-document. */
   ownerDocument(): IFormSchema
@@ -15,18 +11,10 @@ export interface IMyInfoSchema extends IMyInfo, Document {
   parent(): IFieldSchema
 }
 
-export interface IField {
-  globalId?: string
-  title: string
-  description: string
-  required: boolean
-  disabled: boolean
-  fieldType: BasicField
-  myInfo?: IMyInfo
-}
+export type IField = FieldBase
 
 // Manual override since mongoose types don't have generics yet.
-export interface IFieldSchema extends IField, Document {
+export interface IFieldSchema extends AllowMyInfoBase, FieldBase, Document {
   /** Returns the top level document of this sub-document. */
   ownerDocument(): IFormSchema
   /** Returns this sub-documents parent document. */
@@ -48,10 +36,4 @@ export interface IFieldSchema extends IField, Document {
 // Hence we need this interface for client-side fields.
 export interface IClientFieldSchema extends IFieldSchema {
   fieldValue: string
-}
-
-export enum TextSelectedValidation {
-  Maximum = 'Maximum',
-  Minimum = 'Minimum',
-  Exact = 'Exact',
 }

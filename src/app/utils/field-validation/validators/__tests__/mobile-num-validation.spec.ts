@@ -2,7 +2,7 @@ import formsgSdk from 'src/app/config/formsg-sdk'
 import { ValidateFieldError } from 'src/app/modules/submission/submission.errors'
 import { validateField } from 'src/app/utils/field-validation'
 import { IFieldSchema } from 'src/types'
-import { BasicField } from 'src/types/field/fieldTypes'
+import { BasicField } from 'src/types/field'
 
 import {
   generateDefaultField,

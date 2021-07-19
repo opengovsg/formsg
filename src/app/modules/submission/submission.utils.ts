@@ -5,11 +5,10 @@ import { FIELDS_TO_REJECT } from '../../../shared/resources/basic'
 import {
   BasicField,
   FieldResponse,
-  IFieldSchema,
+  FormFieldSchema,
   IFormDocument,
   ResponseMode,
 } from '../../../types'
-import { isEmailField } from '../../../types/field/utils/guards'
 import { AutoReplyMailData } from '../../services/mail/mail.types'
 
 import { IncomingSubmission } from './IncomingSubmission.class'
@@ -53,14 +52,14 @@ const encryptModeFilter = <T extends ModeFilterParam>(responses: T[] = []) => {
 // TODO: Migrate to extractEmailConfirmationDataFromIncomingSubmission
 export const extractEmailConfirmationData = (
   responses: FieldResponse[],
-  formFields: IFieldSchema[] | undefined,
+  formFields: FormFieldSchema[] | undefined,
 ): AutoReplyMailData[] => {
   const fieldsById = keyBy(formFields, '_id')
   return responses.reduce<AutoReplyMailData[]>((acc, response) => {
     const field = fieldsById[response._id]
     if (
       field &&
-      isEmailField(field) &&
+      field.fieldType === BasicField.Email &&
       response.fieldType === BasicField.Email &&
       response.answer
     ) {

@@ -8,7 +8,7 @@ import {
   ITableResponse,
 } from 'src/types/response'
 
-import { BasicField, IFieldSchema } from '../../../types/field'
+import { BasicField, FormFieldSchema } from '../../../types/field'
 
 export type ProcessedResponse = {
   question: string
@@ -21,7 +21,7 @@ export type ProcessedResponse = {
  * ALL field responses in an incoming submission.
  */
 export type ValidatedFieldMap = Opaque<
-  { [p: string]: IFieldSchema },
+  { [p: string]: FormFieldSchema },
   'ValidatedFieldMap'
 >
 

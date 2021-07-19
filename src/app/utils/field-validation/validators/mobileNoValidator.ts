@@ -2,7 +2,7 @@ import { chain, left, right } from 'fp-ts/lib/Either'
 import { flow } from 'fp-ts/lib/function'
 
 import { ProcessedSingleAnswerResponse } from 'src/app/modules/submission/submission.types'
-import { IMobileFieldSchema } from 'src/types/field'
+import { IMobileFieldSchema, OmitUnusedValidatorProps } from 'src/types/field'
 import { ResponseValidator } from 'src/types/field/utils/validation'
 
 import {
@@ -14,7 +14,7 @@ import { makeSignatureValidator, notEmptySingleAnswerResponse } from './common'
 
 type MobileNoValidator = ResponseValidator<ProcessedSingleAnswerResponse>
 type MobileNoValidatorConstructor = (
-  mobileNumberField: IMobileFieldSchema,
+  mobileNumberField: OmitUnusedValidatorProps<IMobileFieldSchema>,
 ) => MobileNoValidator
 
 /**

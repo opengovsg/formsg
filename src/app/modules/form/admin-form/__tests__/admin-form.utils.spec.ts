@@ -4,8 +4,8 @@ import { cloneDeep, omit, tail } from 'lodash'
 import { EditFieldActions } from 'src/shared/constants'
 import {
   BasicField,
+  FormFieldSchema,
   IEmailFieldSchema,
-  IFieldSchema,
   IPopulatedForm,
   IPopulatedUser,
   Permission,
@@ -370,9 +370,10 @@ describe('admin-form.utils', () => {
     it('should return updated fields successfully on duplicate action', async () => {
       // Arrange
       // Remove globalId from duplicate.
-      const duplicateField: IFieldSchema = omit(cloneDeep(INITIAL_FIELDS[1]), [
-        'globalId',
-      ])
+      const duplicateField: FormFieldSchema = omit(
+        cloneDeep(INITIAL_FIELDS[1]),
+        ['globalId'],
+      )
       const dupeFieldParams: EditFormFieldParams = {
         action: { name: EditFieldActions.Duplicate },
         field: duplicateField,
@@ -418,7 +419,7 @@ describe('admin-form.utils', () => {
       const fieldToUpdate = {
         ...INITIAL_FIELDS[0],
         title: 'some new title!!!',
-      } as IFieldSchema
+      } as FormFieldSchema
 
       const updateFieldParams: EditFormFieldParams = {
         action: {

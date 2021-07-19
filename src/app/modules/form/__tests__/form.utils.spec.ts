@@ -1,7 +1,7 @@
 import { ObjectId } from 'bson-ext'
 import { Types } from 'mongoose'
 
-import { BasicField, IFieldSchema, Permission } from 'src/types'
+import { BasicField, FormFieldSchema, Permission } from 'src/types'
 
 import { generateDefaultField } from 'tests/unit/backend/helpers/generate-form-data'
 
@@ -70,7 +70,7 @@ describe('form.utils', () => {
         1: fieldToFind,
         isMongooseDocumentArray: true,
         id: jest.fn().mockReturnValue(fieldToFind),
-      } as unknown as Types.DocumentArray<IFieldSchema>
+      } as unknown as Types.DocumentArray<FormFieldSchema>
 
       // Act
       const result = getFormFieldById(mockDocArray, fieldToFind._id)

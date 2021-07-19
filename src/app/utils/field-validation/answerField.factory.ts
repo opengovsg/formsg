@@ -1,4 +1,9 @@
-import { BasicField, IColumnSchema } from '../../../types'
+import {
+  IColumnSchema,
+  IDropdownFieldSchema,
+  IShortTextFieldSchema,
+  OmitUnusedValidatorProps,
+} from '../../../types'
 
 /**
  * Return type of createAnswerFieldFromColumn().
@@ -6,32 +11,19 @@ import { BasicField, IColumnSchema } from '../../../types'
  * fieldType is restricted) and allows the result to be
  * passed into validateField().
  * */
-type ColumnWithFieldProperties = IColumnSchema & {
-  getQuestion: { (): string }
-  description: string
-  disabled: boolean
-  fieldType: BasicField.ShortText | BasicField.Dropdown
-}
+type ColumnWithFieldProperties =
+  | OmitUnusedValidatorProps<IShortTextFieldSchema>
+  | OmitUnusedValidatorProps<IDropdownFieldSchema>
 
 /**
  * Takes a table field column and generates a form field by
- * filling in the missing attributes.
+ * filling in the missing fieldType attribute.
  * */
 export const createAnswerFieldFromColumn = (
   column: IColumnSchema,
 ): ColumnWithFieldProperties => {
-  const columnField = {
-    // Convert mongoose document to object first,
-    // otherwise the values will not be correctly spread
+  return {
     ...column.toObject(),
-    disabled: false,
-    description: 'some description',
-    get fieldType() {
-      return column.columnType
-    },
-    getQuestion() {
-      return 'some question'
-    },
-  }
-  return columnField as ColumnWithFieldProperties
+    fieldType: column.columnType,
+  } as ColumnWithFieldProperties
 }
