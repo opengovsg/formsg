@@ -32,6 +32,7 @@ export const Checkbox: ComponentStyleConfig = {
       },
     },
     label: {
+      w: '100%',
       textColor: 'secondary.700',
       ml: '1rem',
       textStyle: 'body-1',
