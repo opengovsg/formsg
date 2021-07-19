@@ -3,9 +3,9 @@ import { getColor } from '@chakra-ui/theme-tools'
 
 export const Radio: ComponentStyleConfig = {
   parts: ['others'],
-  baseStyle: (props) => ({
+  baseStyle: ({ theme }) => ({
     control: {
-      border: '2px solid',
+      border: '0.125rem solid',
       borderColor: 'primary.500',
       _checked: {
         borderColor: 'primary.500',
@@ -19,6 +19,12 @@ export const Radio: ComponentStyleConfig = {
           bg: 'white',
           borderColor: 'primary.500',
         },
+        _disabled: {
+          borderColor: 'neutral.500',
+          bg: 'white',
+          color: 'neutral.500',
+          cursor: 'default',
+        },
       },
       _focus: {
         boxShadow: 'none',
@@ -30,13 +36,25 @@ export const Radio: ComponentStyleConfig = {
       _invalid: {
         borderColor: 'primary.500',
       },
+      _disabled: {
+        borderColor: 'neutral.500',
+        bg: 'white',
+        cursor: 'default',
+      },
     },
     label: {
+      w: '100%',
       textColor: 'secondary.700',
-      mx: '1rem',
+      ml: '1rem',
+      textStyle: 'body-1',
+      _disabled: {
+        color: 'neutral.500',
+        opacity: '1',
+        cursor: 'default',
+      },
     },
     container: {
-      h: '44px',
+      w: '100%',
       px: '0.25rem',
       py: '0.5rem',
       _hover: {
@@ -45,20 +63,22 @@ export const Radio: ComponentStyleConfig = {
       },
       _focusWithin: {
         borderColor: 'primary.500',
-        boxShadow: `0 0 0 2px ${getColor(props.theme, 'primary.500')}`,
+        boxShadow: `inset 0 0 0 0.125rem ${getColor(theme, 'primary.500')}`,
+      },
+      _disabled: {
+        cursor: 'default',
       },
     },
     others: {
-      pl: '48px',
-      mt: '2px',
+      pl: '3rem',
     },
   }),
   sizes: {
     // override md size, which is the default size
     md: {
       control: { w: '1.5rem', h: '1.5rem' },
-      label: { textStyle: 'body-1' },
-      icon: { fontSize: '0.75rem' },
+      icon: { fontSize: '1rem' },
+      container: { h: '2.75rem' },
     },
   },
 }

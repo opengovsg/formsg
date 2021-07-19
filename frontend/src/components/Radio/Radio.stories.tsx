@@ -4,12 +4,12 @@ import {
   FormErrorMessage,
   FormLabel,
 } from '@chakra-ui/form-control'
-import { Input, Radio, RadioGroup, RadioProps, VStack } from '@chakra-ui/react'
+import { Input, RadioGroup, RadioProps, VStack } from '@chakra-ui/react'
 import { Meta, Story } from '@storybook/react'
 
 import Button from '~components/Button'
 
-import { RadioOthers } from './RadioOthers'
+import { Radio, RadioOthers } from './Radio'
 
 export default {
   title: 'Components/Fields/Radio',
@@ -31,7 +31,7 @@ export const Group: Story<RadioProps> = (args) => {
         <Radio value="Option 1">Option 1</Radio>
         <Radio value="Option 2">Option 2</Radio>
         <Radio value="Option 3">Option 3</Radio>
-        <RadioOthers value="Others" displayValue="Others">
+        <RadioOthers value="Others" label="Others">
           <Input placeholder="Please specify" />
         </RadioOthers>
       </VStack>
@@ -49,7 +49,7 @@ export const Playground: Story = (args) => {
     formState: { errors },
   } = useForm()
 
-  const values = watch(name, false)
+  const value = watch(name, null)
 
   const onSubmit = (data: Record<string, string>) => {
     alert(JSON.stringify(data))
@@ -60,7 +60,7 @@ export const Playground: Story = (args) => {
     <form onSubmit={handleSubmit(onSubmit)} noValidate>
       <FormControl
         isRequired={isRequired}
-        isDisabled={isDisabled}
+        // isDisabled={isDisabled}
         isInvalid={!!errors[name]}
         mb={6}
       >
@@ -84,18 +84,24 @@ export const Playground: Story = (args) => {
             ))}
             <RadioOthers
               value="Others"
-              displayValue="Others"
+              label="Others"
               isDisabled={isDisabled}
-              base="checkbox"
+              {...register(name, {
+                required: {
+                  value: isRequired,
+                  message: 'This field is required',
+                },
+              })}
             >
               {/* Any subcomponent can be used due to children composition */}
               <Input
                 isInvalid={!!errors.others}
+                isDisabled={isDisabled}
                 placeholder="Please specify"
                 {...register('others', {
                   // Caller is responsible for validation, this is just an example, can be
                   // refined when we start implementing validation and business logic.
-                  required: Array.isArray(values) && values.includes('Others'),
+                  required: value === 'Others',
                 })}
               />
             </RadioOthers>
