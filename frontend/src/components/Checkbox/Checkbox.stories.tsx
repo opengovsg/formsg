@@ -4,12 +4,12 @@ import {
   FormErrorMessage,
   FormLabel,
 } from '@chakra-ui/form-control'
-import { Checkbox, CheckboxProps, Input, VStack } from '@chakra-ui/react'
+import { CheckboxProps, Input, VStack } from '@chakra-ui/react'
 import { Meta, Story } from '@storybook/react'
 
 import Button from '~components/Button'
 
-import { CheckboxOthers } from './CheckboxOthers'
+import { Checkbox, CheckboxOthers } from './Checkbox'
 
 export default {
   title: 'Components/Fields/Checkbox',
@@ -24,13 +24,21 @@ Default.args = {
   value: 'Option',
 }
 
+export const Disabled: Story<CheckboxProps> = (args) => (
+  <Checkbox {...args}>{args.value}</Checkbox>
+)
+Disabled.args = {
+  value: 'Option',
+  isDisabled: true,
+}
+
 export const Group: Story<CheckboxProps> = (args) => {
   return (
     <VStack align="left">
       <Checkbox value="Option 1">Option 1</Checkbox>
       <Checkbox value="Option 2">Option 2</Checkbox>
       <Checkbox value="Option 3">Option 3</Checkbox>
-      <CheckboxOthers {...args} value="Others" displayValue="Others">
+      <CheckboxOthers {...args} value="Others" label="Others">
         <Input placeholder="Please specify" />
       </CheckboxOthers>
     </VStack>
@@ -81,9 +89,8 @@ export const Playground: Story = (args) => {
           ))}
           <CheckboxOthers
             value="Others"
-            displayValue="Others"
+            label="Others"
             isDisabled={isDisabled}
-            base="checkbox"
             {...register(name, {
               required: {
                 value: isRequired,
