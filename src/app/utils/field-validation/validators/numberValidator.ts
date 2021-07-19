@@ -5,7 +5,10 @@ import { ProcessedSingleAnswerResponse } from 'src/app/modules/submission/submis
 import { INumberField } from 'src/types/field'
 import { ResponseValidator } from 'src/types/field/utils/validation'
 
-import { NumberSelectedValidation } from '../../../../types/field'
+import {
+  NumberSelectedValidation,
+  NumberValidationType,
+} from '../../../../types'
 
 import { notEmptySingleAnswerResponse } from './common'
 
@@ -63,16 +66,53 @@ const exactLengthValidator: NumberValidatorConstructor =
 
 /**
  * Returns the appropriate validation function
- * based on the number validation option selected.
+ * based on the number length validation option selected.
  */
 const getNumberLengthValidator: NumberValidatorConstructor = (numberField) => {
   switch (numberField.ValidationOptions.selectedValidation) {
-    case NumberSelectedValidation.Min:
+    case NumberSelectedValidation.Minimum:
       return minLengthValidator(numberField)
-    case NumberSelectedValidation.Max:
+    case NumberSelectedValidation.Maximum:
       return maxLengthValidator(numberField)
     case NumberSelectedValidation.Exact:
       return exactLengthValidator(numberField)
+    default:
+      return right
+  }
+}
+
+/**
+ * Returns a validation function to check if number value is
+ * less than the minimum value specified.
+ */
+const rangeValidator: NumberValidatorConstructor =
+  (numberField) => (response) => {
+    const { answer } = response
+    const { rangeMin, rangeMax } = numberField.ValidationOptions
+
+    if (rangeMin && Number(answer) < rangeMin) {
+      return left(
+        `NumberValidator:\t answer is smaller than custom minimum value`,
+      )
+    }
+
+    if (rangeMax && Number(answer) > rangeMax) {
+      return left(
+        `NumberValidator:\t answer is larger than custom maximum value`,
+      )
+    }
+
+    return right(response)
+  }
+
+/**
+ * Returns the appropriate validation function
+ * based on the number range validation option selected.
+ */
+const getNumberRangeValidator: NumberValidatorConstructor = (numberField) => {
+  switch (numberField.ValidationOptions.selectedValidationType) {
+    case NumberValidationType.Value:
+      return rangeValidator(numberField)
     default:
       return right
   }
@@ -88,4 +128,5 @@ export const constructNumberValidator: NumberValidatorConstructor = (
     notEmptySingleAnswerResponse,
     chain(numberFormatValidator),
     chain(getNumberLengthValidator(numberField)),
+    chain(getNumberRangeValidator(numberField)),
   )

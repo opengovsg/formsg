@@ -315,7 +315,7 @@ export const generateTableResponse = (
           rowAnswer.push('answer')
           break
         case BasicField.Dropdown:
-          rowAnswer.push(((col as unknown) as IDropdownField).fieldOptions[0])
+          rowAnswer.push((col as unknown as IDropdownField).fieldOptions[0])
       }
     })
     answerArray = Array(field.minimumRows).fill(rowAnswer)

@@ -10,7 +10,7 @@ angular.module('forms').service('FormFields', [FormFields])
 function FormFields() {
   this.basicTypes = basicTypes
   this.myInfoTypes = myInfoTypes
-  this.customValFields = ['textarea', 'textfield', 'number']
+  this.customValFields = ['textarea', 'textfield']
 
   /**
    * Whether a field uses custom validation options.
@@ -18,6 +18,14 @@ function FormFields() {
    */
   this.isCustomValField = (fieldType) => {
     return this.customValFields.includes(fieldType)
+  }
+
+  /**
+   * Whether a field uses number validation options.
+   * @param {string} fieldType
+   */
+  this.isNumberField = (fieldType) => {
+    return fieldType === 'number'
   }
 
   /**

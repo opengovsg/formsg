@@ -103,6 +103,11 @@ function EditFieldsModalController(
       !field.ValidationOptions
     ) {
       vm.clearCustomValidation(field)
+    } else if (
+      FormFields.isNumberField(field.fieldType) &&
+      !field.ValidationOptions
+    ) {
+      vm.clearCustomNumberValidation(field)
     }
   }
 
@@ -237,6 +242,57 @@ function EditFieldsModalController(
     field.ValidationOptions = {
       customVal: null,
       selectedValidation: temp,
+    }
+  }
+
+  vm.showCustomNumberValidationOptions = function (field) {
+    return FormFields.isNumberField(field.fieldType)
+  }
+
+  // Controls for custom validation
+  vm.customNumberValidationTypes = ['Length', 'Value']
+  vm.customNumberValidationOptions = ['Maximum', 'Minimum', 'Exact']
+  vm.clearCustomNumberValidationType = function (field) {
+    field.ValidationOptions = {
+      selectedValidationType: null,
+      selectedValidation: null,
+      customVal: null,
+      rangeMin: null,
+      rangeMax: null,
+    }
+  }
+  vm.clearCustomNumberValidation = function (field) {
+    const selectedValidationType =
+      field.ValidationOptions.selectedValidationType
+    field.ValidationOptions = {
+      selectedValidationType,
+      selectedValidation: null,
+      customVal: null,
+      rangeMin: null,
+      rangeMax: null,
+    }
+  }
+  vm.resetCustomNumberValidationParamsType = function (field) {
+    let selectedValidationType = field.ValidationOptions.selectedValidationType
+    // Reset all custom validation params to null, keep selected validation option
+    field.ValidationOptions = {
+      customVal: null,
+      rangeMin: null,
+      rangeMax: null,
+      selectedValidation: null,
+      selectedValidationType,
+    }
+  }
+  vm.resetCustomNumberValidationParams = function (field) {
+    let selectedValidation = field.ValidationOptions.selectedValidation
+    let selectedValidationType = field.ValidationOptions.selectedValidationType
+    // Reset all custom validation params to null, keep selected validation option
+    field.ValidationOptions = {
+      customVal: null,
+      rangeMin: null,
+      rangeMax: null,
+      selectedValidation,
+      selectedValidationType,
     }
   }
 

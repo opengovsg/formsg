@@ -1075,6 +1075,129 @@
         </div>
         <!-- End custom validation field -->
 
+        <!-- Custom number validation field -->
+        <div
+          class="row"
+          ng-init="vm.enforceCompatibility(vm.field)"
+          ng-if="vm.showCustomNumberValidationOptions(vm.field)"
+        >
+          <div class="row"><br /></div>
+          <div class="col-xs-12 label-custom label-medium label-bottom">
+            Number Validation
+          </div>
+          <div class="col-xs-12">
+            <div class="col-sm-12 col-xs-12 custom-val-dropdown">
+              <div class="input-group">
+                <ui-select
+                  theme="selectize"
+                  search-enabled="true"
+                  ng-model="vm.field.ValidationOptions.selectedValidationType"
+                  ng-change="vm.resetCustomNumberValidationParamsType(vm.field);"
+                  style="margin-bottom: 0"
+                >
+                  <ui-select-match placeholder="None"
+                    >{{$select.selected}}</ui-select-match
+                  >
+                  <ui-select-choices
+                    repeat="option in vm.customNumberValidationTypes | filter: $select.search"
+                  >
+                    <span ng-bind="option"></span>
+                  </ui-select-choices>
+                </ui-select>
+                <span class="input-group-btn">
+                  <button
+                    type="button"
+                    class="btn btn-dropdown"
+                    ng-click="vm.clearCustomNumberValidationType(vm.field)"
+                    ng-disabled="!vm.field.ValidationOptions.selectedValidationType"
+                  >
+                    <i class="glyphicon glyphicon-remove"></i>
+                  </button>
+                </span>
+              </div>
+            </div>
+            <div
+              class="col-sm-12 col-xs-12 custom-val-dropdown"
+              ng-if="vm.field.ValidationOptions.selectedValidationType === 'Length'"
+            >
+              <div class="input-group">
+                <ui-select
+                  theme="selectize"
+                  search-enabled="true"
+                  ng-model="vm.field.ValidationOptions.selectedValidation"
+                  ng-change="vm.resetCustomNumberValidationParams(vm.field); vm.setFocus()"
+                  style="margin-bottom: 0"
+                >
+                  <ui-select-match placeholder="None"
+                    >{{$select.selected}}</ui-select-match
+                  >
+                  <ui-select-choices
+                    repeat="option in vm.customNumberValidationOptions | filter: $select.search"
+                  >
+                    <span ng-bind="option"></span>
+                  </ui-select-choices>
+                </ui-select>
+                <span class="input-group-btn">
+                  <button
+                    type="button"
+                    class="btn btn-dropdown"
+                    ng-click="vm.clearCustomNumberValidation(vm.field)"
+                    ng-disabled="!vm.field.ValidationOptions.selectedValidation"
+                  >
+                    <i class="glyphicon glyphicon-remove"></i>
+                  </button>
+                </span>
+              </div>
+            </div>
+
+            <div
+              class="col-sm-12 col-xs-12 custom-val-dropdown"
+              ng-if="vm.field.ValidationOptions.selectedValidationType !== 'Value'"
+            >
+              <input
+                type="number"
+                ng-model="vm.field.ValidationOptions.customVal"
+                ng-min="1"
+                ng-max="10000"
+                class="input-custom input-medium"
+                placeholder="No. of Characters"
+                ng-if="vm.field.ValidationOptions.selectedValidationType === 'Length'"
+                ng-disabled="!vm.field.ValidationOptions.selectedValidation"
+                ng-change="vm.changeFxn(vm.field)"
+              />
+            </div>
+
+            <div
+              class="col-sm-6 col-xs-12 custom-val-dropdown"
+              ng-if="vm.field.ValidationOptions.selectedValidationType === 'Value'"
+            >
+              <input
+                type="number"
+                ng-model="vm.field.ValidationOptions.rangeMin"
+                min="0"
+                class="input-custom input-medium"
+                placeholder="Min"
+                ng-change="vm.changeFxn(vm.field)"
+              />
+            </div>
+
+            <div
+              class="col-sm-6 col-xs-12 custom-val-input"
+              ng-if="vm.field.ValidationOptions.selectedValidationType === 'Value'"
+            >
+              <input
+                type="number"
+                ng-model="vm.field.ValidationOptions.rangeMax"
+                min="{{ vm.field.ValidationOptions.rangeMin || 0 }}"
+                class="input-custom input-medium"
+                placeholder="Max"
+                ng-change="vm.changeFxn(vm.field)"
+              />
+            </div>
+          </div>
+        </div>
+        <!-- End custom number validation field -->
+
         <!-- Short Text -->
 
         <div
