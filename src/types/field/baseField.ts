@@ -43,13 +43,6 @@ export interface IFieldSchema extends IField, Document {
   getQuestion(): string
 }
 
-// We don't store a fieldValue in the database, but the client
-// needs it as a variable to store the client's answer to a field.
-// Hence we need this interface for client-side fields.
-export interface IClientFieldSchema extends IFieldSchema {
-  fieldValue: string
-}
-
 export enum TextSelectedValidation {
   Maximum = 'Maximum',
   Minimum = 'Minimum',

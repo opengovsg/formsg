@@ -1,17 +1,28 @@
+import { isEqual } from 'lodash'
+
 import {
   BasicField,
-  FieldResponse,
-  IClientFieldSchema,
+  CheckboxConditionValue,
+  FieldSchemaOrResponse,
   IConditionSchema,
   IField,
   IFormDocument,
+  ILogicClientFieldSchema,
+  ILogicInputClientSchema,
   ILogicSchema,
   IPreventSubmitLogicSchema,
   IShowFieldsLogicSchema,
+  ITableRow,
   LogicCondition,
   LogicConditionState,
+  LogicFieldResponse,
   LogicType,
 } from '../../types'
+
+import {
+  isCheckboxConditionValue,
+  isLogicCheckboxCondition,
+} from './logic-utils'
 
 const LOGIC_CONDITIONS: LogicCondition[] = [
   [
@@ -65,10 +76,12 @@ export const getApplicableIfStates = (
 ): LogicConditionState[] => LOGIC_MAP.get(fieldType) ?? []
 
 type GroupedLogic = Record<string, IConditionSchema[][]>
-export type FieldIdSet = Set<IClientFieldSchema['_id']>
+export type FieldIdSet = Set<ILogicInputClientSchema['_id']>
 // This module handles logic on both the client side (IFieldSchema[])
 // and server side (FieldResponse[])
-type LogicFieldSchemaOrResponse = IClientFieldSchema | FieldResponse
+export type LogicFieldSchemaOrResponse =
+  | ILogicClientFieldSchema
+  | LogicFieldResponse
 
 // Returns typed ShowFields logic unit
 const isShowFieldsLogic = (
@@ -178,7 +191,7 @@ const getPreventSubmitConditions = (
  * @returns a condition if submission is to prevented, otherwise `undefined`
  */
 export const getLogicUnitPreventingSubmit = (
-  submission: LogicFieldSchemaOrResponse[],
+  submission: FieldSchemaOrResponse[],
   form: IFormDocument,
   visibleFieldIds?: FieldIdSet,
 ): IPreventSubmitLogicSchema | undefined => {
@@ -219,7 +232,7 @@ const allConditionsExist = (
  * @returns a set of IDs of visible fields in the submission
  */
 export const getVisibleFieldIds = (
-  submission: LogicFieldSchemaOrResponse[],
+  submission: FieldSchemaOrResponse[],
   form: IFormDocument,
 ): FieldIdSet => {
   const logicUnitsGroupedByField = groupLogicUnitsByField(form)
@@ -261,7 +274,7 @@ export const getVisibleFieldIds = (
  * @returns true if all the conditions are satisfied, false otherwise
  */
 const isLogicUnitSatisfied = (
-  submission: LogicFieldSchemaOrResponse[],
+  submission: FieldSchemaOrResponse[],
   logicUnit: IConditionSchema[],
   visibleFieldIds: FieldIdSet,
 ): boolean => {
@@ -276,14 +289,24 @@ const isLogicUnitSatisfied = (
 }
 
 const getCurrentValue = (
-  field: LogicFieldSchemaOrResponse,
-): string | null | undefined | string[] => {
+  field: FieldSchemaOrResponse,
+):
+  | string
+  | string[]
+  | boolean[]
+  | ITableRow[]
+  | CheckboxConditionValue
+  | undefined
+  | null => {
   if ('fieldValue' in field) {
     // client
     return field.fieldValue
   } else if ('answer' in field) {
     // server
     return field.answer
+  } else if ('answerArray' in field) {
+    // server
+    return field.answerArray
   }
   return null
 }
@@ -294,7 +317,7 @@ const getCurrentValue = (
  * @param {String} condition.state - The type of condition
  */
 const isConditionFulfilled = (
-  field: LogicFieldSchemaOrResponse,
+  field: FieldSchemaOrResponse,
   condition: IConditionSchema,
 ): boolean => {
   if (!field || !condition) {
@@ -304,7 +327,8 @@ const isConditionFulfilled = (
   if (
     currentValue === null ||
     currentValue === undefined ||
-    currentValue.length === 0
+    ((Array.isArray(currentValue) || typeof currentValue === 'string') &&
+      currentValue.length === 0)
   ) {
     return false
   }
@@ -334,10 +358,8 @@ const isConditionFulfilled = (
     // TODO: An option that is named "Others: Something..." will also pass this test,
     // even if the field has not been configured to set othersRadioButton=true
     if (conditionValues.indexOf('Others') > -1) {
-      if (field.fieldType === 'radiobutton') {
+      if (field.fieldType === BasicField.Radio) {
         conditionValues.push('radioButtonOthers')
-      } else if (field.fieldType === 'checkbox') {
-        conditionValues.push('checkboxOthers') // Checkbox currently doesn't have logic, but the 'Others' will work in the future if it in implemented
       }
       return (
         conditionValues.indexOf(currentValue) > -1 || // Client-side
@@ -345,9 +367,23 @@ const isConditionFulfilled = (
       ) // Server-side
     }
     return conditionValues.indexOf(currentValue) > -1
-  } else if (condition.state === 'is less than or equal to') {
+  } else if (condition.state === LogicConditionState.AnyOf) {
+    if (
+      field.fieldType === BasicField.Checkbox &&
+      isLogicCheckboxCondition(condition) &&
+      isCheckboxConditionValue(currentValue)
+    ) {
+      condition.value.forEach((obj) => {
+        obj.options = obj.options.sort()
+      })
+      currentValue.options = currentValue.options.sort()
+      return condition.value.some((val) => isEqual(currentValue, val))
+    } else {
+      return false
+    }
+  } else if (condition.state === LogicConditionState.Lte) {
     return Number(currentValue) <= Number(condition.value)
-  } else if (condition.state === 'is more than or equal to') {
+  } else if (condition.state === LogicConditionState.Gte) {
     return Number(currentValue) >= Number(condition.value)
   } else {
     return false
@@ -362,9 +398,9 @@ const isConditionFulfilled = (
  * @returns the condition field if it exists, `undefined` otherwise
  */
 const findConditionField = (
-  submission: LogicFieldSchemaOrResponse[],
+  submission: FieldSchemaOrResponse[],
   fieldId: IConditionSchema['field'],
-): LogicFieldSchemaOrResponse | undefined => {
+): FieldSchemaOrResponse | undefined => {
   return submission.find(
     (submittedField) => String(submittedField._id) === String(fieldId),
   )

@@ -39,6 +39,9 @@ describe('Logic validation', () => {
     isVisible = true,
   ): FieldResponse => {
     const response: Record<string, any> = { _id: fieldId, answer, isVisible }
+    if (answer !== null) {
+      response.answer = answer
+    }
     if (answerArray) {
       response.answerArray = answerArray
     }
